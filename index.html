@@ -121,6 +121,39 @@ h3{font-size:19px;margin:0 0 6px}
 /* assistant */
 .fab{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:calc(16px + env(safe-area-inset-left,0px));z-index:20;background:var(--lav);color:#fff;border-radius:999px;padding:12px 18px;box-shadow:0 8px 24px rgba(123,98,232,.35);display:flex;gap:8px;align-items:center}
 [dir="ltr"] .fab{left:auto;right:calc(16px + env(safe-area-inset-right,0px))}
+/* lesson list + lesson page */
+.lesslist{display:grid;gap:8px}
+.lessrow{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;text-decoration:none;color:var(--ink);box-shadow:var(--shadow)}
+.lessrow:hover{border-color:var(--pink)}
+.lessrow .n,.lpage h1 .n{display:inline-grid;place-items:center;min-width:34px;height:34px;border-radius:50%;background:var(--pink-soft);color:var(--pink);font-weight:800;flex-shrink:0}
+.lessrow .t{flex:1;min-width:0;font-weight:700;display:flex;flex-direction:column;gap:2px}
+.lessrow .t small{font-weight:500;font-size:13px}
+.lessrow .go{font-size:24px;color:var(--mut)}
+.lpage .body{font-size:16.5px;line-height:1.9}
+.lnav{display:flex;justify-content:space-between;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btnlink{display:inline-flex;align-items:center;justify-content:center;padding:10px 16px;border-radius:14px;text-decoration:none;font-weight:700}
+a.pri.btnlink{background:var(--pink);color:#fff}
+a.ghost.btnlink{border:1.5px solid var(--line);color:var(--ink)}
+/* exam countdown grid */
+.exgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:12px}
+.exi{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:8px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:14px;padding:8px 10px;min-width:0}
+.exi .exic{grid-row:1/3;font-size:22px}
+.exi .exn{font-weight:700;font-size:14.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exi .exd{font-size:13px;color:var(--mut)}
+.exi.soon{border-color:var(--pink)}.exi.soon .exd{color:var(--pink);font-weight:700}
+/* term bar: three equal buttons */
+.termbar{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.termbar button{white-space:nowrap;padding-inline:6px}
+@media(max-width:600px){
+  .top .in{gap:6px}
+  .logo{font-size:19px;white-space:nowrap;flex-shrink:0}
+  .top .crumbs,#stuChip{display:none!important}
+  .top .in>a.ghost,.top .in>button.ghost{padding:6px 8px!important;min-width:0!important}
+  .fab{padding:12px;border-radius:50%}
+  .fab span{display:none}
+  .exgrid{grid-template-columns:1fr 1fr}
+  .termbar button{font-size:14px}
+}
 .chat{display:flex;flex-direction:column;gap:10px;max-width:820px;margin:0 auto}
 .msgs{display:flex;flex-direction:column;gap:10px;min-height:260px}
 .msg{max-width:88%;padding:10px 14px;border-radius:18px;line-height:1.8;overflow-wrap:anywhere}
@@ -12417,12 +12450,805 @@ Tips: use consistent units (J or eV), convert nm, g, and C, and watch the signs 
 
 }catch(e){console.error('data12_en physics.js',e)}
 var DATA10A={};
+/* ---- data10a english.js ---- */
+try{
+DATA10A["english"] = {
+  name: "English",
+  icon: "🌦️",
+  tone: "p-sky",
+  desc: "Grade 10 Advanced EOT Term 1: health and infotainment vocabulary, 7 grammar topics, two reading texts, main-ideas summary and opinion essay",
+  note: "Based on the Cycle 3 Term 1 2026-27 EOT Test Specs (Grade 10 Advanced / Grade 11 GLG, Stage 7, B1.2-B2.1) and the Term 1 EOT Student Guide.",
+  en: true,
+  exam: { n: 28, mins: 120 },
+  T: [
+    { id: 1, t: "Exam Guide: Format, Marks & Strategies", q: "EOT Spec pp. 19-23 - Parts 1, 2, 3A, 3B, 4 (100 marks)", html: `<div class="en">
+<p>The Grade 10 Advanced End-of-Term 1 exam covers <b>Reading &amp; Viewing (60 marks)</b> and <b>Writing &amp; Representing (40 marks)</b>: 100 marks in total. Level: Stage 7, CEFR B1.2-B2.1.</p>
+<table class="tbl"><tr><th>Part</th><th>Task</th><th>Marks</th></tr>
+<tr><td>1 Vocabulary</td><td>160-word text, 5 gaps, choose A, B or C (2 marks each). Themes: <i>A Picture of Health</i>, <i>Infotainment</i></td><td>10</td></tr>
+<tr><td>2 Grammar</td><td>160-word narrative (news report: an airplane crash), 5 gaps, A/B/C (2 marks each)</td><td>10</td></tr>
+<tr><td>3A Reading</td><td>270-300-word expository text (<i>Longevity, Medical advice and the Internet</i>), 8 questions (3 marks each). At grade level goal</td><td>24</td></tr>
+<tr><td>3B Reading</td><td>270-300-word expository text (<i>Commercials, Visual Media and language</i>), 8 questions (2 marks each). Beyond grade level goal</td><td>16</td></tr>
+<tr><td>4 Writing</td><td>1.1 main ideas of a 170-word text in 3-4 sentences (15 marks) + 1.2 opinion essay of at least 170 words with three prompts (25 marks)</td><td>40</td></tr></table>
+<div class="key"><b>Reading strategy S-S-C:</b> <b>Skim</b> (read quickly for the main idea), <b>Scan</b> (find names, facts and supporting details), <b>Check</b> (return to the passage to confirm your answer).</div>
+<ul><li>Read the <b>whole sentence</b> before choosing a gap word; use meaning and context clues.</li><li>For grammar gaps, check the <b>subject, verb tense and meaning</b>.</li><li>Answer every question: there are three options, so never leave a blank.</li></ul>
+<div class="trap">⚠️ Part 3A questions are worth 3 marks each, Part 3B 2 marks each. Do not spend all your time on 3B.</div>
+</div>`, say: "The Grade 10 Advanced English exam has one hundred marks. Reading and language is sixty marks and writing is forty. Part one is vocabulary, ten marks. Part two is grammar, ten marks, with a news report about an airplane crash. Part three A is a health reading text, twenty four marks. Part three B is an infotainment reading text, sixteen marks. Part four is writing, forty marks: four sentences giving the main ideas, and an opinion essay of at least one hundred and seventy words. For reading, use skim, scan, check. Always read the whole sentence before choosing a gap word, and answer every question." },
+
+    { id: 2, t: "Vocabulary: A Picture of Health (1)", q: "Part 1 Vocabulary - symptoms, prescription, fraudulent, dishonest, syndrome", html: `<div class="en">
+<p>Theme <b>A Picture of Health</b>. Learn the meaning, the word class and a sentence for each word.</p>
+<table class="tbl"><tr><th>Word</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><b>symptoms</b> (n)</td><td>signs of an illness or condition</td><td>A cough and a fever are symptoms of the flu.</td></tr>
+<tr><td><b>prescription</b> (n)</td><td>a doctor's written order for medicine</td><td>The doctor wrote a prescription for antibiotics.</td></tr>
+<tr><td><b>fraudulent</b> (adj)</td><td>done to cheat people, often to get money</td><td>The website sold fraudulent cures.</td></tr>
+<tr><td><b>dishonest</b> (adj)</td><td>not telling the truth; not honest (prefix <i>dis-</i> = not)</td><td>A dishonest advert can put your health at risk.</td></tr>
+<tr><td><b>syndrome</b> (n)</td><td>a group of symptoms that occur together</td><td>Tired eyes and headaches can be part of a screen-related syndrome.</td></tr></table>
+<div class="key"><b>Word families:</b> fraud (n) - fraudulent (adj); honest - dishonest - dishonesty; prescribe (v) - prescription (n).</div>
+<div class="ex">Gap: "She went to the doctor because she had several ____ (A symptoms B remedies C scenes)." The best answer is <b>symptoms</b>: it fits the meaning (signs of illness).</div>
+<div class="trap">⚠️ Do not confuse <b>prescription</b> (written order for medicine) with <b>description</b>, and <b>symptoms</b> (signs of illness) with <b>symbols</b>.</div>
+</div>`, say: "Theme: A Picture of Health. Symptoms are signs of an illness, like a cough or a fever. A prescription is a doctor's written order for medicine. Fraudulent means done to cheat people, often to get money. Dishonest means not honest; the prefix dis means not. A syndrome is a group of symptoms that happen together. Example: The doctor wrote a prescription after she described her symptoms. Be careful: prescription is not the same as description." },
+
+    { id: 3, t: "Vocabulary: A Picture of Health (2) and Stress", q: "Part 1 Vocabulary - remedy, nervous, stress, toothache, upset stomach", html: `<div class="en">
+<table class="tbl"><tr><th>Word</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><b>remedy</b> (n)</td><td>a treatment or cure for an illness or problem</td><td>Honey and warm water is a home remedy for a sore throat.</td></tr>
+<tr><td><b>nervous</b> (adj)</td><td>worried or anxious about something</td><td>Before her presentation, Hessa felt nervous.</td></tr>
+<tr><td><b>stress</b> (n/v)</td><td>worry and pressure that make you feel tense</td><td>Exams cause stress for many students.</td></tr>
+<tr><td><b>toothache</b> (n)</td><td>pain in a tooth</td><td>He had a bad toothache and visited the dentist.</td></tr>
+<tr><td><b>upset stomach</b> (n)</td><td>a stomach that feels sick or uncomfortable</td><td>Eating too fast can give you an upset stomach.</td></tr></table>
+<p><b>Handling stress (class vocabulary):</b> <b>calm down</b> = become less worried or excited; <b>negative effect</b> = a harmful result; <b>causes of stress</b> = things that make a person feel worried or under pressure.</p>
+<div class="ex">"Before the test, Sara took a deep breath to <b>calm down</b>. Too much stress can have a <b>negative effect</b> on sleep."</div>
+<div class="key"><b>stress</b> can be a noun (<i>He is under stress</i>) and a verb (<i>Don't stress about it</i>). <b>Nervous</b> describes a feeling; <b>stress</b> is the pressure causing it.</div>
+<div class="trap">⚠️ Say <b>an upset stomach</b> (not "a stomach upset"), <b>toothache</b> is one word, and use <b>a remedy FOR</b> an illness.</div>
+</div>`, say: "More health words. A remedy is a treatment or cure, like honey and warm water for a sore throat. Nervous means worried or anxious. Stress is worry and pressure that make you tense. Toothache is pain in a tooth. An upset stomach is a stomach that feels sick. From the stress lessons: calm down means become less worried; a negative effect is a harmful result; causes of stress are things that put a person under pressure. Example: Before the test, Sara took a deep breath to calm down." },
+
+    { id: 4, t: "Vocabulary: Infotainment (1)", q: "Part 1 Vocabulary - connectivity, productivity, slogan, commercial, memorable", html: `<div class="en">
+<p><b>Infotainment</b> = information + entertainment (news and media that inform and entertain).</p>
+<table class="tbl"><tr><th>Word</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><b>connectivity</b> (n)</td><td>the ability to connect to the internet or other devices</td><td>Good connectivity lets us stream videos anywhere.</td></tr>
+<tr><td><b>productivity</b> (n)</td><td>how much work you do in a given time</td><td>Turning off notifications can raise your productivity.</td></tr>
+<tr><td><b>slogan</b> (n)</td><td>a short, catchy phrase used by a company</td><td>"Just do it" is a famous slogan.</td></tr>
+<tr><td><b>commercial</b> (n/adj)</td><td>(n) a paid advertisement on TV or online; (adj) connected with business</td><td>The commercial lasted thirty seconds.</td></tr>
+<tr><td><b>memorable</b> (adj)</td><td>easy to remember; special</td><td>A memorable slogan stays in your mind.</td></tr></table>
+<div class="key"><b>Word parts:</b> connect + <i>-ivity</i> (noun); product + <i>-ive</i> + <i>-ity</i>; memor(y) + <i>-able</i> = able to be remembered.</div>
+<div class="ex">"The company's new ____ was short and ____, so everyone remembered it." = <b>slogan</b>, <b>memorable</b>.</div>
+<div class="trap">⚠️ <b>Commercial</b> as a noun means an advert, not a shop. <b>Connectivity</b> is about connecting; do not confuse it with <i>connection</i> in a sentence needing the idea of ability or quality of connecting.</div>
+</div>`, say: "Theme: Infotainment, which means information plus entertainment. Connectivity is the ability to connect to the internet or other devices. Productivity is how much work you do in a given time. A slogan is a short, catchy phrase used by a company. A commercial is a paid advertisement on television or online. Memorable means easy to remember. For example: The company's slogan was short and memorable, so everyone remembered it." },
+
+    { id: 5, t: "Vocabulary: Infotainment (2)", q: "Part 1 Vocabulary - informative, witness, investigation, injuries, scene", html: `<div class="en">
+<table class="tbl"><tr><th>Word</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><b>informative</b> (adj)</td><td>giving useful information</td><td>The documentary was very informative.</td></tr>
+<tr><td><b>witness</b> (n/v)</td><td>a person who sees an event; to see it happen</td><td>A witness told the police what she saw.</td></tr>
+<tr><td><b>investigation</b> (n)</td><td>an official examination to find out the facts</td><td>An investigation into the accident began at once.</td></tr>
+<tr><td><b>injuries</b> (n, plural)</td><td>physical harm to the body</td><td>Several passengers had minor injuries.</td></tr>
+<tr><td><b>scene</b> (n)</td><td>the place where something happens</td><td>Police arrived at the scene quickly.</td></tr></table>
+<div class="key"><b>Word families:</b> inform - information - informative; investigate (v) - investigation (n); injure (v) - injury (n) - injuries (plural: y becomes ies).</div>
+<div class="ex">News report: "A ____ saw the plane land. Rescue teams reached the ____ within minutes, and there was an ____ into the cause." = <b>witness</b>, <b>scene</b>, <b>investigation</b>.</div>
+<div class="trap">⚠️ <b>scene</b> (place of an event) sounds like <b>seen</b>. A <b>witness</b> sees; the <b>scene</b> is the place. <b>Injuries</b> = harm; <b>damage</b> is for things.</div>
+</div>`, say: "More infotainment words. Informative means giving useful information. A witness is a person who sees an event. An investigation is an official examination to find the facts. Injuries is physical harm to people. The scene is the place where something happens. Example: A witness told the police what she saw, and an investigation began at the scene of the accident. Remember injuries are for people, damage is for things." },
+
+    { id: 6, t: "Vocabulary Strategies: Gap-Fill, Context and Word Parts", q: "Part 1 Vocabulary / Part 3 inference - ENG.07.RV.S.3.3, CS.4.1", html: `<div class="en">
+<p>In Part 1 you read a 160-word text with five gaps and choose A, B or C. A systematic method:</p>
+<div class="key"><b>4 steps:</b> 1) Skim the whole text for the topic. 2) For each gap, decide the <b>word class</b> (noun? adjective?). 3) Test each option in the <b>whole sentence</b>. 4) Re-read the finished text to check it makes sense.</div>
+<table class="tbl"><tr><th>Clue</th><th>Example</th></tr>
+<tr><td>Definition / synonym nearby</td><td>"She felt <b>nervous</b>, worried about her speech."</td></tr>
+<tr><td>Contrast (but, however)</td><td>"The first advert was boring, but the second was <b>memorable</b>."</td></tr>
+<tr><td>Cause and result</td><td>"He was injured, so he needed medical help."</td></tr></table>
+<p><b>Word parts</b> (prefixes and suffixes) help you infer unknown words:</p>
+<table class="tbl"><tr><th>Part</th><th>Meaning</th><th>Example</th></tr>
+<tr><td>dis-, un-, in-</td><td>not / opposite</td><td>dishonest, unhealthy, incorrect</td></tr>
+<tr><td>-able, -ible</td><td>able to be</td><td>memorable, visible</td></tr>
+<tr><td>-ive</td><td>adjective: tending to</td><td>informative, productive</td></tr>
+<tr><td>-ity, -tion, -ment</td><td>noun endings</td><td>connectivity, investigation, treatment</td></tr></table>
+<div class="trap">⚠️ Do not choose a word only because you recognise it. Two options may be correct English words, but only one fits the grammar and meaning of the sentence.</div>
+</div>`, say: "For a vocabulary gap fill, use four steps. One, skim the whole text. Two, for each gap decide the word class: is it a noun or an adjective? Three, test each option in the whole sentence. Four, read the finished text again. Look for clues: a definition nearby, a contrast with but or however, or a cause and result. Word parts also help. Dis, un and in mean not. Able means able to be, as in memorable. Ive makes an adjective, like informative. Ity, tion and ment make nouns. Do not choose a word just because you recognise it." },
+
+    { id: 7, t: "Grammar: Present Simple Passive", q: "Part 2 Grammar - G.10.1 Passives (present simple passive)", html: `<div class="en">
+<p>Use the <b>present simple passive</b> when the <u>action or the receiver</u> is more important than who does it, or when the doer is unknown. News reports and processes use it a lot.</p>
+<div class="key"><b>Form:</b> subject + <b>am / is / are</b> + <b>past participle (V3)</b><br>Negative: is/are + <b>not</b> + V3 &nbsp;|&nbsp; Question: <b>Is/Are</b> + subject + V3?</div>
+<table class="tbl"><tr><th>Active</th><th>Passive</th></tr>
+<tr><td>Police <b>investigate</b> the accident.</td><td>The accident <b>is investigated</b> by police.</td></tr>
+<tr><td>Doctors <b>prescribe</b> medicine.</td><td>Medicine <b>is prescribed</b> by doctors.</td></tr>
+<tr><td>They <b>broadcast</b> the news at 8 p.m.</td><td>The news <b>is broadcast</b> at 8 p.m.</td></tr>
+<tr><td>People <b>watch</b> commercials.</td><td>Commercials <b>are watched</b> by millions.</td></tr></table>
+<p>Use <b>by + agent</b> only if the doer matters. Passive tip: the object of the active sentence becomes the subject.</p>
+<div class="ex">"Passengers' injuries <b>are treated</b> at the hospital." (is/are agrees with the subject: injuries = are)</div>
+<div class="trap">⚠️ 1) Agreement: <i>The witness is asked</i> / <i>The witnesses are asked</i>. 2) You need V3: "is <u>invite</u>" is wrong, "is <u>invited</u>" is right. 3) Do not use the passive with intransitive verbs (<i>happen, arrive</i>).</div>
+</div>`, say: "The present simple passive is formed with am, is or are, plus the past participle. We use it when the action matters more than who does it, as in news reports. Active: Police investigate the accident. Passive: The accident is investigated by police. Active: Doctors prescribe medicine. Passive: Medicine is prescribed by doctors. Make sure is or are agrees with the new subject: the injuries are treated at the hospital. And always use the past participle: is invited, not is invite." },
+
+    { id: 8, t: "Grammar: Present Perfect Continuous", q: "Part 2 Grammar - G.13.4 Present time (present perfect continuous)", html: `<div class="en">
+<div class="key"><b>Form:</b> subject + <b>have / has + been + verb-ing</b><br>Negative: haven't / hasn't been + -ing &nbsp;|&nbsp; Question: <b>Have/Has</b> + subject + <b>been</b> + -ing?</div>
+<p><b>Uses:</b></p>
+<ul><li>An action that <b>started in the past and is still continuing</b>: <i>Rescue teams have been working since 6 a.m.</i></li>
+<li>An action that <b>just stopped</b> but has a visible result now: <i>She is tired because she has been studying.</i></li></ul>
+<table class="tbl"><tr><th>Time word</th><th>Example</th></tr>
+<tr><td><b>for</b> + period</td><td>He has been waiting <b>for two hours</b>.</td></tr>
+<tr><td><b>since</b> + starting point</td><td>It has been raining <b>since morning</b>.</td></tr>
+<tr><td>How long...?, recently, lately, all day</td><td><b>How long</b> have you been feeling ill?</td></tr></table>
+<div class="ex">"Police <b>have been investigating</b> the crash since Monday." (started on Monday, still continuing)</div>
+<div class="trap">⚠️ 1) Use <b>been</b> + -ing, never "have being". 2) <b>for</b> (length of time) vs <b>since</b> (starting point). 3) Stative verbs (know, like, own) are not used in the continuous: <i>I have known him for years.</i> 4) With <b>he/she/it</b> use <b>has</b>.</div>
+</div>`, say: "The present perfect continuous is formed with have or has, plus been, plus the verb with ing. We use it for actions that started in the past and are still continuing, for example: Rescue teams have been working since six a.m. We also use it for an action that has just stopped but has a result now: She is tired because she has been studying. Use for with a period of time, like two hours, and since with a starting point, like morning. Remember: been, not being, and has with he, she and it." },
+
+    { id: 9, t: "Grammar: Participle Clauses", q: "Part 2 Grammar - G.4.5 Clauses and phrases (participle clauses)", html: `<div class="en">
+<p>A <b>participle clause</b> shortens a sentence by using a participle (-ing or -ed) instead of a full clause. The subject of the participle must be the <b>same</b> as the subject of the main clause.</p>
+<table class="tbl"><tr><th>Type</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><b>-ing</b> (present participle)</td><td>active; actions at the same time or one after another</td><td><b>Hearing</b> the noise, the witness ran outside. (= When she heard the noise...)</td></tr>
+<tr><td><b>-ing</b> in relative clause</td><td>replaces who/which + active verb</td><td>The man <b>standing</b> near the door saw everything. (= who was standing)</td></tr>
+<tr><td><b>-ed</b> (past participle)</td><td>passive meaning</td><td>The passengers <b>injured</b> in the crash were taken to hospital. (= who were injured)</td></tr>
+<tr><td><b>Having + V3</b></td><td>an earlier action</td><td><b>Having landed</b> safely, the pilot thanked the crew.</td></tr></table>
+<div class="ex">Full: "The plane, which was carrying 120 passengers, landed safely." Reduced: "The plane, <b>carrying</b> 120 passengers, landed safely."</div>
+<div class="trap">⚠️ <b>Dangling participle:</b> "Walking down the street, the plane crashed" (the plane was not walking!). The subject of the main clause must be the one doing the participle action. Active meaning = -ing; passive meaning = -ed.</div>
+</div>`, say: "A participle clause shortens a sentence using an ing or ed participle. The subject of the participle must be the same as the subject of the main clause. Hearing the noise, the witness ran outside means: when she heard the noise, the witness ran outside. The man standing near the door means the man who was standing. The passengers injured in the crash means the passengers who were injured; use the ed form for passive meaning. Having landed safely, the pilot thanked the crew shows an earlier action. Avoid dangling participles, where the subject does not match." },
+
+    { id: 10, t: "Grammar: Demonstratives (this, that, these, those)", q: "Part 2 Grammar - G.7.4 Determiners (demonstratives)", html: `<div class="en">
+<table class="tbl"><tr><th></th><th>Near (here / now)</th><th>Far (there / then)</th></tr>
+<tr><th>Singular</th><td><b>this</b> book</td><td><b>that</b> building</td></tr>
+<tr><th>Plural</th><td><b>these</b> books</td><td><b>those</b> buildings</td></tr></table>
+<ul><li><b>this / these</b>: things close to the speaker in place, time or thought: <i>This morning, I read these reports.</i></li>
+<li><b>that / those</b>: things far away or in the past: <i>Those passengers were lucky.</i> <i>That day, nobody was seriously hurt.</i></li>
+<li>As <b>pronouns</b>: <i>This is my prescription.</i> <i>Those are the witnesses.</i></li>
+<li>Referring back to an idea: <i>The plane crashed. This caused panic.</i> / <i>That was a shock.</i></li></ul>
+<div class="ex">Pointing at a pile of reports on your desk: "<b>These</b> are the reports." Pointing at buildings across the street: "<b>Those</b> are the offices."</div>
+<div class="key">The demonstrative must <b>agree in number</b> with the noun: this/that + singular, these/those + plural.</div>
+<div class="trap">⚠️ "these <u>problem</u>" and "this <u>books</u>" are wrong. Also: <b>these days</b> = nowadays, but <b>those days</b> = in the past.</div>
+</div>`, say: "Demonstratives show distance. This and these are for things that are near, in place, time or thought. That and those are for things that are far or in the past. This and that are singular; these and those are plural. For example: These are the reports on my desk. Those are the offices across the street. They can also be pronouns: This is my prescription. They can refer back to an idea: The plane crashed. This caused panic. Make sure the demonstrative agrees in number with the noun." },
+
+    { id: 11, t: "Grammar: Subordinating Conjunctions", q: "Part 2 Grammar - G.6.2 Conjunctions (subordinating)", html: `<div class="en">
+<p>A <b>subordinating conjunction</b> joins a dependent clause to a main clause. The dependent clause cannot stand alone.</p>
+<table class="tbl"><tr><th>Meaning</th><th>Conjunctions</th><th>Example</th></tr>
+<tr><td>Contrast</td><td><b>although, even though, while, whereas</b></td><td><b>Although</b> he was injured, he helped others.</td></tr>
+<tr><td>Reason</td><td><b>because, since, as</b></td><td>We stayed inside <b>because</b> it was raining.</td></tr>
+<tr><td>Time</td><td><b>when, while, after, before, as soon as, until</b></td><td><b>As soon as</b> the plane landed, the crew helped passengers.</td></tr>
+<tr><td>Condition</td><td><b>if, unless</b></td><td><b>Unless</b> you rest, you won't recover.</td></tr>
+<tr><td>Purpose</td><td><b>so that</b></td><td>He wrote it down <b>so that</b> he wouldn't forget.</td></tr></table>
+<div class="key">If the <b>dependent clause comes first</b>, use a <b>comma</b>: <i>Although it was late, we kept working.</i> If it comes second, usually no comma.</div>
+<div class="ex">"<b>Although</b> the passengers were frightened, no one panicked." (contrast)</div>
+<div class="trap">⚠️ Do not use <b>although</b> and <b>but</b> together: "Although he was tired, <u>but</u> he continued" is wrong. Do not confuse <b>because</b> (conjunction + clause) with <b>because of</b> (+ noun). <b>Despite / in spite of</b> are followed by a noun or -ing, not a clause.</div>
+</div>`, say: "Subordinating conjunctions join a dependent clause to a main clause. For contrast use although, even though, while or whereas. For reason use because, since or as. For time use when, while, after, before, as soon as or until. For condition use if or unless. For purpose use so that. When the dependent clause comes first, put a comma after it. Example: Although the passengers were frightened, no one panicked. Never use although and but together in the same sentence." },
+
+    { id: 12, t: "Grammar: Question Tags", q: "Part 2 Grammar - G.17.3 Questions (question tags)", html: `<div class="en">
+<p>A <b>question tag</b> is a short question added to a statement to check information or ask for agreement.</p>
+<div class="key"><b>Rule:</b> positive statement → <b>negative tag</b>; negative statement → <b>positive tag</b>. The tag repeats the <b>auxiliary</b> (or modal) and uses a <b>pronoun</b>.</div>
+<table class="tbl"><tr><th>Statement</th><th>Tag</th></tr>
+<tr><td>The report is interesting,</td><td><b>isn't it?</b></td></tr>
+<tr><td>They don't have a prescription,</td><td><b>do they?</b></td></tr>
+<tr><td>She has been waiting,</td><td><b>hasn't she?</b></td></tr>
+<tr><td>You like documentaries,</td><td><b>don't you?</b> (no auxiliary: use do/does/did)</td></tr>
+<tr><td>He went to the scene,</td><td><b>didn't he?</b></td></tr>
+<tr><td>We can leave now,</td><td><b>can't we?</b></td></tr></table>
+<p><b>Special cases:</b> I am → <b>aren't I?</b> | Let's → <b>shall we?</b> | Imperative (Close the door) → <b>will you?</b> | Nobody / nothing / never (negative meaning) → positive tag: <i>Nobody was hurt, <b>were they</b>?</i> | There is → <b>isn't there?</b></p>
+<div class="ex">"The witness saw the crash, <b>didn't she</b>?"</div>
+<div class="trap">⚠️ Do not use a noun in the tag ("The man is..., isn't the man?" ✗). Use <b>he/she/it/they/there</b>. And match the tense: <i>He has gone, hasn't he?</i> (not "doesn't he").</div>
+</div>`, say: "A question tag is a short question added to a statement. If the statement is positive, the tag is negative. If the statement is negative, the tag is positive. The tag repeats the auxiliary verb and uses a pronoun. The report is interesting, isn't it? They don't have a prescription, do they? She has been waiting, hasn't she? You like documentaries, don't you? Special cases: I am, aren't I; Let's, shall we; and with nobody or never, use a positive tag: Nobody was hurt, were they?" },
+
+    { id: 13, t: "Grammar: Adverbs of Degree", q: "Part 2 Grammar - G.2.8 Adverbs (degree)", html: `<div class="en">
+<p><b>Adverbs of degree</b> say <u>how much</u> or <u>to what extent</u>. They usually come <b>before the adjective or adverb</b> they modify.</p>
+<table class="tbl"><tr><th>Strength</th><th>Adverbs</th><th>Example</th></tr>
+<tr><td>Very strong</td><td>extremely, completely, absolutely, totally</td><td>The pilot was <b>extremely</b> calm.</td></tr>
+<tr><td>Strong</td><td>very, really, highly, so</td><td>The story was <b>really</b> informative.</td></tr>
+<tr><td>Medium</td><td>quite, fairly, rather, pretty</td><td>The film was <b>fairly</b> long.</td></tr>
+<tr><td>Weak</td><td>a little, slightly, a bit</td><td>I was <b>slightly</b> nervous.</td></tr>
+<tr><td>Negative</td><td>hardly, barely, scarcely</td><td>He could <b>hardly</b> speak.</td></tr>
+<tr><td>Enough / too</td><td>enough (after adj), too (negative result)</td><td>It's <b>too</b> dangerous. / Is it safe <b>enough</b>?</td></tr></table>
+<div class="key"><b>Gradable</b> adjectives (cold, tired) take <i>very, quite, slightly</i>. <b>Non-gradable</b> adjectives (freezing, exhausted, perfect, impossible) take <i>absolutely, completely, totally</i>.</div>
+<div class="trap">⚠️ "very exhausted" ✗ → "absolutely exhausted" ✓. <b>Enough</b> goes <u>after</u> the adjective: "enough safe" ✗ → "safe enough" ✓. <b>too</b> ≠ <b>very</b>: too = more than is good.</div>
+</div>`, say: "Adverbs of degree tell us how much or to what extent. They usually come before the adjective they modify. Extremely, completely and absolutely are very strong. Very, really and so are strong. Quite, fairly and rather are medium. Slightly and a little are weak. Hardly and barely have a negative meaning. Gradable adjectives like cold take very or quite. Non-gradable adjectives like exhausted or perfect take absolutely or completely. So say absolutely exhausted, not very exhausted. And enough goes after the adjective: safe enough." },
+
+    { id: 14, t: "Grammar Part 2: Solving the News-Report Gap-Fill", q: "Part 2 - 160-word narrative with 5 gaps (news report: an airplane crash)", html: `<div class="en">
+<p>Part 2 is a <b>news report about an airplane crash</b> with five gaps that test the seven topics. Words to recognise: <b>injuries, witness, scene, suffered, investigation, fortunately</b>.</p>
+<div class="ex"><b>Model text:</b> "An airplane <b>(1)</b> ___ forced to land in a field early on Monday. Fortunately, nobody was killed. Passengers, <b>(2)</b> ___ in the crash, were taken to hospital. <b>(3)</b> ___ the weather was bad, the pilot managed to land safely. Rescue teams <b>(4)</b> ___ at the scene since dawn. <b>(5)</b> ___ was a frightening day for everyone."</div>
+<table class="tbl"><tr><th>Gap</th><th>Answer</th><th>Topic</th></tr>
+<tr><td>1</td><td>was (an airplane <b>was forced</b>)</td><td>passive (past)</td></tr>
+<tr><td>2</td><td>injured (passengers <b>injured</b> in the crash)</td><td>participle clause (-ed)</td></tr>
+<tr><td>3</td><td>Although</td><td>subordinating conjunction</td></tr>
+<tr><td>4</td><td>have been working</td><td>present perfect continuous</td></tr>
+<tr><td>5</td><td>That</td><td>demonstrative</td></tr></table>
+<div class="key"><b>Method:</b> 1) Read the whole text. 2) Look at the words before and after the gap. 3) Identify the grammar topic. 4) Check the subject, tense and meaning. 5) Read the sentence with your answer.</div>
+<div class="trap">⚠️ News reports use the past tense for the event (<i>crashed, landed</i>) and the passive for unknown doers (<i>was forced, were taken</i>). Watch for time markers such as <i>since</i> and <i>for</i>.</div>
+</div>`, say: "Part two is a news report about an airplane crash, with five gaps. It tests the seven grammar topics you revised: the present simple passive, present perfect continuous, participle clauses, demonstratives, subordinating conjunctions, question tags and degree adverbs. Read the whole text first. Look at the words before and after each gap. Decide which grammar topic it is. Then check the subject, the tense and the meaning. News reports use the past tense for the event and the passive when the doer is unknown. Words to recognise: injuries, witness, scene, suffered, investigation, fortunately." },
+
+    { id: 15, t: "Reading Skills: Question Types for Parts 3A and 3B", q: "Part 3A / 3B - ENG.07.RV.CS.1.1, 2.1, 3.1, 4.1, 4.2, 5.1", html: `<div class="en">
+<table class="tbl"><tr><th>Question type</th><th>What it asks</th><th>Where (3A / 3B)</th></tr>
+<tr><td><b>Specific information</b> (CS.2.1)</td><td>One fact: a name, number, date, place</td><td>3A: 3 questions</td></tr>
+<tr><td><b>Details</b> (CS.5.1)</td><td>Supporting facts and examples</td><td>3A: 3; 3B: 4</td></tr>
+<tr><td><b>Word meaning / inference</b> (CS.4.1)</td><td>Meaning of an unknown word from context and word parts</td><td>3A: 1; 3B: 1</td></tr>
+<tr><td><b>Inference or prediction</b> (CS.4.2)</td><td>What the text suggests but does not say</td><td>3B: 1</td></tr>
+<tr><td><b>Connections</b> (CS.3.1)</td><td>Link ideas, viewpoints or your own experience</td><td>3B: 1</td></tr>
+<tr><td><b>Overall meaning</b> (CS.1.1)</td><td>Main idea of the whole text</td><td>3A: 1; 3B: 1</td></tr></table>
+<div class="key"><b>S-S-C:</b> <b>Skim</b> for the main idea → <b>Scan</b> for key words from the question → <b>Check</b> your answer in the text.</div>
+<ul><li><b>Specific information / details:</b> find the key words of the question in the text; the answer is near them, often paraphrased.</li>
+<li><b>Vocabulary in context:</b> read the sentence before and after; replace the word with each option.</li>
+<li><b>Inference:</b> combine clues; the best answer is <u>supported by the text</u>, not just possible.</li>
+<li><b>Overall meaning:</b> choose the option covering the <b>whole</b> text, not one paragraph.</li></ul>
+<div class="trap">⚠️ A wrong option is often <b>true in real life</b> but <b>not in the text</b>, or uses the same words with a different meaning. Always find evidence.</div>
+</div>`, say: "In the reading parts there are six question types. Specific information asks for one fact. Details ask about supporting facts. Word meaning questions ask what an unknown word means in context; use the sentences around it and word parts like prefixes and suffixes. Inference questions ask what the text suggests but does not say. Connection questions ask you to link ideas or viewpoints. Overall meaning asks for the main idea of the whole text. Use skim, scan and check. The correct answer is always supported by the text, even if a wrong option is true in real life." },
+
+    { id: 16, t: "Reading 3A: Longevity (Living a Long Life)", q: "Part 3A theme - A Picture of Health | Longevity", html: `<div class="en">
+<p><b>Longevity</b> = long life. Part 3A uses a 270-300-word expository text. Practise with this model text:</p>
+<div class="ex"><b>Model text (shortened):</b> "In recent decades, average life expectancy has been rising. In 1900, many people lived to about 50; today, in many countries, it is over 80. Researchers say the main reasons are better healthcare, clean water and safer food. However, scientists in the 'Blue Zones', regions where many people live past 100, also point to lifestyle. People there eat mostly plants, walk daily, stay close to family, and have a sense of purpose. Experts warn that longevity is not only about adding years but about adding <i>healthy</i> years. Although genes play a part, studies show that lifestyle choices influence health more than inheritance."</div>
+<table class="tbl"><tr><th>Question</th><th>Type</th><th>Answer and evidence</th></tr>
+<tr><td>What was life expectancy in 1900?</td><td>specific info</td><td>About 50 ("lived to about 50")</td></tr>
+<tr><td>Which is NOT a reason for longer life?</td><td>details</td><td>Better healthcare, clean water and safer food ARE reasons</td></tr>
+<tr><td>What are 'Blue Zones'?</td><td>word meaning</td><td>Regions where many people live past 100</td></tr>
+<tr><td>Best title?</td><td>overall meaning</td><td>"How Lifestyle and Healthcare Help Us Live Longer"</td></tr></table>
+<div class="key"><b>Topic vocabulary:</b> life expectancy, lifestyle, genes, inheritance, diet, healthcare, influence, regions.</div>
+<div class="trap">⚠️ Details questions often use words like <b>NOT</b>, <b>EXCEPT</b> or <b>according to the text</b>. Check each option against the text; do not answer from general knowledge.</div>
+</div>`, say: "Part three A is about longevity, which means long life. The text is an expository text of two hundred seventy to three hundred words. In the model text, life expectancy has risen from about fifty years in nineteen hundred to over eighty in many countries today. The reasons are better healthcare, clean water and safer food. In the Blue Zones, regions where many people live past one hundred, lifestyle matters: eating plants, walking daily, staying close to family and having a sense of purpose. The main idea is that lifestyle and healthcare help us live longer, healthier lives. For questions like not or except, check every option against the text." },
+
+    { id: 17, t: "Reading 3A: Medical Advice and the Internet", q: "Part 3A theme - A Picture of Health | Medical advice and the Internet", html: `<div class="en">
+<div class="ex"><b>Model text (shortened):</b> "Millions of people search online for health advice every day. Typing a few symptoms into a search engine can give instant answers, which is convenient and saves time. However, not all websites are reliable. Some pages are written by experts, but others are fraudulent, promoting dishonest 'miracle cures' to make money. Doctors warn that self-diagnosis can be dangerous because the same symptoms may have many causes. 'The internet is a useful starting point, but never a replacement for a doctor,' says Dr. Salem. To check a source, look at who wrote it, whether it gives evidence, and when it was updated. Reliable sites usually end in .gov or .edu, or belong to hospitals."</div>
+<table class="tbl"><tr><th>Question</th><th>Answer</th></tr>
+<tr><td>Why do people use the internet for health advice? (detail)</td><td>It gives instant answers and is convenient.</td></tr>
+<tr><td>"reliable" means (word meaning)</td><td>can be trusted (contrast: "fraudulent... dishonest")</td></tr>
+<tr><td>What is the danger of self-diagnosis? (detail)</td><td>The same symptoms can have many causes.</td></tr>
+<tr><td>What does Dr. Salem suggest? (inference)</td><td>Use the internet to start, but see a doctor.</td></tr>
+<tr><td>Main idea (overall)</td><td>Internet health advice is useful but must be checked.</td></tr></table>
+<div class="key"><b>Evaluating a source:</b> author (expert?), evidence (facts?), date (recent?), purpose (to inform or to sell?).</div>
+<div class="trap">⚠️ In "word from context" questions, <b>reliable</b> is not simply "popular" or "fast". The clue words <b>however</b> and <b>but</b> signal a contrast: reliable vs fraudulent.</div>
+</div>`, say: "The second Part three A theme is medical advice and the internet. Millions of people search for health advice online. It is convenient, but not all websites are reliable. Some are fraudulent and promote dishonest miracle cures to make money. Self-diagnosis can be dangerous because the same symptoms may have many causes. A doctor says the internet is a useful starting point but never a replacement for a doctor. To check a source, look at who wrote it, whether it gives evidence and when it was updated. In a word meaning question, notice contrast words like however: reliable is the opposite of fraudulent, so it means can be trusted." },
+
+    { id: 18, t: "Reading 3B: Commercials, Visual Media and Language", q: "Part 3B theme - Infotainment | Commercials, Visual Media and language (inference, connections)", html: `<div class="en">
+<p>Part 3B is <b>beyond grade level goal</b> (B2.2): a 270-300-word text, 8 questions, 2 marks each: 4 details, 1 word in context, 1 inference/prediction, 1 connection, 1 overall meaning.</p>
+<div class="ex"><b>Model text (shortened):</b> "A thirty-second commercial must grab attention quickly, so advertisers combine images, music and carefully chosen words. Short, memorable slogans are repeated until they stick in our minds. Bright colours and smiling faces create positive feelings, while phrases such as 'limited offer' create urgency. Some commercials use emotive language to appeal to feelings rather than facts. Critics argue that this can persuade people to buy things they do not need, whereas supporters say it simply informs consumers about choices. Understanding these techniques helps viewers become critical consumers who question what they see."</div>
+<table class="tbl"><tr><th>Skill</th><th>Question / answer</th></tr>
+<tr><td>Detail</td><td>How do slogans stay in our minds? <b>They are repeated.</b></td></tr>
+<tr><td>Word in context</td><td>'urgency' = a feeling that you must act quickly.</td></tr>
+<tr><td>Inference</td><td>Why 'limited offer'? <b>To make viewers act quickly.</b></td></tr>
+<tr><td>Connection</td><td>Critics vs supporters: two viewpoints on advertising.</td></tr>
+<tr><td>Overall</td><td>Commercials use visual and language techniques to influence viewers.</td></tr></table>
+<div class="key"><b>Connections:</b> relate ideas in the text to other viewpoints, your own experience, or the wider world (e.g. adverts you have seen). Words like <b>whereas, while, critics, supporters</b> signal two views.</div>
+<div class="trap">⚠️ An inference answer must be <b>supported by the text</b>. Avoid extreme options ("always", "never", "all advertisers lie") unless the text says so.</div>
+</div>`, say: "Part three B is the harder reading part. The theme is commercials, visual media and language. There are eight questions: four details, one word in context, one inference or prediction, one connection and one overall meaning. In the model text, advertisers combine images, music and carefully chosen words to grab attention. Slogans are repeated until they stick. Phrases like limited offer create urgency, which means a feeling that you must act quickly. Critics say adverts persuade people to buy things they do not need, while supporters say they inform consumers. For connection questions, link the ideas to other viewpoints or your own experience. For inference questions, avoid extreme answers that the text does not support." },
+
+    { id: 19, t: "Writing 1.1: Four Main-Idea Sentences", q: "Part 4 Writing 1.1 - ENG.07.WR.S.6.1 (15 marks, 170-word text, 3-4 sentences)", html: `<div class="en">
+<p><b>Task 1.1:</b> Read a text of about <b>170 words</b> and write its <b>main ideas in your own words</b> in <b>3-4 sentences</b> (the student guide says four). 15 marks.</p>
+<div class="key"><b>Four-sentence frame</b><br>1. <b>Main idea:</b> The text is mainly about... / The author explains that...<br>2. <b>Important point:</b> One important point is that... / The text also explains how...<br>3. <b>Supporting idea:</b> Another key idea is... / In addition, the author discusses...<br>4. <b>Final idea:</b> Finally, the text highlights... / Overall, the text shows that...</div>
+<div class="ex"><b>Text:</b> screens affect sleep, eyes and mood; blue light delays sleep; experts suggest a screen-free hour before bed; limiting time improves focus.<br><b>Answer:</b> The text is mainly about how too much screen time affects health. One important point is that the blue light from screens delays sleep. In addition, the author discusses how tired eyes and a poor mood can result. Finally, the text highlights that limiting screen time before bed improves focus.</div>
+<ul><li>Identify the <b>most important ideas</b> (usually one per paragraph).</li><li><b>Paraphrase</b>: use synonyms and change the structure; do not copy full sentences.</li><li>No personal opinion, no small or unrelated details.</li></ul>
+<div class="trap">⚠️ Common mistakes: copying sentences; writing "I think..."; choosing a small example as a main idea; writing fewer than 3 or more than 4 sentences; mixing the order of ideas.</div>
+</div>`, say: "Writing task one point one: read a text of about one hundred seventy words and write its main ideas in your own words, in three to four sentences. Use a frame. Sentence one: The text is mainly about. Sentence two: One important point is that. Sentence three: Another key idea is, or In addition the author discusses. Sentence four: Finally the text highlights, or Overall the text shows. Find the most important idea in each paragraph. Paraphrase, do not copy. Do not give your opinion, and do not include small details." },
+
+    { id: 20, t: "Writing 1.2: The Opinion Essay (170+ words)", q: "Part 4 Writing 1.2 - opinion essay, 3 prompts, at least 170 words (25 marks)", html: `<div class="en">
+<p><b>Task 1.2:</b> "Write an opinion essay in which you ____: prompt 1, prompt 2, prompt 3. Write at least <b>170 words</b> in paragraphs." 25 marks (rubric).</p>
+<table class="tbl"><tr><th>Part</th><th>What to do</th><th>Useful phrases</th></tr>
+<tr><td><b>Introduction</b></td><td>Introduce the topic and state your opinion</td><td>In my opinion, ... / I strongly believe that... / From my point of view...</td></tr>
+<tr><td><b>Body paragraphs</b></td><td>One reason per paragraph + explanation + example; address <b>all three prompts</b></td><td>Firstly, ... / Another reason is... / For example, ... / Furthermore, ...</td></tr>
+<tr><td><b>Conclusion</b></td><td>Restate your opinion and finish clearly</td><td>In conclusion, I believe that... / To sum up, ... / For these reasons, ...</td></tr></table>
+<div class="key"><b>Process: Plan → Write → Check.</b> Plan 3 prompts + 1 reason each (2 min). Use linking words (firstly, because, however, finally). Count your words. Check spelling, tenses and punctuation.</div>
+<div class="ex"><b>Model (health club, short):</b> In my opinion, joining a health club is a good idea for teenagers. Firstly, it keeps you fit. Regular exercise strengthens the body and improves sleep. For example, swimming three times a week raised my energy. Another reason is that it reduces stress; exercising helps you calm down after exams. Finally, clubs help you make friends who share the same goals. However, memberships can be expensive, so I believe schools should offer cheaper programmes. In conclusion, I strongly believe that health clubs improve teenagers' health and mood.</div>
+<div class="trap">⚠️ Marks are lost for: missing a prompt, no paragraphs, fewer than 170 words, no opinion, no examples, many spelling/tense mistakes, and informal language (don't, gonna, lots of).</div>
+</div>`, say: "Task one point two is the opinion essay. You receive a prompt with three points to address and write at least one hundred seventy words in paragraphs. It is worth twenty five marks. Introduction: introduce the topic and state your opinion, for example, In my opinion, or I strongly believe that. Body paragraphs: explain one reason in each paragraph and give an example. Cover all three prompts. Use linking words like firstly, another reason, for example, furthermore and however. Conclusion: restate your opinion, for example, In conclusion, I believe that. Plan, write, then check, and count your words." },
+
+    { id: 21, t: "Functional Language: Asking for and Giving Advice", q: "Part 4 Writing - FL.24 Asking for and giving advice", html: `<div class="en">
+<table class="tbl"><tr><th>Function</th><th>Phrases</th></tr>
+<tr><td><b>Asking for advice</b></td><td>What should I do? / What would you advise me to do? / Could you give me some advice about...? / Do you think I should...? / What do you suggest?</td></tr>
+<tr><td><b>Giving advice</b></td><td>You should / shouldn't + verb / You'd better (not) + verb / If I were you, I would... / Why don't you...? / I suggest (that) you... / It's a good idea to... / Try + -ing</td></tr></table>
+<div class="key"><b>Structures:</b> should + base verb; <b>had better</b> + base verb (strong); If I were you, I <b>would</b> + base verb; I suggest <b>that you</b> + base verb / <b>-ing</b>; Why don't you + base verb?</div>
+<div class="ex">Talking about stress: "<b>If I were you</b>, I would talk to a counsellor. You <b>should</b> take regular breaks, and you <b>'d better not</b> stay up all night."</div>
+<ul><li>Soften advice politely: <i>Maybe you could...</i>, <i>Have you thought about...?</i></li><li>Give a <b>reason</b>: <i>You should exercise because it reduces stress.</i></li></ul>
+<div class="trap">⚠️ "You should <u>to</u> go" ✗ → "should go" ✓. "If I <u>was</u> you" is informal; use <b>If I were you</b>. "I suggest you <u>to</u> rest" ✗ → "I suggest you rest / resting".</div>
+</div>`, say: "Functional language: asking for and giving advice. To ask: What should I do? What would you advise me to do? Could you give me some advice about? Do you think I should? To give advice: You should, or you shouldn't, followed by the base verb. You had better, or you had better not. If I were you, I would. Why don't you. I suggest that you. It's a good idea to. For example: If I were you, I would talk to a counsellor. You should take regular breaks. Remember: should is followed by the base verb, without to." },
+
+    { id: 22, t: "Functional Language: Comparing and Contrasting", q: "Part 4 Writing - FL.26 Comparing and contrasting", html: `<div class="en">
+<table class="tbl"><tr><th>Function</th><th>Words and structures</th><th>Example</th></tr>
+<tr><td><b>Similarity</b></td><td>both... and, like, similarly, in the same way, as well as, the same as</td><td><b>Both</b> TV adverts <b>and</b> online adverts use slogans.</td></tr>
+<tr><td><b>Difference</b></td><td>however, but, whereas, while, on the other hand, in contrast, unlike, although</td><td>TV ads are expensive, <b>whereas</b> social-media ads are cheap.</td></tr>
+<tr><td><b>Comparatives</b></td><td>-er than, more + adj + than, (not) as + adj + as, less... than</td><td>Walking is <b>less</b> stressful <b>than</b> driving.</td></tr>
+<tr><td><b>Superlatives</b></td><td>the -est, the most + adj</td><td>This is <b>the most informative</b> programme.</td></tr></table>
+<div class="key"><b>Punctuation:</b> "However," / "On the other hand," / "In contrast," start a sentence and are followed by a comma. <b>Whereas / while / although</b> join two clauses in one sentence.</div>
+<div class="ex">"<b>Unlike</b> a health club, exercising at home is free. <b>However</b>, a club offers expert advice. <b>Both</b> options improve fitness."</div>
+<div class="trap">⚠️ "more better" ✗ → "better". "different <u>than</u>" is informal; use "different <u>from</u>". "Unlike" is followed by a noun/pronoun, not a clause. Do not use <b>but</b> and <b>although</b> in the same clause.</div>
+</div>`, say: "Functional language: comparing and contrasting. To show similarity use both and, like, similarly, in the same way and as well as. To show difference use however, but, whereas, while, on the other hand, in contrast and unlike. Use comparatives: less stressful than; and superlatives: the most informative. Example: Unlike a health club, exercising at home is free. However, a club offers expert advice. Both options improve fitness. Remember to put a comma after however and on the other hand, and never say more better." },
+
+    { id: 23, t: "Writing Themes: Health Clubs, Stress, Screens Everywhere", q: "Part 4 Writing themes - Health Clubs, Talking about Stress, Screens Everywhere!", html: `<div class="en">
+<p>The writing task will be based on <b>one</b> of these themes. Prepare ideas and vocabulary for each.</p>
+<table class="tbl"><tr><th>Theme</th><th>Possible prompts</th><th>Ideas / vocabulary</th></tr>
+<tr><td><b>Health Clubs</b></td><td>whether students should join one; benefits; cost</td><td>fitness, workout, membership, trainer, energy, strength, expensive, motivation</td></tr>
+<tr><td><b>Talking about Stress</b></td><td>causes of stress; effects; ways to cope</td><td>causes of stress (exams, deadlines), nervous, calm down, negative effect, talk to a friend, sleep, exercise</td></tr>
+<tr><td><b>Screens Everywhere!</b></td><td>advantages / disadvantages of screens; limiting screen time</td><td>connectivity, productivity, eye strain, sleep, distraction, communication, limit, balance</td></tr></table>
+<div class="ex"><b>Screens model paragraph:</b> Firstly, screens improve productivity because students can research and share work quickly. However, using them for too long can harm health. For example, tired eyes and poor sleep are common. Therefore, I believe young people should limit screen time and take regular breaks.</div>
+<div class="key">For each theme, prepare: <b>2 benefits, 2 problems, 1 solution, 1 personal example</b>. Link them with <i>however, for example, therefore, as a result</i>.</div>
+<div class="trap">⚠️ Stay on the prompts. A long essay about a different point of the theme loses marks. Use a formal tone and avoid slang.</div>
+</div>`, say: "The writing task is based on one of three themes: Health clubs, Talking about stress, or Screens everywhere. For each theme prepare two benefits, two problems, one solution and one personal example. For health clubs: fitness, membership, trainer, energy, motivation. For stress: causes of stress, nervous, calm down, negative effect. For screens: connectivity, productivity, eye strain, sleep, distraction, balance. Use linking words such as however, for example, therefore and as a result. Stay on the prompts and keep a formal tone." }
+  ],
+  Q: [
+    [1, "How many marks is the whole Grade 10 Advanced EOT English exam?", "100", "60", "40", "120", "Reading and language is 60 marks and writing is 40 marks, so the total is 100."],
+    [1, "How many gaps are there in the Part 1 vocabulary text and Part 2 grammar text?", "5 gaps in each", "10 gaps in each", "8 gaps in each", "3 gaps in each", "Each text has five gaps worth 2 marks each (10 marks)."],
+    [1, "Which part of the exam is worth the most marks in Reading?", "Part 3A (24 marks)", "Part 3B (16 marks)", "Part 1 (10 marks)", "Part 2 (10 marks)", "Part 3A has 8 questions at 3 marks each = 24 marks."],
+    [1, "In the S-S-C reading strategy, what does the second S (Scan) mean?", "Find names, facts and supporting details", "Read quickly for the main idea", "Return to the passage to confirm", "Sum up the text", "Skim = main idea, Scan = find details, Check = confirm."],
+    [1, "How many marks does each question in Part 3B carry?", "2 marks", "3 marks", "1 mark", "4 marks", "Part 3B: 8 questions x 2 marks = 16 marks."],
+    [1, "What is the Writing Task 1.2 requirement?", "An opinion essay of at least 170 words", "A 100-word email", "A 4-line poem", "A story of 300 words", "Task 1.2 is an opinion essay of at least 170 words with three prompts (25 marks)."],
+
+    [2, "Signs of an illness are called ____.", "symptoms", "prescriptions", "remedies", "slogans", "Symptoms are signs of an illness, such as a cough or fever."],
+    [2, "The doctor wrote a ____ for antibiotics.", "prescription", "syndrome", "scene", "slogan", "A prescription is a doctor's written order for medicine."],
+    [2, "A website that tries to cheat people out of money is ____.", "fraudulent", "informative", "memorable", "nervous", "Fraudulent means done to cheat people."],
+    [2, "Which word means 'not honest'?", "dishonest", "reliable", "productive", "commercial", "The prefix dis- means not: dishonest = not honest."],
+    [2, "A group of symptoms that occur together is a ____.", "syndrome", "remedy", "scene", "witness", "A syndrome is a group of symptoms that appear together."],
+    [2, "Which word is a noun formed from the verb 'prescribe'?", "prescription", "prescribing", "prescriptive", "prescribed", "prescribe (v) - prescription (n)."],
+
+    [3, "Honey and warm water is a home ____ for a sore throat.", "remedy", "slogan", "syndrome", "injury", "A remedy is a treatment or cure."],
+    [3, "Before her presentation, Hessa felt ____.", "nervous", "memorable", "informative", "fraudulent", "Nervous = worried or anxious."],
+    [3, "She took a deep breath to ____ before the test.", "calm down", "cut down", "give up", "show off", "Calm down means become less worried or excited."],
+    [3, "Too much stress can have a negative ____ on your sleep.", "effect", "affect", "scene", "slogan", "'Effect' is the noun (a harmful result); 'affect' is a verb."],
+    [3, "Eating too fast can give you an ____.", "upset stomach", "stomach upset ache", "toothache", "syndrome", "An upset stomach is a stomach that feels sick or uncomfortable."],
+    [3, "Which is a cause of stress?", "Exams and deadlines", "Deep breathing", "Sleeping well", "Going for a walk", "Causes of stress are things that put people under pressure, e.g. exams and deadlines."],
+
+    [4, "The ability to connect to the internet or other devices is called ____.", "connectivity", "productivity", "memorability", "investigation", "Connectivity = ability to connect."],
+    [4, "How much work you do in a given time is your ____.", "productivity", "connectivity", "slogan", "scene", "Productivity measures output in a given time."],
+    [4, "'Just do it' is a famous ____.", "slogan", "syndrome", "witness", "remedy", "A slogan is a short, catchy phrase used by a company."],
+    [4, "A paid advertisement on TV is a ____.", "commercial", "documentary", "investigation", "prescription", "A commercial is a paid advert on TV or online."],
+    [4, "A slogan that everyone remembers is ____.", "memorable", "dishonest", "nervous", "fraudulent", "Memorable = easy to remember."],
+    [4, "'Infotainment' combines which two ideas?", "information and entertainment", "internet and entertainment", "injury and treatment", "investigation and news", "Infotainment = information + entertainment."],
+
+    [5, "A documentary that gives lots of useful facts is ____.", "informative", "memorable", "nervous", "dishonest", "Informative = giving useful information."],
+    [5, "A person who sees an accident happen is a ____.", "witness", "scene", "slogan", "remedy", "A witness sees an event."],
+    [5, "The police began an ____ into the cause of the crash.", "investigation", "injury", "informative", "commercial", "An investigation is an official examination to find the facts."],
+    [5, "Several passengers had minor ____.", "injuries", "scenes", "slogans", "remedies", "Injuries = physical harm to people."],
+    [5, "Rescue teams reached the ____ within minutes.", "scene", "seen", "syndrome", "slogan", "The scene is the place where something happens."],
+    [5, "What is the plural of 'injury'?", "injuries", "injurys", "injuryes", "injuries's", "Consonant + y becomes -ies: injury - injuries."],
+
+    [6, "What should you do FIRST with a vocabulary gap-fill text?", "Skim the whole text for the topic", "Choose the longest word", "Guess the first option", "Translate every word", "Skimming gives context before you decide on each gap."],
+    [6, "The prefix 'dis-' in 'dishonest' means ____.", "not", "again", "before", "very", "dis- = not / opposite."],
+    [6, "The suffix '-able' in 'memorable' means ____.", "able to be", "without", "before", "against", "Memorable = able to be remembered."],
+    [6, "'The first ad was boring, but the second was ____.' Which word fits best?", "memorable", "dull", "tiring", "useless", "'But' signals contrast with 'boring', so a positive word is needed."],
+    [6, "Which gives a noun ending?", "-tion", "-ive", "-able", "-ly", "-tion forms nouns: investigate - investigation."],
+    [6, "Why is 'choose a word because you recognise it' a poor strategy?", "It may not fit the grammar or meaning", "All options are wrong", "Familiar words are always wrong", "It saves time but costs marks", "Two options may be real words; only one fits the sentence."],
+
+    [7, "The accident ____ by the police.", "is investigated", "investigated", "is investigate", "are investigated", "Present simple passive: is + past participle; 'accident' is singular."],
+    [7, "Medicines ____ by doctors.", "are prescribed", "is prescribed", "are prescribe", "prescribed", "Plural subject: are + V3."],
+    [7, "Which is the passive of 'People watch commercials'?", "Commercials are watched by people.", "Commercials watched people.", "Commercials is watched by people.", "Commercials were watching by people.", "Object becomes subject; are + watched."],
+    [7, "Choose the correct negative passive.", "The news is not broadcast at night.", "The news not is broadcast at night.", "The news does not broadcast at night.", "The news is not broadcasting at night.", "Negative passive: is/are + not + V3."],
+    [7, "Complete: Where ____ the injured passengers treated?", "are", "is", "do", "does", "Question passive: Are + subject + V3 (passengers = plural)."],
+    [7, "Which verb CANNOT normally be used in the passive?", "arrive", "invite", "treat", "prescribe", "Intransitive verbs like arrive, happen have no object, so no passive."],
+
+    [8, "Rescue teams ____ at the scene since dawn.", "have been working", "have being working", "are working", "has been working", "Present perfect continuous: have been + -ing, with 'since'."],
+    [8, "She ____ for two hours.", "has been waiting", "have been waiting", "is been waiting", "has waiting", "With 'she' use has been + -ing."],
+    [8, "'How long ____ you ____ feeling ill?'", "have / been", "did / been", "have / being", "are / been", "How long + have + subject + been + -ing."],
+    [8, "Choose the correct time word: It has been raining ____ morning.", "since", "for", "during", "ago", "'Since' goes with a starting point; 'for' with a period."],
+    [8, "Which verb is NOT normally used in the continuous?", "know", "work", "study", "wait", "'Know' is a stative verb: I have known him for years."],
+    [8, "'Her eyes are red because she ____ studying all night.'", "has been", "is been", "have been", "was been", "Present result of a recent continuing action: has been studying."],
+
+    [9, "____ the noise, the witness ran outside.", "Hearing", "Heard", "To hear", "Hear", "Participle clause with the same subject (the witness): Hearing = When she heard."],
+    [9, "The passengers ____ in the crash were taken to hospital.", "injured", "injuring", "injure", "injures", "-ed participle with passive meaning (who were injured)."],
+    [9, "The man ____ near the door saw everything.", "standing", "stood", "stands", "stand", "-ing participle replacing 'who was standing'."],
+    [9, "Which sentence has a dangling participle?", "Walking down the street, the plane crashed.", "Walking down the street, he saw the plane.", "Having landed, the pilot smiled.", "Injured in the crash, he went to hospital.", "The plane was not walking: the subject does not match the participle."],
+    [9, "'Having landed safely, the pilot thanked the crew.' shows ____.", "an earlier action", "a future action", "a habit", "a condition", "Having + V3 shows an action completed before the main action."],
+    [9, "Reduce: 'The plane, which was carrying 120 passengers, landed safely.'", "The plane, carrying 120 passengers, landed safely.", "The plane, carried 120 passengers, landed safely.", "The plane, carry 120 passengers, landed safely.", "The plane, to carry 120 passengers, landed.", "which was carrying = carrying (active)."],
+
+    [10, "Pointing at books on your desk, you say: '____ are my reports.'", "These", "Those", "That", "This", "Near and plural = these."],
+    [10, "Pointing at buildings across the street: '____ are the offices.'", "Those", "These", "This", "That", "Far and plural = those."],
+    [10, "'The plane crashed. ____ caused panic.' Which demonstrative refers back to the event?", "This", "These", "Those", "Them", "This refers to the idea just mentioned."],
+    [10, "Which is correct?", "Those passengers were lucky.", "Those passenger were lucky.", "That passengers were lucky.", "This passengers were lucky.", "The demonstrative must agree in number with the noun."],
+    [10, "'These days' means ____.", "nowadays", "long ago", "tomorrow", "last week", "'These days' = at present; 'those days' = in the past."],
+    [10, "Choose: '____ building over there is the hospital.'", "That", "These", "Those", "This", "Singular and far = that."],
+
+    [11, "____ the passengers were frightened, no one panicked.", "Although", "Because", "So that", "Unless", "Contrast between 'frightened' and 'no one panicked'."],
+    [11, "We stayed inside ____ it was raining.", "because", "although", "unless", "whereas", "'Because' gives a reason."],
+    [11, "____ you rest, you won't recover.", "Unless", "Although", "Because", "While", "'Unless' = if not (condition)."],
+    [11, "Which sentence is correct?", "Although he was tired, he continued.", "Although he was tired, but he continued.", "Despite he was tired, he continued.", "Because he was tired, but he continued.", "Do not use 'although' and 'but' together; 'despite' needs a noun/-ing."],
+    [11, "Which conjunction shows purpose?", "so that", "whereas", "although", "unless", "'So that' introduces purpose."],
+    [11, "'____ the plane landed, the crew helped passengers.'", "As soon as", "Unless", "Whereas", "Even though", "Time conjunction: immediately after."],
+
+    [12, "The report is interesting, ____?", "isn't it", "is it", "doesn't it", "aren't it", "Positive statement, negative tag, same verb be."],
+    [12, "They don't have a prescription, ____?", "do they", "don't they", "have they", "haven't they", "Negative statement, positive tag with do."],
+    [12, "She has been waiting, ____?", "hasn't she", "isn't she", "doesn't she", "hadn't she", "Tag repeats the auxiliary 'has'."],
+    [12, "I am late, ____?", "aren't I", "amn't I", "am I", "isn't I", "'I am' takes the special tag 'aren't I?'."],
+    [12, "Let's start, ____?", "shall we", "will we", "don't we", "let us", "'Let's' takes 'shall we?'."],
+    [12, "Nobody was hurt, ____?", "were they", "weren't they", "wasn't he", "was he", "'Nobody' has a negative meaning, so the tag is positive; use they."],
+
+    [13, "The pilot was ____ calm.", "extremely", "enough", "hardly", "much", "'Extremely' is a very strong degree adverb before an adjective."],
+    [13, "Which sentence is correct?", "I was absolutely exhausted.", "I was very exhausted.", "I was absolutely tired.", "I was enough exhausted.", "Non-gradable adjectives (exhausted) take absolutely/completely, not very."],
+    [13, "Is the building safe ____?", "enough", "too", "very", "quite enough", "'Enough' comes after the adjective."],
+    [13, "He was so tired he could ____ keep his eyes open.", "hardly", "very", "quite", "extremely", "'Hardly' has a negative meaning (almost not)."],
+    [13, "Which adverb is the weakest?", "slightly", "extremely", "really", "totally", "'Slightly' means a small degree."],
+    [13, "'It's ____ dangerous to swim here!' (more than is acceptable)", "too", "enough", "slightly", "rather enough", "'Too' means more than is good or acceptable."],
+
+    [14, "'An airplane ____ forced to land in a field.' (news report, past event)", "was", "is", "has", "were", "Singular subject + past passive: was forced."],
+    [14, "Passengers, ____ in the crash, were taken to hospital.", "injured", "injuring", "injure", "injury", "Passive meaning requires the -ed participle."],
+    [14, "____ the weather was bad, the pilot managed to land safely.", "Although", "Because", "Unless", "So that", "Contrast between bad weather and a safe landing."],
+    [14, "'Rescue teams ____ at the scene since dawn.'", "have been working", "worked", "are worked", "were working", "'Since dawn' + continuing action = present perfect continuous."],
+    [14, "Which word in a news report means 'luckily'?", "fortunately", "suddenly", "finally", "exactly", "Fortunately = luckily."],
+    [14, "Which words do you expect in an airplane-crash report?", "injuries, witness, scene", "recipe, oven, menu", "slogan, brand, logo", "stress, toothache, remedy", "Crash reports use injuries, witness, scene, investigation."],
+
+    [15, "A question asking for one name, number or date is a ____ question.", "specific information", "overall meaning", "inference", "connection", "Specific information questions target one fact."],
+    [15, "Which question type asks what the text suggests but does not say?", "inference", "details", "specific information", "overall meaning", "Inference = reading between the lines using clues."],
+    [15, "For 'main idea of the whole text', you should choose the option that ____.", "covers the whole text", "covers only paragraph 1", "gives one example", "uses the most difficult words", "Overall meaning means the main point of the whole text."],
+    [15, "What is the best way to answer a word-in-context question?", "Read the sentences around the word", "Pick the longest option", "Use the first meaning you know", "Skip it", "Context clues and word parts help you infer meaning."],
+    [15, "After choosing an answer, the 'Check' step means to ____.", "return to the passage to confirm", "change the answer", "read the questions again only", "ask a friend", "S-S-C: Check = confirm in the text."],
+    [15, "How many connection questions are in Part 3B?", "1", "4", "3", "0", "Part 3B has 4 details, 1 word, 1 inference/prediction, 1 connection, 1 overall."],
+
+    [16, "In 'Longevity', what does 'life expectancy' mean?", "the average number of years people are expected to live", "the age of the oldest person", "the number of doctors", "how healthy a person feels", "Life expectancy = average length of life."],
+    [16, "According to the model text, which is NOT a reason for longer life?", "Heavier smoking", "Better healthcare", "Clean water", "Safer food", "Healthcare, clean water and safer food are given as reasons."],
+    [16, "In the Blue Zones people ____.", "live past 100", "avoid all family", "eat mostly meat", "do not exercise", "Blue Zones are regions where many people live past 100."],
+    [16, "The best title for the model text is ____.", "How lifestyle and healthcare help us live longer", "The history of clean water", "A diet of meat", "Why genes decide everything", "The text covers healthcare and lifestyle reasons for longevity."],
+    [16, "What does the writer say about genes?", "They matter, but lifestyle influences health more", "They decide health completely", "They are not important at all", "They are the same as healthcare", "'Although genes play a part, lifestyle choices influence health more.'"],
+    [16, "Experts say longevity is about adding ____.", "healthy years", "any years", "more doctors", "money", "'Adding healthy years' is the key point."],
+
+    [17, "Why do people search online for health advice?", "It gives instant, convenient answers", "Doctors are not allowed", "It is always correct", "It is free of advertising", "Instant answers are convenient and save time."],
+    [17, "In the text, 'reliable' means ____.", "can be trusted", "very fast", "very popular", "expensive", "It is contrasted with fraudulent/dishonest sites."],
+    [17, "Why can self-diagnosis be dangerous?", "The same symptoms may have many causes", "Internet is slow", "Medicines are expensive", "Doctors disagree", "That is the reason given in the text."],
+    [17, "What does Dr Salem suggest?", "Use the internet as a starting point but see a doctor", "Never use the internet", "Always trust the internet", "Avoid doctors", "'A useful starting point, but never a replacement for a doctor.'"],
+    [17, "Which is a way to check a website?", "See who wrote it and when it was updated", "Count the adverts", "Check how colourful it is", "Read only the title", "The text says check the author, evidence and date."],
+    [17, "The main idea of the text is that ____.", "internet health advice is useful but must be checked", "the internet is dangerous", "doctors are unnecessary", "only .gov sites exist", "The text balances usefulness and risk."],
+
+    [18, "How do slogans stay in our minds?", "They are repeated", "They are very long", "They are in small print", "They are hidden", "'Repeated until they stick in our minds.'"],
+    [18, "'Urgency' in the text means ____.", "a feeling that you must act quickly", "a lot of money", "a slow decision", "a colourful picture", "'Limited offer' creates urgency to act fast."],
+    [18, "Why do advertisers use the phrase 'limited offer'?", "To make viewers act quickly", "To save money", "To confuse viewers", "To end the commercial", "It creates urgency."],
+    [18, "Critics of emotive advertising argue that it ____.", "persuades people to buy things they do not need", "makes people healthy", "gives only facts", "is always honest", "That is the critics' view in the text."],
+    [18, "Which word signals two different viewpoints?", "whereas", "firstly", "finally", "therefore", "Whereas contrasts critics with supporters."],
+    [18, "Which is the best overall meaning?", "Commercials use images and language to influence viewers", "Commercials are always honest", "TV is better than the internet", "Slogans must be long", "The text explains advertising techniques."],
+
+    [19, "How many sentences should you write in Writing Task 1.1?", "3-4", "10", "1", "6-7", "Task 1.1 asks for three to four sentences of main ideas."],
+    [19, "Which opening best starts a main-idea summary?", "The text is mainly about...", "I think that...", "Once upon a time...", "Dear Sir,", "'The text is mainly about...' states the main idea."],
+    [19, "In Task 1.1 you should ____.", "paraphrase using your own words", "copy full sentences", "add your opinion", "include small details", "Task 1.1 tests summarising in your own words."],
+    [19, "Which linker suits the final sentence?", "Finally, the text highlights...", "By the way,", "On Monday,", "For instance, I...", "The last main idea can start with 'Finally' or 'Overall'."],
+    [19, "How many marks is Writing Task 1.1 worth?", "15", "25", "10", "40", "1.1 = 15 marks, 1.2 = 25 marks."],
+    [19, "Which is a common mistake in Task 1.1?", "Including a small example as a main idea", "Using synonyms", "Following the text order", "Using four sentences", "Only the most important ideas should be included."],
+
+    [20, "How many words must the opinion essay have?", "At least 170", "About 50", "Exactly 100", "More than 500", "The task requires at least 170 words in paragraphs."],
+    [20, "What goes in the introduction?", "Introduce the topic and state your opinion", "Only examples", "The conclusion", "A list of mistakes", "Introduction = topic + opinion."],
+    [20, "Which phrase states an opinion?", "I strongly believe that...", "Once upon a time...", "Dear Sir,", "For example,", "'I strongly believe that' is an opinion phrase."],
+    [20, "Which is correct for a conclusion?", "In conclusion, I believe that...", "By the way,", "First of all,", "Gonna finish now.", "Conclusion restates the opinion: In conclusion/To sum up."],
+    [20, "How many prompts must you address?", "All three", "One", "Two", "None", "Marks are lost for missing a prompt."],
+    [20, "How many marks is the opinion essay worth?", "25", "15", "10", "40", "Task 1.2 = 25 marks (rubric)."],
+
+    [21, "Which phrase asks for advice?", "What should I do?", "You'd better go.", "If I were you...", "I suggest you rest.", "'What should I do?' asks for advice; the others give it."],
+    [21, "Choose the correct advice.", "You should drink more water.", "You should to drink more water.", "You should drinking more water.", "You should drank more water.", "should + base verb, no 'to'."],
+    [21, "'If I ____ you, I would talk to a counsellor.'", "were", "am", "will be", "is", "In formal advice use 'If I were you'."],
+    [21, "Which is the strongest advice?", "You'd better not stay up all night.", "Maybe you could rest.", "Why don't you rest?", "You might sleep.", "'Had better' is strong advice with a warning."],
+    [21, "'I suggest that you ____ more.'", "exercise", "to exercise", "exercising to", "exercised to", "suggest that + subject + base verb."],
+    [21, "Which gives a reason with advice?", "You should exercise because it reduces stress.", "You should exercise.", "Exercise!", "You exercise stress.", "Adding 'because' strengthens the advice."],
+
+    [22, "Which word shows contrast?", "whereas", "similarly", "both", "in the same way", "Whereas shows a difference."],
+    [22, "'Both TV and online adverts use slogans' shows ____.", "similarity", "difference", "advice", "result", "'Both... and' expresses similarity."],
+    [22, "Choose the correct comparative.", "Walking is less stressful than driving.", "Walking is more less stressful than driving.", "Walking is stressfuler than driving.", "Walking is less stressful that driving.", "less + adjective + than."],
+    [22, "'____ a health club, exercising at home is free.'", "Unlike", "Like", "Both", "Similarly", "'Unlike' + noun shows contrast."],
+    [22, "Which is punctuated correctly?", "However, a club offers expert advice.", "However a club offers expert advice.", "However; a club offers expert advice.", "However. a club offers expert advice.", "'However,' is followed by a comma at the start of a sentence."],
+    [22, "Which is the superlative?", "the most informative", "more informative", "informativer", "as informative", "the most + adjective is the superlative."],
+
+    [23, "Which writing theme belongs to Part 4?", "Screens Everywhere!", "Cooking at Home", "Space Travel", "Holiday Plans", "The three themes are Health Clubs, Talking about Stress and Screens Everywhere!"],
+    [23, "A good plan for each theme has ____.", "2 benefits, 2 problems, 1 solution, 1 example", "one long list of facts", "only opinions", "no examples", "This structure gives balanced ideas."],
+    [23, "Which words help in a screens essay?", "connectivity, productivity, eye strain", "toothache, remedy, syndrome", "witness, scene, injuries", "recipe, oven, menu", "These words belong to the Screens Everywhere topic."],
+    [23, "Which linking word shows result?", "Therefore", "However", "Whereas", "Although", "Therefore introduces a result."],
+    [23, "Which is a good way to cope with stress?", "Exercise and talk to a friend", "Stay up all night", "Ignore it", "Skip meals", "Healthy coping includes exercise, sleep and talking."],
+    [23, "A formal essay should avoid ____.", "slang such as 'gonna'", "linking words", "examples", "paragraphs", "Use formal language in the opinion essay."]
+  ],
+  summary: `<div class="en">
+<h3>Grade 10 Advanced English - Term 1 Cheat Sheet</h3>
+<b>Exam (100 marks):</b> Part 1 Vocabulary 10 | Part 2 Grammar 10 | Part 3A Reading 24 | Part 3B Reading 16 | Part 4 Writing 40. Reading strategy: <b>Skim - Scan - Check</b>.<br><br>
+<b>Vocabulary - A Picture of Health:</b> symptoms, prescription, fraudulent, dishonest, syndrome, remedy, nervous, stress, toothache, upset stomach (+ calm down, negative effect, causes of stress).<br>
+<b>Vocabulary - Infotainment:</b> connectivity, productivity, slogan, commercial, memorable, informative, witness, investigation, injuries, scene.<br><br>
+<b>Grammar (7 topics):</b>
+<table class="tbl"><tr><th>Topic</th><th>Rule</th></tr>
+<tr><td>Present simple passive</td><td>am/is/are + V3: Medicine is prescribed.</td></tr>
+<tr><td>Present perfect continuous</td><td>have/has been + -ing; for/since</td></tr>
+<tr><td>Participle clauses</td><td>-ing active, -ed passive; same subject</td></tr>
+<tr><td>Demonstratives</td><td>this/these (near), that/those (far)</td></tr>
+<tr><td>Subordinating conjunctions</td><td>although, because, unless, so that, as soon as</td></tr>
+<tr><td>Question tags</td><td>positive - negative tag; aren't I; shall we</td></tr>
+<tr><td>Degree adverbs</td><td>extremely, quite, slightly, hardly; absolutely exhausted; safe enough</td></tr></table><br>
+<b>Reading 3A (Health):</b> Longevity; Medical advice and the Internet - 3 specific information, 3 details, 1 word in context, 1 overall. <b>3B (Infotainment):</b> Commercials, Visual Media and language - 4 details, 1 word, 1 inference/prediction, 1 connection, 1 overall.<br><br>
+<b>Writing 1.1 (15):</b> four sentences, own words: The text is mainly about... / One important point is... / Another key idea is... / Finally, the text highlights... No copying, no opinion.<br>
+<b>Writing 1.2 (25):</b> 170+ words, intro with opinion, body paragraphs answering all 3 prompts with reasons and examples, conclusion. Themes: Health Clubs, Talking about Stress, Screens Everywhere!<br>
+<b>Functional language:</b> FL.24 advice (should, had better, If I were you...), FL.26 comparing and contrasting (both, whereas, unlike, however).
+</div>`
+};
+
+}catch(e){console.error('data10a english.js',e)}
+/* ---- data10a physics.js ---- */
+try{
+DATA10A["physics"] = {
+  name: "الفيزياء",
+  icon: "⚛️",
+  tone: "p-sky",
+  desc: "انعكاس الضوء والمرايا المستوية والكروية، انكسار الضوء وقانون سنيل والانعكاس الكلي الداخلي والتشتت، العدسات وعيوب الرؤية، التداخل والحيود ومحزوز الحيود",
+  note: "مبنية على هيكل امتحان نهاية الفصل الأول 2026-2027 الرسمي (16 سؤالاً موضوعياً + 4 أسئلة مقالية، 150 دقيقة، الآلة الحاسبة مسموحة) وكتاب Inspire Physics للصف العاشر المتقدم (الوحدة 4: الوحدة التعليمية 16 الانعكاس والانكسار، والوحدة التعليمية 17 التداخل والحيود) مع عروض المعلمين وأوراق العمل.",
+  en: false,
+  exam: { n: 20, mins: 150 },
+  T: [
+    { id: 1, t: "الانعكاس المنتظم والانتشاري وقانون الانعكاس", q: "Q1 · ص 4-5", html: `<p><b>الانعكاس</b> (Reflection): ارتداد الضوء عن سطح عند سقوطه عليه.</p>
+<table class="tbl"><tr><th>النوع</th><th>السطح</th><th>النتيجة</th></tr>
+<tr><td>انعكاس منتظم (Specular)</td><td>أملس ولامع (مرآة، ماء ساكن)</td><td>أشعة منعكسة متوازية وتكوّن صورة واضحة</td></tr>
+<tr><td>انعكاس منتشر (Diffuse)</td><td>خشن (جدار، ورق، طريق)</td><td>تنعكس الأشعة في اتجاهات مختلفة فلا تتكوّن صورة، لكن نرى الجسم من كل الجهات</td></tr></table>
+<div class="key"><b>قانون الانعكاس</b> (Law of reflection): <span class="m">θᵢ = θᵣ</span> أي زاوية السقوط = زاوية الانعكاس، وتُقاس الزاويتان من <b>العمودي</b> (Normal) على السطح. والشعاع الساقط والمنعكس والعمودي كلها في <b>مستوى واحد</b>.</div>
+<div class="ex">الانعكاس المنتشر ليس مخالفاً للقانون: كل شعاع يطيع القانون عند نقطة سقوطه، لكن العمودي يختلف من نقطة لأخرى لأن السطح خشن.</div>
+<div class="trap">⚠️ الزاوية تُقاس من العمودي وليس من السطح.</div>`, say: "الانعكاس هو ارتداد الضوء عن السطح. إذا كان السطح أملس مثل المرآة فالانعكاس منتظم وتتكون صورة واضحة. وإذا كان خشناً مثل الجدار فالانعكاس منتشر، وهذا يجعلنا نرى الجسم من كل الاتجاهات. قانون الانعكاس يقول إن زاوية السقوط تساوي زاوية الانعكاس، وتقاس الزاويتان من العمودي على السطح، وليس من السطح نفسه." },
+    { id: 2, t: "رسم الأشعة وحل مسائل قانون الانعكاس", q: "Q1 · Q17 جزء 1 · ص 6, 8", html: `<p>خطوات الرسم: ارسم السطح، ثم العمودي عند نقطة السقوط، ثم الشعاع الساقط، ثم الشعاع المنعكس بنفس الزاوية على الجهة الأخرى من العمودي.</p>
+<div class="ex"><b>مثال 1:</b> شعاع يسقط بزاوية 35° على العمودي → زاوية الانعكاس 35°، والزاوية بين الشعاعين = 70°.<br><b>مثال 2:</b> شعاع يصنع 30° مع سطح المرآة → زاوية السقوط = 90° − 30° = <b>60°</b>.<br><b>مثال 3:</b> الزاوية بين الشعاع الساقط والمنعكس 80° → زاوية السقوط = 80° ÷ 2 = <b>40°</b>.<br><b>مثال 4:</b> شعاع يسقط عمودياً (θ = 0°) يرتد على نفسه.</div>
+<div class="key">الزاوية بين الساقط والمنعكس = 2θᵢ.<br>زاوية السقوط = 90° − (الزاوية مع السطح).</div>
+<div class="trap">⚠️ إذا أعطاك السؤال الزاوية مع السطح فلا تستعملها مباشرة في القانون، حوّلها أولاً إلى الزاوية مع العمودي.</div>`, say: "عند رسم الأشعة نرسم العمودي أولاً، ثم الشعاع الساقط، ثم المنعكس بنفس الزاوية. إذا سقط شعاع بزاوية خمس وثلاثين درجة فزاوية الانعكاس خمس وثلاثون درجة. وإذا كانت الزاوية مع سطح المرآة ثلاثين درجة، فزاوية السقوط ستون درجة لأنها تقاس من العمودي. والزاوية بين الشعاع الساقط والمنعكس تساوي ضعف زاوية السقوط." },
+    { id: 3, t: "المرايا المستوية: موضع الصورة وخصائصها", q: "Q2 · Q5 · ص 5-8", html: `<p>المرآة المستوية (Plane mirror) تكوّن صورة <b>وهمية</b> (Virtual) خلف المرآة.</p>
+<div class="key"><span class="m">dᵢ = dₒ</span> (بعد الصورة = بُعد الجسم)<br><span class="m">hᵢ = hₒ</span> (ارتفاع الصورة = ارتفاع الجسم)<br>الصورة: وهمية، معتدلة، مساوية للجسم، ومعكوسة جانبياً (Lateral inversion).</div>
+<p>لرسم الصورة: ارسم شعاعين من نقطة على الجسم، وأطل المنعكسين <b>خلف المرآة</b> بخط متقطع، فيلتقيان عند موضع الصورة.</p>
+<div class="ex">جسم يبعد 3.0 m عن المرآة ← الصورة خلف المرآة بمسافة 3.0 m، والمسافة بين الجسم وصورته = 6.0 m.<br>شخص طوله 1.80 m: أقل طول للمرآة ليرى نفسه كاملاً = نصف طوله = <b>0.90 m</b>.<br>شخص على بعد 1.2 m يتحرك نحو المرآة مسافة 1.0 m ← يصبح على 0.2 m والصورة على 0.2 m، فالمسافة بينهما 0.4 m.</div>
+<div class="trap">⚠️ الصورة الوهمية لا تُلتقط على شاشة لأن الأشعة لا تمر فعلاً عبرها، بل تبدو قادمة منها.</div>`, say: "المرآة المستوية تكوّن صورة وهمية خلف المرآة. بعد الصورة يساوي بعد الجسم، وارتفاع الصورة يساوي ارتفاع الجسم. الصورة معتدلة ومعكوسة جانبياً. فإذا وقفت على بعد ثلاثة أمتار فصورتك خلف المرآة بثلاثة أمتار، والمسافة بينكما ستة أمتار. والصورة الوهمية لا يمكن التقاطها على شاشة." },
+    { id: 4, t: "المرايا الكروية: المحور الرئيسي والبؤرة والبعد البؤري", q: "Q17 جزء 2 · ص 9-10", html: `<p><b>المرآة الكروية</b> (Spherical mirror) جزء من سطح كرة.</p>
+<ul><li><b>المقعرة</b> (Concave): السطح العاكس من الداخل، تجمّع الأشعة (Converging).</li>
+<li><b>المحدبة</b> (Convex): السطح العاكس من الخارج، تفرّق الأشعة (Diverging).</li>
+<li><b>المحور الرئيسي</b> (Principal axis): الخط المار بمركز التكور C ورأس المرآة V.</li>
+<li><b>البؤرة</b> (Focal point F): النقطة التي تلتقي عندها الأشعة المنعكسة الموازية للمحور (حقيقية في المقعرة، وهمية خلف المحدبة).</li>
+<li><b>البعد البؤري</b> (Focal length f): المسافة من V إلى F.</li></ul>
+<div class="key"><span class="m">f = R / 2</span> حيث R نصف قطر التكور.</div>
+<div class="ex">مرآة مقعرة نصف قطر تكورها 30 cm ← f = 15 cm. مرآة محدبة R = 24 cm ← f = −12 cm (بإشارة سالبة).</div>`, say: "المرآة الكروية جزء من كرة. المقعرة سطحها العاكس من الداخل وتجمّع الأشعة، والمحدبة سطحها العاكس من الخارج وتفرّق الأشعة. المحور الرئيسي هو الخط المار بمركز التكور ورأس المرآة. البؤرة هي النقطة التي تتجمع عندها الأشعة الموازية للمحور، والبعد البؤري يساوي نصف نصف القطر." },
+    { id: 5, t: "المرآة المقعرة: تحديد الصورة بالرسم", q: "Q3 · Q5 · ص 11-13", html: `<p>الأشعة الرئيسية الثلاثة:</p>
+<ol><li>شعاع موازٍ للمحور ← يُنعكس مارّاً بالبؤرة F.</li><li>شعاع مار بالبؤرة F ← يُنعكس موازياً للمحور.</li><li>شعاع مار بمركز التكور C ← يرتد على نفسه.</li></ol>
+<table class="tbl"><tr><th>موضع الجسم</th><th>موضع الصورة</th><th>الخصائص</th></tr>
+<tr><td>أبعد من C (dₒ > 2f)</td><td>بين F و C</td><td>حقيقية، مقلوبة، مصغّرة</td></tr>
+<tr><td>عند C</td><td>عند C</td><td>حقيقية، مقلوبة، مساوية</td></tr>
+<tr><td>بين F و C (f < dₒ < 2f)</td><td>أبعد من C</td><td>حقيقية، مقلوبة، مكبّرة</td></tr>
+<tr><td>عند F</td><td>لا تتكوّن صورة</td><td>أشعة منعكسة متوازية</td></tr>
+<tr><td>أقرب من F (dₒ < f)</td><td>خلف المرآة</td><td>وهمية، معتدلة، مكبّرة</td></tr></table>
+<div class="trap">⚠️ الصورة الحقيقية دائماً مقلوبة في المرايا، والوهمية معتدلة. المقعرة تعطي صورة وهمية فقط إذا كان الجسم داخل البعد البؤري.</div>`, say: "في المرآة المقعرة نستعمل ثلاثة أشعة: الموازي للمحور ينعكس من البؤرة، والمار بالبؤرة ينعكس موازياً، والمار بالمركز يرتد على نفسه. إذا كان الجسم أبعد من مركز التكور فالصورة حقيقية ومقلوبة ومصغرة بين البؤرة والمركز. وإذا كان بين البؤرة والمركز فالصورة حقيقية ومقلوبة ومكبرة أبعد من المركز. وإذا كان داخل البؤرة فالصورة وهمية معتدلة مكبرة." },
+    { id: 6, t: "المرآة المحدبة واستخدامات المرايا", q: "Q17 جزء 2 · ص 9-14", html: `<div class="key">المرآة المحدبة تعطي دائماً صورة <b>وهمية، معتدلة، مصغّرة</b> خلف المرآة مهما كان موضع الجسم، لأن الأشعة المنعكسة <b>تتفرّق</b> ولا تلتقي.</div>
+<p>للرسم: شعاع موازٍ للمحور ينعكس وكأنه قادم من البؤرة F خلف المرآة (أطل المنعكس للخلف بخط متقطع).</p>
+<table class="tbl"><tr><th>المرآة</th><th>الاستخدامات</th></tr>
+<tr><td>مقعرة</td><td>المصابيح الأمامية والكشافات (الجسم عند F)، مرايا الحلاقة والتجميل (جسم داخل F)، طبيب الأسنان، التلسكوبات العاكسة، الأفران الشمسية</td></tr>
+<tr><td>محدبة</td><td>مرايا الرؤية الجانبية للسيارات، مرايا المراقبة في المتاجر والمنعطفات (مجال رؤية واسع)</td></tr></table>
+<div class="trap">⚠️ عبارة "الأجسام في المرآة أقرب مما تبدو" مكتوبة على المرآة المحدبة لأن الصورة مصغّرة فتبدو أبعد.</div>`, say: "المرآة المحدبة تعطي دائماً صورة وهمية معتدلة ومصغرة، لأن الأشعة المنعكسة تتفرق. لذلك تستعمل في مرايا السيارات الجانبية ومرايا المراقبة، لأنها تعطي مجال رؤية واسعاً. أما المقعرة فتستعمل في المصابيح الأمامية ومرايا الحلاقة وطبيب الأسنان والتلسكوبات." },
+    { id: 7, t: "معادلة المرآة والإشارات الجبرية", q: "Q4 · ص 15-18 · E.P 2,3 · P.P 13-20", html: `<div class="key"><span class="m">1/f = 1/dₒ + 1/dᵢ</span><br>اصطلاح الإشارات: f موجب للمقعرة وسالب للمحدبة. dₒ موجب دائماً. dᵢ موجب للصورة الحقيقية (أمام المرآة) وسالب للوهمية (خلف المرآة).</div>
+<div class="ex"><b>1)</b> مقعرة f = 10 cm، dₒ = 30 cm:<br>1/dᵢ = 1/10 − 1/30 = 2/30 ← <b>dᵢ = 15 cm</b> (حقيقية).<br><b>2)</b> محدبة f = −12 cm، dₒ = 24 cm:<br>1/dᵢ = −1/12 − 1/24 = −3/24 ← <b>dᵢ = −8 cm</b> (وهمية).<br><b>3)</b> مقعرة f = 15 cm، dₒ = 6 cm:<br>1/dᵢ = 1/15 − 1/6 = −3/30 ← <b>dᵢ = −10 cm</b> (وهمية لأن الجسم داخل f).<br><b>4)</b> f = 12 cm، dᵢ = 24 cm: 1/dₒ = 1/12 − 1/24 = 1/24 ← <b>dₒ = 24 cm</b>.</div>
+<div class="trap">⚠️ لا تنسَ أن تقلب الناتج: المعادلة تعطي 1/dᵢ وليس dᵢ. والإشارة السالبة لـ dᵢ تعني صورة وهمية خلف المرآة.</div>`, say: "معادلة المرآة: واحد على البعد البؤري يساوي واحد على بعد الجسم زائد واحد على بعد الصورة. البعد البؤري موجب للمقعرة وسالب للمحدبة. وبعد الصورة موجب إذا كانت حقيقية وسالب إذا كانت وهمية. مثال: مرآة مقعرة بعدها البؤري عشرة سنتيمترات وجسم على ثلاثين، فبعد الصورة خمسة عشر سنتيمتراً. وتذكر أن تقلب الناتج في النهاية." },
+    { id: 8, t: "التكبير وتحديد نوع الصورة من إشارته", q: "Q5 · ص 18 · C.Y.P 22,23,26", html: `<div class="key"><span class="m">m = hᵢ / hₒ = − dᵢ / dₒ</span><br><b>m سالبة</b> ← صورة حقيقية مقلوبة. <b>m موجبة</b> ← صورة وهمية معتدلة.<br>|m| > 1 مكبّرة، |m| < 1 مصغّرة، |m| = 1 مساوية.</div>
+<div class="ex"><b>1)</b> dₒ = 30 cm، dᵢ = 15 cm ← m = −15/30 = <b>−0.5</b> (حقيقية، مقلوبة، مصغّرة).<br><b>2)</b> جسم ارتفاعه 4.0 cm و m = −0.5 ← hᵢ = −2.0 cm (صورة مقلوبة ارتفاعها 2.0 cm).<br><b>3)</b> dₒ = 6 cm، dᵢ = −10 cm ← m = +10/6 = <b>+1.67</b> (وهمية، معتدلة، مكبّرة).<br><b>4)</b> محدبة: dₒ = 24، dᵢ = −8 ← m = +8/24 = <b>+0.33</b> (وهمية، معتدلة، مصغّرة).</div>
+<p>التجربة: حرّك الجسم أمام مرآة مقعرة وحدّد موضع الشاشة التي تظهر عليها الصورة الحقيقية، فهي تثبت أن الصورة الحقيقية تُلتقط على شاشة والوهمية لا تُلتقط.</p>`, say: "التكبير يساوي ارتفاع الصورة على ارتفاع الجسم، ويساوي سالب بعد الصورة على بعد الجسم. إذا كان التكبير سالباً فالصورة حقيقية ومقلوبة، وإذا كان موجباً فالصورة وهمية ومعتدلة. وإذا كانت قيمته المطلقة أكبر من واحد فالصورة مكبرة، وإذا كانت أقل من واحد فهي مصغرة." },
+    { id: 9, t: "انكسار الضوء ومعامل الانكسار", q: "Q6 · Q18 جزء 1 · ص 19-23 · C.Y.P 38", html: `<p><b>الانكسار</b> (Refraction): انحراف الضوء عند انتقاله بين وسطين مختلفين لأن <b>سرعته تتغير</b>.</p>
+<div class="key"><b>معامل الانكسار</b> (Index of refraction): <span class="m">n = c / v</span><br>c = 3.0×10⁸ m/s سرعة الضوء في الفراغ، v سرعته في الوسط. دائماً n ≥ 1 (للفراغ والهواء تقريباً 1.00).</div>
+<ul><li>عند الدخول إلى وسط أكبر n (أكثر كثافة ضوئية): السرعة تقل، الطول الموجي يقل، <b>التردد ثابت</b>، والشعاع <b>ينكسر نحو العمودي</b>.</li>
+<li>عند الخروج إلى وسط أقل n: الشعاع <b>يبتعد عن العمودي</b>.</li>
+<li>السقوط عمودياً: لا انحراف.</li></ul>
+<div class="ex">زجاج v = 2.0×10⁸ m/s ← n = 3.0×10⁸ ÷ 2.0×10⁸ = <b>1.5</b>.<br>ماء n = 1.33 ← v = 3.0×10⁸ ÷ 1.33 ≈ <b>2.26×10⁸ m/s</b>.<br>ألماس n = 2.42 ← v ≈ <b>1.24×10⁸ m/s</b>.</div>
+<div class="trap">⚠️ التردد لا يتغير عند الانكسار أبداً، المتغير هو السرعة والطول الموجي.</div>`, say: "الانكسار هو انحراف الضوء عند انتقاله بين وسطين مختلفين بسبب تغير سرعته. معامل الانكسار يساوي سرعة الضوء في الفراغ مقسومة على سرعته في الوسط. إذا دخل الضوء وسطاً معامل انكساره أكبر، تقل سرعته وطوله الموجي، ويبقى تردده ثابتاً، وينكسر نحو العمودي. مثال: الزجاج الذي تبلغ سرعة الضوء فيه مئتي مليون متر في الثانية معامل انكساره واحد فاصلة خمسة." },
+    { id: 10, t: "قانون سنيل للانكسار", q: "Q18 جزء 1 · ص 21 · E.P 4 · P.P 30-34", html: `<div class="key"><b>قانون سنيل</b> (Snell's law): <span class="m">n₁ sin θ₁ = n₂ sin θ₂</span><br>θ₁ و θ₂ تُقاسان من العمودي. الشعاع الساقط والمنكسر والعمودي في مستوى واحد.</div>
+<div class="ex"><b>1)</b> هواء ← زجاج (n = 1.5)، θ₁ = 30°:<br>sin θ₂ = sin 30° ÷ 1.5 = 0.5 ÷ 1.5 = 0.333 ← <b>θ₂ ≈ 19.5°</b> (نحو العمودي).<br><b>2)</b> هواء ← ماء (n = 1.33)، θ₁ = 45°:<br>sin θ₂ = 0.7071 ÷ 1.33 = 0.5317 ← <b>θ₂ ≈ 32.1°</b>.<br><b>3)</b> زجاج (1.5) ← هواء، θ₁ = 20°:<br>sin θ₂ = 1.5 × sin 20° = 1.5 × 0.3420 = 0.513 ← <b>θ₂ ≈ 30.9°</b> (يبتعد عن العمودي).</div>
+<p>التمثيل بالأشعة: ارسم العمودي عند الحد الفاصل، الساقط في الوسط الأول، والمنكسر مائلاً نحو العمودي إذا كان n₂ > n₁ وبعيداً عنه إذا كان n₂ < n₁.</p>
+<div class="trap">⚠️ اضبط الآلة الحاسبة على وضع الدرجات (DEG)، واستخدم sin⁻¹ للحصول على الزاوية.</div>`, say: "قانون سنيل: معامل انكسار الوسط الأول في جيب زاوية السقوط يساوي معامل انكسار الوسط الثاني في جيب زاوية الانكسار. مثال: شعاع من الهواء إلى الزجاج بزاوية ثلاثين درجة، جيب زاوية الانكسار يساوي نصفاً مقسوماً على واحد فاصلة خمسة، أي ثلث، فزاوية الانكسار تقريباً تسع عشرة درجة ونصف. تأكد أن الآلة الحاسبة على وضع الدرجات." },
+    { id: 11, t: "الزاوية الحرجة والانعكاس الكلي الداخلي", q: "Q7 · Q18 جزء 1 · ص 23-25 · C.Y.P 36,37", html: `<p>عندما ينتقل الضوء من وسط <b>أكبر n</b> إلى وسط <b>أقل n</b> يبتعد عن العمودي. عند زاوية سقوط معينة تصبح زاوية الانكسار 90°: هذه <b>الزاوية الحرجة</b> (Critical angle).</p>
+<div class="key"><span class="m">sin θc = n₂ / n₁</span> (n₁ > n₂)، وللخروج إلى الهواء: <span class="m">sin θc = 1 / n</span>.<br><b>الانعكاس الكلي الداخلي</b> (Total internal reflection): ينعكس كل الضوء داخل الوسط الأكبر n بشرطين: (1) الانتقال من وسط أكبر n إلى أقل n. (2) زاوية السقوط أكبر من الزاوية الحرجة.</div>
+<div class="ex">زجاج ← هواء: sin θc = 1/1.5 = 0.667 ← <b>θc ≈ 41.8°</b>.<br>ماء ← هواء: 1/1.33 = 0.752 ← <b>θc ≈ 48.8°</b>.<br>ألماس ← هواء: 1/2.42 = 0.413 ← <b>θc ≈ 24.4°</b> (سبب لمعان الألماس).<br>زجاج (1.5) ← ماء (1.33): sin θc = 1.33/1.5 = 0.887 ← <b>θc ≈ 62.5°</b>.</div>
+<p><b>تطبيقات:</b> الألياف الضوئية (Optical fibers)، المناظير والمنشورات العاكسة، العاكسات على الطرق.</p>
+<div class="trap">⚠️ لا توجد زاوية حرجة عند الانتقال من وسط أقل n إلى أكبر n (مثل هواء ← زجاج).</div>`, say: "عندما ينتقل الضوء من وسط معامل انكساره أكبر إلى وسط أقل، تكون هناك زاوية سقوط تصبح عندها زاوية الانكسار تسعين درجة، وتسمى الزاوية الحرجة. جيبها يساوي معامل الوسط الثاني على معامل الأول، وللخروج إلى الهواء يساوي واحد على n. إذا زادت زاوية السقوط عن الزاوية الحرجة يحدث الانعكاس الكلي الداخلي. بالنسبة للزجاج الزاوية الحرجة تقريباً واحد وأربعون فاصلة ثمانية درجة. تستعمل هذه الظاهرة في الألياف الضوئية والمناظير." },
+    { id: 12, t: "تشتت الضوء في المنشور", q: "Q8 · ص 24-25", html: `<p><b>التشتت</b> (Dispersion): انفصال الضوء الأبيض إلى ألوانه (طيف) عند انكساره، لأن <b>معامل الانكسار يعتمد على الطول الموجي</b>.</p>
+<div class="key">الطول الموجي الأقصر (البنفسجي) ← n أكبر ← <b>ينحرف أكثر</b>.<br>الطول الموجي الأطول (الأحمر) ← n أقل ← <b>ينحرف أقل</b>.<br>ترتيب الألوان: أحمر، برتقالي، أصفر، أخضر، أزرق، نيلي، بنفسجي.</div>
+<p>في <b>المنشور الزجاجي</b> (Prism) ينكسر الضوء مرتين (عند الدخول وعند الخروج) فيزداد الفصل بين الألوان. في الفراغ تنتقل كل الألوان بنفس السرعة c، وتختلف سرعاتها داخل الزجاج.</p>
+<div class="trap">⚠️ المنشور لا "يصنع" الألوان، هي موجودة في الضوء الأبيض وإنما يفصلها.</div>`, say: "التشتت هو انفصال الضوء الأبيض إلى ألوانه عند الانكسار، لأن معامل الانكسار يختلف باختلاف الطول الموجي. اللون البنفسجي له أقصر طول موجي ومعامل انكساره أكبر فينحرف أكثر، واللون الأحمر ينحرف أقل. في المنشور ينكسر الضوء مرتين، فتظهر الألوان منفصلة." },
+    { id: 13, t: "ظواهر طبيعية: قوس المطر والسراب وغيرها", q: "Q9 · ص 23-25 · C.Y.P 42", html: `<table class="tbl"><tr><th>الظاهرة</th><th>التفسير</th></tr>
+<tr><td>قوس المطر (Rainbow)</td><td>الضوء يدخل قطرة الماء فينكسر ويتشتت، ثم ينعكس انعكاساً كلياً داخلياً على الجدار الخلفي، ثم ينكسر عند الخروج. يظهر الأحمر في الخارج والبنفسجي في الداخل.</td></tr>
+<tr><td>السراب (Mirage)</td><td>الهواء الملامس للأرض الساخنة أقل كثافة (n أقل) من الهواء الأعلى، فينكسر ضوء السماء متجهاً إلى الأعلى نحو عين المراقب فيبدو كأنه ماء.</td></tr>
+<tr><td>لمعان الألماس</td><td>زاويته الحرجة صغيرة (24.4°) فيحدث انعكاس كلي داخلي متكرر.</td></tr>
+<tr><td>رؤية الشمس بعد غروبها</td><td>انكسار الضوء في طبقات الغلاف الجوي.</td></tr></table>
+<div class="key">كل هذه الظواهر نتيجة: انعكاس + انكسار + انعكاس كلي داخلي + تشتت.</div>
+<div class="trap">⚠️ السراب ليس وهماً في الدماغ، بل صورة حقيقية للسماء بسبب انكسار الضوء، ولا يمكن الوصول إليه.</div>`, say: "قوس المطر يحدث عندما يدخل الضوء قطرة ماء، فينكسر ويتشتت، ثم ينعكس انعكاساً كلياً داخلياً، ثم ينكسر مرة أخرى عند الخروج. والسراب يحدث لأن الهواء الساخن قرب الأرض أقل كثافة ضوئية فينكسر ضوء السماء إلى الأعلى فيبدو كالماء. ولمعان الألماس سببه الانعكاس الكلي الداخلي المتكرر." },
+    { id: 14, t: "العدسات المحدبة والمقعرة ورسم الصور", q: "Q10 · ص 26-28 · C.Y.P 54", html: `<ul><li><b>العدسة المحدبة</b> (Convex/converging): أسمك في الوسط، تجمّع الأشعة، f موجب.</li>
+<li><b>العدسة المقعرة</b> (Concave/diverging): أرق في الوسط، تفرّق الأشعة، f سالب.</li></ul>
+<p>الأشعة الرئيسية: موازٍ للمحور ← ينكسر عبر البؤرة (محدبة) أو كأنه صادر من البؤرة (مقعرة). المار بمركز العدسة ← يمر دون انحراف.</p>
+<table class="tbl"><tr><th>العدسة والجسم</th><th>الصورة</th></tr>
+<tr><td>محدبة، dₒ > 2f</td><td>حقيقية، مقلوبة، مصغّرة (الكاميرا)</td></tr>
+<tr><td>محدبة، f < dₒ < 2f</td><td>حقيقية، مقلوبة، مكبّرة (جهاز العرض)</td></tr>
+<tr><td>محدبة، dₒ < f</td><td>وهمية، معتدلة، مكبّرة (العدسة المكبّرة)</td></tr>
+<tr><td><b>مقعرة، أي موضع</b></td><td><b>وهمية، معتدلة، مصغّرة، في نفس جهة الجسم</b></td></tr></table>
+<div class="trap">⚠️ العدسة المقعرة لا تكوّن صورة حقيقية أبداً.</div>`, say: "العدسة المحدبة أسمك في الوسط وتجمع الأشعة، وبعدها البؤري موجب. العدسة المقعرة أرق في الوسط وتفرق الأشعة، وبعدها البؤري سالب. العدسة المقعرة تعطي دائماً صورة وهمية معتدلة مصغرة في نفس جهة الجسم. والمحدبة تعطي صورة حقيقية مقلوبة إذا كان الجسم أبعد من البؤرة، ووهمية معتدلة مكبرة إذا كان داخلها." },
+    { id: 15, t: "معادلة العدسة الرقيقة والتكبير", q: "Q18 جزء 2 · ص 29-30 · E.P 5 · P.P 43-46 · C.Y.P 51,55,56", html: `<div class="key"><span class="m">1/f = 1/dₒ + 1/dᵢ</span> و <span class="m">m = hᵢ/hₒ = − dᵢ/dₒ</span><br>f موجب للمحدبة وسالب للمقعرة. dᵢ موجب للصورة الحقيقية (في الجهة المقابلة للجسم) وسالب للوهمية.</div>
+<div class="ex"><b>1)</b> محدبة f = 10 cm، dₒ = 30 cm: 1/dᵢ = 1/10 − 1/30 = 2/30 ← <b>dᵢ = 15 cm</b>، m = −15/30 = <b>−0.5</b>.<br><b>2)</b> محدبة f = 10 cm، dₒ = 5 cm: 1/dᵢ = 1/10 − 1/5 = −1/10 ← <b>dᵢ = −10 cm</b> (وهمية)، m = +10/5 = <b>+2</b>.<br><b>3)</b> مقعرة f = −15 cm، dₒ = 30 cm: 1/dᵢ = −1/15 − 1/30 = −3/30 ← <b>dᵢ = −10 cm</b>، m = +10/30 = <b>+0.33</b>.<br><b>4)</b> f = 20 cm، dₒ = 30 cm: 1/dᵢ = 1/20 − 1/30 = 1/60 ← <b>dᵢ = 60 cm</b>، m = <b>−2</b>؛ جسم ارتفاعه 1.0 cm ← صورة مقلوبة ارتفاعها 2.0 cm.</div>
+<div class="trap">⚠️ المعادلة نفسها معادلة المرآة، لكن الصورة الحقيقية في العدسة تكون على الجهة المقابلة للجسم، وفي المرآة أمامها.</div>`, say: "معادلة العدسة الرقيقة هي نفسها معادلة المرآة: واحد على f يساوي واحد على بعد الجسم زائد واحد على بعد الصورة. والتكبير يساوي سالب بعد الصورة على بعد الجسم. العدسة المحدبة بعدها البؤري عشرة سنتيمترات وجسم على ثلاثين: بعد الصورة خمسة عشر، والتكبير سالب نصف، فالصورة حقيقية مقلوبة مصغرة. وإذا وضع الجسم على خمسة سنتيمترات فبعد الصورة سالب عشرة، والتكبير موجب اثنان: صورة وهمية معتدلة مكبرة." },
+    { id: 16, t: "عيوب العدسات: الزيغ الكروي والزيغ اللوني", q: "Q11 · ص 31", html: `<table class="tbl"><tr><th>العيب</th><th>السبب</th><th>العلاج</th></tr>
+<tr><td><b>الزيغ الكروي</b> (Spherical aberration)</td><td>الأشعة البعيدة عن المحور تتجمع في نقطة تختلف عن نقطة تجمع الأشعة القريبة من المحور (سطح كروي) فتتشوه الصورة</td><td>حاجز (فتحة) يحجب الأشعة الطرفية، أو استعمال عدسة بسطح غير كروي (Aspheric/Parabolic)</td></tr>
+<tr><td><b>الزيغ اللوني</b> (Chromatic aberration)</td><td>معامل الانكسار يختلف باختلاف اللون (تشتت)، فتتجمع الألوان في نقاط مختلفة وتظهر هالات ملونة حول الصورة. البنفسجي يتجمع أقرب إلى العدسة والأحمر أبعد</td><td>عدسة مزدوجة لونياً (Achromatic doublet): محدبة من زجاج Crown ملصوقة بمقعرة من زجاج Flint</td></tr></table>
+<div class="trap">⚠️ الزيغ الكروي سببه شكل السطح، والزيغ اللوني سببه اختلاف الطول الموجي (اللون).</div>`, say: "للعدسات عيبان رئيسيان. الزيغ الكروي: الأشعة الطرفية لا تتجمع في نفس نقطة الأشعة القريبة من المحور، فتتشوه الصورة، ويعالج بحاجز أو بعدسة غير كروية. والزيغ اللوني: الألوان المختلفة تنكسر بمقادير مختلفة فتتجمع في نقاط مختلفة، ويعالج بعدسة مزدوجة من محدبة ومقعرة بزجاجين مختلفين." },
+    { id: 17, t: "عيوب الإبصار: قصر النظر وطول النظر", q: "Q12 · ص 32-33 · C.Y.P 54", html: `<table class="tbl"><tr><th></th><th>قصر النظر (Myopia / Nearsightedness)</th><th>طول النظر (Hyperopia / Farsightedness)</th></tr>
+<tr><td>المشكلة</td><td>يرى القريب بوضوح والبعيد مشوشاً</td><td>يرى البعيد بوضوح والقريب مشوشاً</td></tr>
+<tr><td>السبب</td><td>كرة العين طويلة أو القرنية/العدسة شديدة التحدب</td><td>كرة العين قصيرة أو العدسة ضعيفة التحدب</td></tr>
+<tr><td>موضع الصورة</td><td><b>أمام</b> الشبكية</td><td><b>خلف</b> الشبكية</td></tr>
+<tr><td>العلاج</td><td>عدسة <b>مقعرة</b> (مفرّقة)</td><td>عدسة <b>محدبة</b> (مجمّعة)</td></tr></table>
+<div class="key">العدسة المقعرة تفرّق الأشعة قبل دخولها العين فتتحرك الصورة إلى الخلف وتقع على الشبكية. العدسة المحدبة تجمّع الأشعة قليلاً فتتحرك الصورة إلى الأمام وتقع على الشبكية.</div>
+<div class="trap">⚠️ قصر النظر ≠ الرؤية القصيرة للصورة: الصورة تتكون أمام الشبكية. تذكّر: Myopia ← Concave.</div>`, say: "قصر النظر يعني أن الشخص يرى القريب بوضوح والبعيد مشوشاً، لأن الصورة تتكون أمام الشبكية، ويعالج بعدسة مقعرة تفرق الأشعة. وطول النظر يعني أن الشخص يرى البعيد بوضوح والقريب مشوشاً، لأن الصورة تتكون خلف الشبكية، ويعالج بعدسة محدبة تجمع الأشعة." },
+    { id: 18, t: "التداخل البنّاء والهدّام وهدب التداخل", q: "Q13 · ص 42-44", html: `<p><b>التداخل</b> (Interference): تراكب موجتين أو أكثر فتتحد إزاحتاهما (مبدأ التراكب).</p>
+<div class="key"><b>بنّاء</b> (Constructive): قمة فوق قمة ← سعة أكبر ← <b>هدب مضيء</b> (Bright fringe). فرق المسار = <span class="m">mλ</span> (m = 0, 1, 2, ...).<br><b>هدّام</b> (Destructive): قمة فوق قاع ← تلاشٍ ← <b>هدب مظلم</b> (Dark fringe). فرق المسار = <span class="m">(m + ½)λ</span>.</div>
+<p><b>تجربة الشق المزدوج لـ Young</b>: ضوء <b>أحادي اللون</b> (Monochromatic) ومترابط (Coherent) يمر بشقين ضيقين فتتكوّن على الشاشة أهداب مضيئة ومظلمة متبادلة ومتساوية البُعد. الهدب المركزي (m = 0) مضيء دائماً لأن المسارين متساويان.</p>
+<div class="ex">λ = 500 nm، فرق المسار 1000 nm = 2λ ← تداخل بنّاء (هدب مضيء). وفرق المسار 750 nm = 1.5λ ← تداخل هدّام.</div>
+<div class="trap">⚠️ التداخل لا يفقد الطاقة: تتوزع الطاقة من المناطق المظلمة إلى المضيئة.</div>`, say: "التداخل هو تراكب موجتين. إذا التقت قمة بقمة حدث تداخل بنّاء وظهر هدب مضيء، وفرق المسار يساوي عدداً صحيحاً من الأطوال الموجية. وإذا التقت قمة بقاع حدث تداخل هدّام وظهر هدب مظلم، وفرق المسار يساوي عدداً صحيحاً زائد نصف من الأطوال الموجية. في تجربة يونغ للشق المزدوج بضوء أحادي اللون تظهر أهداب مضيئة ومظلمة متبادلة، والهدب المركزي مضيء." },
+    { id: 19, t: "معادلة الشق المزدوج وحل المسائل", q: "Q19 · ص 42-45 · E.P 1 · P.P 1-4 · C.Y.P 13", html: `<div class="key">موضع الهدب المضيء رقم m: <span class="m">x<sub>m</sub> = m λ L / d</span> (m = 0, 1, 2, ...)<br>أي <span class="m">m λ = x<sub>m</sub> d / L</span>. المسافة بين هدبين مضيئين متتاليين: <span class="m">Δx = λ L / d</span>.<br>λ الطول الموجي، L المسافة من الشقين إلى الشاشة، d المسافة بين الشقين، x المسافة من الهدب المركزي.</div>
+<div class="ex"><b>1)</b> λ = 600 nm، d = 0.20 mm، L = 1.5 m: x₁ = (6.0×10⁻⁷ × 1.5) ÷ (2.0×10⁻⁴) = 4.5×10⁻³ m = <b>4.5 mm</b>؛ وx₃ = 3 × 4.5 = <b>13.5 mm</b>.<br><b>2)</b> d = 0.10 mm، L = 2.0 m، x₁ = 12 mm: λ = x d / (mL) = (0.012 × 1.0×10⁻⁴) ÷ 2.0 = 6.0×10⁻⁷ m = <b>600 nm</b>.<br><b>3)</b> λ = 500 nm، L = 1.0 m، الهدب الثاني (m = 2) على 5.0 mm: d = mλL/x = (2 × 5.0×10⁻⁷ × 1.0) ÷ 5.0×10⁻³ = 2.0×10⁻⁴ m = <b>0.20 mm</b>.</div>
+<p>التأثيرات: زيادة L أو λ تزيد الفاصل بين الأهداب، وزيادة d تُنقصه.</p>
+<div class="trap">⚠️ حوّل الوحدات إلى المتر قبل التعويض (nm = 10⁻⁹ m، mm = 10⁻³ m).</div>`, say: "موضع الهدب المضيء رقم m يساوي m في لامدا في L مقسوماً على d. والفاصل بين هدبين متتاليين يساوي لامدا L على d. مثال: طول موجي ستمئة نانومتر، والمسافة بين الشقين عشر ملم صفر فاصلة اثنين، والشاشة على متر ونصف، فالهدب الأول يبعد أربعة فاصلة خمسة ملم. وتذكر تحويل الوحدات إلى المتر قبل التعويض." },
+    { id: 20, t: "الضوء الأبيض في تجربة الشق المزدوج: الأطياف الملونة", q: "Q19 · ص 44-45", html: `<p>عند استعمال ضوء أبيض (كل الألوان) تتكون أهداب <b>كل لون في موضع مختلف</b> لأن <span class="m">x ∝ λ</span>.</p>
+<ul><li>الهدب المركزي (m = 0) <b>أبيض</b> لأن كل الألوان تتداخل بنّاءً فيه.</li>
+<li>على جانبيه أطياف ملونة: <b>البنفسجي الأقرب</b> للمركز (λ أقصر)، و<b>الأحمر الأبعد</b> (λ أطول).</li>
+<li>الأحمر يعطي أهدابه أكثر تباعداً من الأزرق.</li></ul>
+<div class="ex">d = 0.20 mm، L = 2.0 m، الرتبة الأولى:<br>بنفسجي 400 nm: x₁ = 4.0×10⁻⁷ × 2.0 ÷ 2.0×10⁻⁴ = <b>4.0 mm</b>.<br>أحمر 700 nm: x₁ = <b>7.0 mm</b>.<br>عرض طيف الرتبة الأولى = 7.0 − 4.0 = <b>3.0 mm</b>.</div>
+<div class="trap">⚠️ الألوان لا تتكون من المنشور هنا بل من اختلاف مواضع التداخل البنّاء لكل طول موجي.</div>`, say: "عند استعمال الضوء الأبيض يكون الهدب المركزي أبيض، لأن كل الألوان تتداخل بنّاءً فيه. وعلى جانبيه تظهر أطياف ملونة، لأن موضع الهدب يتناسب مع الطول الموجي. البنفسجي أقرب إلى المركز والأحمر أبعد. مثلاً، للرتبة الأولى يبعد البنفسجي أربعة ملم والأحمر سبعة ملم." },
+    { id: 21, t: "تداخل الأغشية الرقيقة", q: "Q14 · ص 46-47", html: `<p><b>تداخل الغشاء الرقيق</b> (Thin-film interference): تتداخل الموجة المنعكسة عن السطح العلوي للغشاء مع الموجة المنعكسة عن سطحه السفلي (فقاعة صابون، بقعة زيت، طلاء العدسات).</p>
+<div class="key"><b>انقلاب الطور</b> (Wave inversion): الانعكاس عند سطح وسط <b>أكبر n</b> يقلب الموجة (فرق طور نصف طول موجي)، والانعكاس عند وسط <b>أقل n</b> لا يقلبها.</div>
+<ul><li>إذا انقلب انعكاس <b>واحد فقط</b>: تداخل بنّاء عند <span class="m">2t = (m + ½) λ<sub>film</sub></span>، وهدّام عند <span class="m">2t = m λ<sub>film</sub></span>.</li>
+<li>إذا انقلب <b>الاثنان أو لا شيء</b>: العكس.</li>
+<li>λ<sub>film</sub> = λ / n.</li></ul>
+<div class="ex"><b>فقاعة صابون</b> في الهواء: السطح العلوي ينقلب والسفلي لا ينقلب، وعندما يكون الغشاء أرق بكثير من λ يظهر مظلماً. <b>طلاء مانع للانعكاس</b> (n = 1.38) على زجاج (1.5): كلا الانعكاسين ينقلب، ويكون الهدّام عند 2t = λ<sub>film</sub>/2، أي t = λ/(4n) = 550 ÷ (4 × 1.38) ≈ <b>100 nm</b>.</div>
+<div class="trap">⚠️ الألوان المتغيرة في بقعة الزيت سببها اختلاف سمك الغشاء من نقطة لأخرى.</div>`, say: "تداخل الغشاء الرقيق يحدث عندما تتداخل الموجة المنعكسة عن السطح العلوي مع المنعكسة عن السطح السفلي. عند الانعكاس عن وسط معامل انكساره أكبر تنقلب الموجة، وعند الانعكاس عن وسط أقل لا تنقلب. وهذا الانقلاب يتحكم في كون التداخل بنّاء أم هدّاماً. ومن تطبيقاته الطلاء المانع للانعكاس على العدسات، وسمكه ربع الطول الموجي داخل الغشاء." },
+    { id: 22, t: "الحيود من شق مفرد", q: "Q20 جزء 1 · ص 50-53 · P.P 15-19", html: `<p><b>الحيود</b> (Diffraction): انحناء الموجة وانتشارها عند مرورها بفتحة أو حافة. يظهر على الشاشة هدب مركزي مضيء عريض وأهداب جانبية أضيق وأضعف تفصلها أهداب مظلمة.</p>
+<div class="key">عرض الهدب المركزي: <span class="m">2x₁ = 2λL / w</span><br>w عرض الشق، L البعد إلى الشاشة. الشق الأضيق أو الطول الموجي الأكبر (الأحمر) ← هدب مركزي أعرض.</div>
+<div class="ex"><b>1)</b> λ = 600 nm، L = 2.0 m، w = 0.10 mm:<br>2x₁ = 2 × 6.0×10⁻⁷ × 2.0 ÷ 1.0×10⁻⁴ = 2.4×10⁻² m = <b>2.4 cm</b>.<br><b>2)</b> λ = 500 nm، L = 1.5 m، عرض الهدب المركزي 3.0 cm:<br>w = 2λL/(2x₁) = 2 × 5.0×10⁻⁷ × 1.5 ÷ 0.030 = 5.0×10⁻⁵ m = <b>0.050 mm</b>.</div>
+<p>الضوء الأبيض: هدب مركزي أبيض وحوافه ملونة (الأحمر في الخارج). الضوء الأخضر يعطي هدباً أضيق من الأحمر.</p>
+<div class="trap">⚠️ في الحيود من شق مفرد، تضييق الشق يوسّع النمط، عكس ما يتوقعه الطلاب.</div>`, say: "الحيود هو انحناء الموجة عند مرورها بشق ضيق. يظهر على الشاشة هدب مركزي عريض ومضيء وأهداب جانبية أضعف. عرض الهدب المركزي يساوي اثنين لامدا L على w، حيث w عرض الشق. كلما ضاق الشق اتسع الهدب المركزي. مثال: ستمئة نانومتر، والشاشة على مترين، وعرض الشق عشر ملم، فعرض الهدب المركزي اثنان فاصلة أربعة سنتيمتر." },
+    { id: 23, t: "محزوز الحيود والمطياف", q: "Q15 · Q16 · Q20 جزء 2 · ص 53-56", html: `<p><b>محزوز الحيود</b> (Diffraction grating): سطح فيه عدد كبير جداً من الشقوق أو الخطوط المتوازية المتقاربة (مئات في المليمتر). يعطي أهدابا مضيئة <b>حادة جداً</b> ومتباعدة.</p>
+<ul><li><b>محزوز النفاذ</b> (Transmission): شقوق ينفذ منها الضوء.</li>
+<li><b>محزوز الانعكاس</b> (Reflection grating): أخاديد دقيقة على سطح عاكس، مثل <b>الأقراص المدمجة CD و DVD</b> وبعض الأجنحة الفراشية.</li></ul>
+<p><b>مطياف المحزوز</b> (Grating spectroscope): شق يمر منه الضوء، ثم عدسة تجعله متوازياً، ثم المحزوز الذي يفرّق الأطوال الموجية، ثم تلسكوب لرصد الخطوط الطيفية.</p>
+<div class="key">التطبيقات: تحليل <b>الأحجار الكريمة</b> وتحديد نوعها، تعيين تركيب النجوم والعناصر بخطوطها الطيفية، الكشف عن الملوثات، أجهزة التحليل الكيميائي.</div>
+<div class="trap">⚠️ المحزوز يعطي رتباً حادة، بينما الشق المزدوج يعطي أهدابا عريضة غير حادة.</div>`, say: "محزوز الحيود سطح فيه آلاف الخطوط الدقيقة المتقاربة، وهو يعطي أهدابا مضيئة حادة. هناك محزوز نفاذ ومحزوز انعكاس، والأقراص المدمجة مثال على محزوز الانعكاس. مطياف المحزوز يفرق الضوء إلى أطواله الموجية، ويستعمل في تحليل الأحجار الكريمة ومعرفة تركيب النجوم والعناصر." },
+    { id: 24, t: "معادلة محزوز الحيود وحل المسائل", q: "Q20 جزء 2 · ص 55-56 · E.P 3 · P.P 20-24", html: `<div class="key">التداخل البنّاء من المحزوز: <span class="m">m λ = d sin θ</span> (m = 1, 2, 3, ...)<br>d = المسافة بين خطين متجاورين = 1 ÷ (عدد الخطوط في وحدة الطول).<br>أكبر رتبة ممكنة: m < d/λ (لأن sin θ ≤ 1).</div>
+<div class="ex"><b>1)</b> محزوز 5000 خط/cm: d = 1/5000 cm = 2.0×10⁻⁴ cm = 2.0×10⁻⁶ m. λ = 500 nm، m = 1: sin θ = 5.0×10⁻⁷ ÷ 2.0×10⁻⁶ = 0.25 ← <b>θ ≈ 14.5°</b>؛ و m = 2: sin θ = 0.50 ← <b>30°</b>.<br><b>2)</b> محزوز 300 خط/mm: d = 3.33×10⁻⁶ m. λ = 600 nm، m = 1: sin θ = 0.18 ← <b>θ ≈ 10.4°</b>.<br><b>3)</b> محزوز 6000 خط/cm (d = 1.667×10⁻⁶ m) والرتبة الأولى عند 20.0°: λ = d sin θ = 1.667×10⁻⁶ × 0.3420 = 5.70×10⁻⁷ m = <b>570 nm</b>.<br><b>4)</b> d = 2.0×10⁻⁶ m، λ = 500 nm: d/λ = 4 ← أقصى رتبة مرئية هي <b>m = 3</b> (m = 4 تعطي 90° ولا تُرى).</div>
+<div class="trap">⚠️ إذا أعطاك "عدد الخطوط في cm" فاحسب d = 1/العدد ثم حوّلها إلى متر.</div>`, say: "معادلة المحزوز: m لامدا يساوي d في جيب ثيتا. و d هي المسافة بين خطين متجاورين، وتساوي واحداً على عدد الخطوط في وحدة الطول. مثال: محزوز فيه خمسة آلاف خط في السنتيمتر، فإن d تساوي اثنين ميكرومتر. وبطول موجي خمسمئة نانومتر في الرتبة الأولى يكون جيب ثيتا ربعاً، فتكون الزاوية تقريباً أربع عشرة درجة ونصف. وأكبر رتبة ممكنة هي أقل من d على لامدا." }
+  ],
+  Q: [
+    [1, "سطح أملس لامع يعكس الأشعة الساقطة المتوازية في اتجاه واحد متوازٍ. هذا النوع من الانعكاس يسمى:", "انعكاس منتظم (Specular)", "انعكاس منتشر (Diffuse)", "انكسار", "تشتت", "الأسطح الملساء تعكس الأشعة المتوازية متوازية فيحدث الانعكاس المنتظم وتتكوّن صورة."],
+    [1, "نستطيع رؤية صفحة كتاب من أي جهة في الغرفة لأن الورق يعكس الضوء انعكاساً:", "منتشراً بسبب خشونة سطحه", "منتظماً لأنه أملس", "كلياً داخلياً", "منتظماً لأنه أبيض", "السطح الخشن يشتت الأشعة المنعكسة في اتجاهات كثيرة."],
+    [1, "ينص قانون الانعكاس على أن:", "زاوية السقوط تساوي زاوية الانعكاس وتُقاسان من العمودي", "زاوية السقوط تساوي زاوية الانعكاس وتُقاسان من السطح", "زاوية السقوط أكبر من زاوية الانعكاس", "زاوية الانعكاس ضعف زاوية السقوط", "القانون: θᵢ = θᵣ وكلاهما من العمودي على السطح."],
+    [1, "أي مما يلي صحيح للشعاع الساقط والمنعكس والعمودي عند نقطة السقوط؟", "جميعها في مستوى واحد", "الساقط والمنعكس في مستويين مختلفين", "العمودي لا يقع في مستوى الشعاعين", "المنعكس دائماً عمودي على الساقط", "من نص قانون الانعكاس: الثلاثة في مستوى واحد."],
+    [1, "تعطي البحيرة الهادئة صورة واضحة للجبال بينما لا يعطيها الطريق الخشن لأن البحيرة تسبب انعكاساً:", "منتظماً", "منتشراً", "كلياً", "مشتتاً للألوان", "سطح الماء الساكن أملس فيعكس انعكاساً منتظماً."],
+    [2, "سقط شعاع بزاوية 35° على العمودي لمرآة مستوية. زاوية الانعكاس تساوي:", "35°", "55°", "70°", "145°", "θᵣ = θᵢ = 35°."],
+    [2, "يصنع شعاع ساقط زاوية 30° مع سطح مرآة مستوية. زاوية السقوط تساوي:", "60°", "30°", "120°", "15°", "θᵢ = 90° − 30° = 60° (تقاس من العمودي)."],
+    [2, "الزاوية بين الشعاع الساقط والمنعكس 80°. زاوية السقوط تساوي:", "40°", "80°", "10°", "160°", "الزاوية بين الشعاعين = 2θᵢ، إذن θᵢ = 40°."],
+    [2, "شعاع يسقط عمودياً على مرآة مستوية (θᵢ = 0°). الشعاع المنعكس:", "يرتد على نفسه", "ينعكس بزاوية 90°", "ينكسر داخل المرآة", "يتجه موازياً للمرآة", "زاوية الانعكاس 0° فيعود على نفس المسار."],
+    [2, "سقط شعاع بزاوية 50° على العمودي. الزاوية بين الشعاع المنعكس وسطح المرآة تساوي:", "40°", "50°", "130°", "80°", "θᵣ = 50° من العمودي، والزاوية مع السطح = 90° − 50° = 40°."],
+    [3, "يقف شخص على بعد 3.0 m أمام مرآة مستوية. تتكوّن صورته على بعد:", "3.0 m خلف المرآة", "3.0 m أمام المرآة", "1.5 m خلف المرآة", "6.0 m خلف المرآة", "dᵢ = dₒ والصورة خلف المرآة."],
+    [3, "الصورة المتكوّنة في مرآة مستوية:", "وهمية، معتدلة، مساوية للجسم", "حقيقية، مقلوبة، مساوية للجسم", "وهمية، مقلوبة، مصغّرة", "حقيقية، معتدلة، مكبّرة", "المرآة المستوية: صورة وهمية معتدلة مساوية ومعكوسة جانبياً."],
+    [3, "يقف شخص على بعد 1.2 m من مرآة مستوية ثم يتحرك نحوها 1.0 m. المسافة بينه وبين صورته تصبح:", "0.4 m", "0.2 m", "2.4 m", "1.0 m", "يصبح على 0.2 m والصورة على 0.2 m ← 0.4 m."],
+    [3, "طول شخص 1.80 m. أقل طول لمرآة مستوية رأسية ليرى صورته كاملة هو:", "0.90 m", "1.80 m", "0.60 m", "3.60 m", "يكفي نصف طول الجسم."],
+    [3, "جسم ارتفاعه 12 cm أمام مرآة مستوية. ارتفاع صورته:", "12 cm", "6 cm", "24 cm", "0 cm", "hᵢ = hₒ في المرآة المستوية."],
+    [3, "لا يمكن التقاط صورة المرآة المستوية على شاشة لأنها:", "وهمية: الأشعة لا تمر فعلاً عبرها", "مصغّرة", "مقلوبة", "تتكون أمام المرآة", "الصورة الوهمية تبدو قادمة من خلف المرآة فقط."],
+    [4, "نصف قطر تكور مرآة مقعرة 30 cm. بعدها البؤري:", "15 cm", "30 cm", "60 cm", "10 cm", "f = R/2 = 15 cm."],
+    [4, "المرآة المقعرة تتميز بأن:", "سطحها العاكس داخلي وتجمّع الأشعة", "سطحها العاكس خارجي وتفرّق الأشعة", "سطحها مستوٍ", "لا تعكس إلا الأشعة الموازية", "المقعرة مجمّعة (Converging)."],
+    [4, "المحور الرئيسي للمرآة الكروية هو الخط المار بـ:", "مركز التكور ورأس المرآة", "البؤرة فقط", "رأس المرآة وحافتها", "أي نقطتين على سطح المرآة", "تعريف المحور الرئيسي."],
+    [4, "الأشعة الموازية للمحور الرئيسي الساقطة على مرآة مقعرة تنعكس:", "مارة بالبؤرة", "موازية للمحور", "مارة بمركز التكور", "عمودياً على المحور", "هذا تعريف البؤرة F."],
+    [4, "مرآة محدبة نصف قطر تكورها 24 cm. بعدها البؤري (بإشارته):", "−12 cm", "+12 cm", "−24 cm", "+48 cm", "f = R/2 وسالب للمحدبة."],
+    [5, "جسم أبعد من مركز تكور مرآة مقعرة (dₒ > 2f). الصورة:", "حقيقية، مقلوبة، مصغّرة، بين F و C", "حقيقية، مقلوبة، مكبّرة، بعد C", "وهمية، معتدلة، مكبّرة", "وهمية، معتدلة، مصغّرة", "من جدول الصور للمقعرة."],
+    [5, "جسم بين F و C لمرآة مقعرة. الصورة:", "حقيقية، مقلوبة، مكبّرة، أبعد من C", "حقيقية، مقلوبة، مصغّرة", "وهمية، معتدلة، مكبّرة", "لا تتكوّن صورة", "f < dₒ < 2f يعطي صورة حقيقية مقلوبة مكبّرة أبعد من C."],
+    [5, "جسم موضوع عند مركز تكور مرآة مقعرة. صورته:", "حقيقية، مقلوبة، مساوية للجسم، عند C", "وهمية، معتدلة، مساوية", "حقيقية، مقلوبة، مكبّرة", "عند اللانهاية", "عند C يكون dᵢ = dₒ و m = −1."],
+    [5, "جسم داخل البعد البؤري لمرآة مقعرة (مثل مرآة الحلاقة). الصورة:", "وهمية، معتدلة، مكبّرة", "حقيقية، مقلوبة، مكبّرة", "حقيقية، معتدلة، مصغّرة", "وهمية، مقلوبة، مصغّرة", "dₒ < f ← صورة وهمية خلف المرآة."],
+    [5, "جسم عند بؤرة مرآة مقعرة. ماذا يحدث للأشعة المنعكسة؟", "تخرج متوازية ولا تتكوّن صورة", "تلتقي عند مركز التكور", "ترتد على نفسها", "تتفرق وتكوّن صورة وهمية صغيرة", "الأشعة المارة بالبؤرة تنعكس موازية للمحور."],
+    [5, "الشعاع المار بمركز التكور C قبل سقوطه على مرآة مقعرة:", "يرتد على نفسه", "ينعكس موازياً للمحور", "ينعكس مارّاً بالبؤرة", "ينكسر", "يسقط عمودياً على سطح المرآة."],
+    [6, "الصورة التي تكوّنها مرآة محدبة لجسم حقيقي هي دائماً:", "وهمية، معتدلة، مصغّرة", "حقيقية، مقلوبة، مصغّرة", "وهمية، معتدلة، مكبّرة", "حقيقية، مقلوبة، مكبّرة", "الأشعة المنعكسة تتفرق فلا تتكوّن صورة حقيقية."],
+    [6, "تُستخدم المرايا المحدبة في مراقبة المتاجر لأنها:", "تعطي مجال رؤية واسعاً", "تكبّر الصورة", "تكوّن صوراً حقيقية", "تجمّع الضوء", "الصورة مصغّرة فيتسع مجال الرؤية."],
+    [6, "أي مما يلي استخدام للمرآة المقعرة؟", "مرآة طبيب الأسنان", "مرآة السيارة الجانبية", "مرآة المراقبة في المتجر", "مرآة المنعطفات", "المقعرة تكوّن صورة مكبّرة معتدلة داخل البعد البؤري."],
+    [6, "الأشعة المنعكسة عن مرآة محدبة:", "تتفرق وتبدو قادمة من بؤرة خلف المرآة", "تتجمع أمام المرآة", "تبقى متوازية", "ترتد على نفسها", "المحدبة مفرّقة (Diverging)."],
+    [6, "كُتب على مرآة السيارة الجانبية «الأجسام في المرآة أقرب مما تبدو» لأن الصورة:", "مصغّرة فتبدو أبعد", "مكبّرة فتبدو أقرب", "مقلوبة", "حقيقية", "المرآة المحدبة تعطي صورة أصغر من الجسم."],
+    [7, "مرآة مقعرة بعدها البؤري 10 cm وُضع أمامها جسم على بعد 30 cm. بعد الصورة:", "15 cm", "7.5 cm", "−15 cm", "20 cm", "1/dᵢ = 1/10 − 1/30 = 2/30 ← dᵢ = 15 cm."],
+    [7, "مرآة محدبة بعدها البؤري −12 cm، جسم على بعد 24 cm. بعد الصورة:", "−8 cm", "+8 cm", "−24 cm", "+24 cm", "1/dᵢ = −1/12 − 1/24 = −3/24 ← dᵢ = −8 cm (وهمية)."],
+    [7, "مرآة مقعرة f = 15 cm وجسم على بعد 6 cm. بعد الصورة:", "−10 cm", "+10 cm", "+4.3 cm", "−4.3 cm", "1/dᵢ = 1/15 − 1/6 = −3/30 ← dᵢ = −10 cm (وهمية لأن الجسم داخل f)."],
+    [7, "مرآة مقعرة f = 20 cm، جسم على 40 cm. بعد الصورة:", "40 cm", "20 cm", "13.3 cm", "60 cm", "1/dᵢ = 1/20 − 1/40 = 1/40 ← dᵢ = 40 cm (الجسم عند C)."],
+    [7, "مرآة بعدها البؤري 12 cm كوّنت صورة حقيقية على بعد 24 cm. بعد الجسم:", "24 cm", "12 cm", "8 cm", "36 cm", "1/dₒ = 1/12 − 1/24 = 1/24 ← dₒ = 24 cm."],
+    [7, "في اصطلاح الإشارات لمعادلة المرآة، تكون dᵢ سالبة عندما تكون الصورة:", "وهمية خلف المرآة", "حقيقية أمام المرآة", "مقلوبة", "مصغّرة", "الصورة الوهمية موجودة خلف المرآة فتأخذ إشارة سالبة."],
+    [8, "أُوجد تكبير مرآة وُضع أمامها جسم على 30 cm وتكوّنت صورته على 15 cm (حقيقية).", "−0.5", "+0.5", "−2", "+2", "m = −dᵢ/dₒ = −15/30 = −0.5."],
+    [8, "إشارة التكبير السالبة تدل على أن الصورة:", "حقيقية ومقلوبة", "وهمية ومعتدلة", "وهمية ومقلوبة", "حقيقية ومعتدلة", "m سالبة ← حقيقية مقلوبة."],
+    [8, "جسم ارتفاعه 4.0 cm وتكبير مرآة −0.5. ارتفاع الصورة:", "−2.0 cm", "+2.0 cm", "−8.0 cm", "+8.0 cm", "hᵢ = m hₒ = −0.5 × 4.0 = −2.0 cm (مقلوبة)."],
+    [8, "مرآة مقعرة f = 15 cm وجسم على 6 cm. تكبيرها:", "+1.67", "−1.67", "+0.6", "−0.6", "dᵢ = −10 cm ← m = −(−10)/6 = +1.67 (وهمية معتدلة مكبّرة)."],
+    [8, "مرآة محدبة: dₒ = 24 cm و dᵢ = −8 cm. التكبير:", "+0.33", "−0.33", "+3", "−3", "m = −(−8)/24 = +0.33 (مصغّرة)."],
+    [8, "الصورة المصغّرة هي التي يكون فيها:", "|m| < 1", "|m| > 1", "m = 0", "|m| = 1", "القيمة المطلقة للتكبير أقل من 1."],
+    [9, "الضوء في الزجاج سرعته 2.0×10⁸ m/s. معامل انكسار الزجاج:", "1.5", "0.67", "6.0", "2.0", "n = c/v = 3.0×10⁸ ÷ 2.0×10⁸ = 1.5."],
+    [9, "معامل انكسار الماء 1.33. سرعة الضوء فيه تقريباً:", "2.26×10⁸ m/s", "3.99×10⁸ m/s", "1.33×10⁸ m/s", "3.0×10⁸ m/s", "v = c/n = 3.0×10⁸ ÷ 1.33 ≈ 2.26×10⁸."],
+    [9, "عند انتقال الضوء من الهواء إلى الزجاج، أي مقدار يبقى ثابتاً؟", "التردد", "السرعة", "الطول الموجي", "اتجاه الانتشار", "التردد يحدده المصدر ولا يتغير."],
+    [9, "ينكسر الشعاع الداخل من الهواء إلى الماء:", "نحو العمودي", "بعيداً عن العمودي", "دون انحراف دائماً", "ينعكس كلياً", "الوسط الأكبر n يقلل السرعة ويقرّب الشعاع من العمودي."],
+    [9, "معامل انكسار الألماس 2.42. سرعة الضوء فيه تقريباً:", "1.24×10⁸ m/s", "7.3×10⁸ m/s", "2.42×10⁸ m/s", "3.0×10⁸ m/s", "v = 3.0×10⁸ ÷ 2.42 ≈ 1.24×10⁸."],
+    [10, "ينتقل شعاع من الهواء إلى زجاج (n = 1.5) بزاوية سقوط 30°. زاوية الانكسار:", "19.5°", "30°", "45°", "48.6°", "sin θ₂ = 0.5/1.5 = 0.333 ← 19.5°."],
+    [10, "شعاع يسقط من الهواء على الماء (n = 1.33) بزاوية 45°. زاوية الانكسار:", "32.1°", "45°", "60.3°", "28.0°", "sin θ₂ = 0.7071/1.33 = 0.5317 ← 32.1°."],
+    [10, "ينص قانون سنيل على:", "n₁ sin θ₁ = n₂ sin θ₂", "n₁ cos θ₁ = n₂ cos θ₂", "n₁ θ₂ = n₂ θ₁", "n₁ / sin θ₁ = n₂ sin θ₂", "هذا هو نص قانون سنيل."],
+    [10, "شعاع يسقط عمودياً على السطح الفاصل بين الهواء والزجاج. زاوية الانكسار:", "0°", "30°", "41.8°", "90°", "sin 0° = 0 فلا انحراف."],
+    [10, "شعاع من زجاج (1.5) إلى هواء بزاوية سقوط 20°. زاوية الانكسار:", "30.9°، بعيداً عن العمودي", "13.1°، نحو العمودي", "20°", "41.8°", "sin θ₂ = 1.5 × 0.342 = 0.513 ← 30.9°."],
+    [11, "الزاوية الحرجة للزجاج (n = 1.5) عند الانتقال إلى الهواء:", "41.8°", "48.8°", "24.4°", "62.5°", "sin θc = 1/1.5 = 0.667 ← 41.8°."],
+    [11, "الزاوية الحرجة للماء (n = 1.33) في الهواء:", "48.8°", "41.8°", "36.9°", "90°", "sin θc = 1/1.33 = 0.752 ← 48.8°."],
+    [11, "من شروط حدوث الانعكاس الكلي الداخلي:", "الانتقال من وسط أكبر n إلى أقل n وزاوية السقوط أكبر من الحرجة", "الانتقال من وسط أقل n إلى أكبر n", "أي زاوية سقوط", "سقوط عمودي على السطح", "الشرطان معاً ضروريان."],
+    [11, "لماذا يلمع الألماس (n = 2.42)؟", "زاويته الحرجة صغيرة (24.4°) فيحدث انعكاس كلي متكرر", "لأنه يمتص الضوء", "لأن n له أقل من الهواء", "لأنه لا ينكسر فيه الضوء", "sin θc = 1/2.42 ← 24.4°."],
+    [11, "الزاوية الحرجة عند الانتقال من الزجاج (1.5) إلى الماء (1.33):", "62.5°", "41.8°", "48.8°", "27.5°", "sin θc = 1.33/1.5 = 0.887 ← 62.5°."],
+    [11, "من تطبيقات الانعكاس الكلي الداخلي:", "الألياف الضوئية", "المرآة المستوية", "العدسة المكبّرة", "قوس الظل", "ينتقل الضوء داخل الليف بانعكاسات كلية متتالية."],
+    [12, "التشتت هو:", "انفصال الضوء الأبيض إلى ألوانه عند الانكسار", "ارتداد الضوء عن السطح", "اتحاد الألوان في لون أبيض", "انحناء الضوء حول الحواف", "تعريف التشتت."],
+    [12, "في المنشور الزجاجي أي لون ينحرف أكثر؟", "البنفسجي", "الأحمر", "الأخضر", "الأصفر", "الطول الموجي الأقصر له n أكبر فينحرف أكثر."],
+    [12, "السبب الأساسي لتشتت الضوء في الزجاج:", "n يعتمد على الطول الموجي (اللون)", "تغير التردد", "الانعكاس الكلي", "الحيود", "كل لون له سرعة مختلفة في الزجاج."],
+    [12, "اللون الأقل انحرافاً في المنشور:", "الأحمر", "البنفسجي", "الأزرق", "الأخضر", "الأحمر له أطول موجة وأقل n."],
+    [12, "ترتيب الألوان من الأقل انحرافاً إلى الأكثر:", "أحمر، برتقالي، أصفر، أخضر، أزرق، بنفسجي", "بنفسجي، أزرق، أخضر، أصفر، برتقالي، أحمر", "أخضر، أحمر، أزرق، أصفر", "كلها بنفس الانحراف", "الانحراف يزيد بنقصان الطول الموجي."],
+    [12, "في الفراغ تنتقل ألوان الضوء المرئي جميعها:", "بنفس السرعة", "الأحمر أسرع", "البنفسجي أسرع", "الأخضر أسرع", "في الفراغ السرعة c لكل الألوان، ويظهر التشتت في الأوساط المادية."],
+    [13, "قوس المطر ينتج عن:", "انكسار وتشتت وانعكاس كلي داخلي في قطرات الماء", "حيود الضوء حول القطرات", "تداخل بنّاء في السحب", "انعكاس منتظم على الأرض", "الضوء يدخل القطرة فينكسر ويتشتت ثم ينعكس داخلياً ثم ينكسر."],
+    [13, "السراب الذي يُرى على الطرق الساخنة سببه:", "انكسار ضوء السماء في طبقات هواء مختلفة الكثافة الضوئية", "انعكاس منتظم على الإسفلت", "حيود الضوء", "تشتت الضوء في الماء", "الهواء الساخن أقل n فينحني الضوء نحو العين."],
+    [13, "اللون الذي يظهر في الخارج (الحافة العلوية) في قوس المطر الأولي:", "الأحمر", "البنفسجي", "الأخضر", "الأصفر", "الأحمر في الخارج والبنفسجي في الداخل."],
+    [13, "ما تفسير رؤية الشمس بعد غروبها الفعلي بقليل؟", "انكسار الضوء في الغلاف الجوي", "حيود الضوء", "التداخل", "انعكاس منتظم", "الغلاف الجوي يثني الأشعة فنرى الشمس أعلى من موضعها."],
+    [13, "الظاهرة التي لا تحدث فيها عملية انكسار:", "انعكاس الوجه في مرآة مستوية", "قوس المطر", "السراب", "التشتت في المنشور", "المرآة المستوية انعكاس فقط."],
+    [13, "الظاهرة التي تعتمد على الانعكاس الكلي الداخلي:", "لمعان الألماس وقوس المطر", "المرآة المستوية فقط", "ظل الجسم", "الحيود من شق", "الانعكاس الكلي يحدث في الألماس وفي قطرات المطر."],
+    [14, "العدسة المحدبة (Convex) عدسة:", "مجمّعة بعدها البؤري موجب", "مفرّقة بعدها البؤري موجب", "مجمّعة بعدها البؤري سالب", "مفرّقة بعدها البؤري سالب", "المحدبة تجمّع الأشعة وf موجب."],
+    [14, "الصورة المتكوّنة بالعدسة المقعرة لجسم حقيقي هي دائماً:", "وهمية، معتدلة، مصغّرة", "حقيقية، مقلوبة، مصغّرة", "وهمية، معتدلة، مكبّرة", "حقيقية، مقلوبة، مكبّرة", "العدسة المقعرة تفرق الأشعة."],
+    [14, "جسم أبعد من 2f أمام عدسة محدبة. الصورة:", "حقيقية، مقلوبة، مصغّرة", "وهمية، معتدلة، مكبّرة", "حقيقية، معتدلة، مكبّرة", "وهمية، مقلوبة", "مثل الكاميرا."],
+    [14, "تعمل العدسة المكبّرة (جسم داخل البعد البؤري) فتعطي صورة:", "وهمية، معتدلة، مكبّرة", "حقيقية، مقلوبة، مكبّرة", "حقيقية، مقلوبة، مصغّرة", "لا تتكوّن صورة", "dₒ < f ← صورة وهمية مكبّرة."],
+    [14, "الشعاع المار بمركز العدسة الرقيقة:", "يمر دون انحراف", "ينكسر موازياً للمحور", "ينعكس", "يمر بالبؤرة", "العدسة الرقيقة عند مركزها كشريحة متوازية."],
+    [14, "أي عدسة تُستخدم في جهاز عرض الشرائح (صورة حقيقية مكبّرة)؟", "محدبة مع f < dₒ < 2f", "مقعرة", "محدبة مع dₒ < f", "محدبة مع dₒ > 2f", "المحدبة وf < dₒ < 2f تعطي صورة حقيقية مكبّرة."],
+    [15, "عدسة محدبة f = 10 cm، جسم على 30 cm. موضع الصورة:", "15 cm", "7.5 cm", "−15 cm", "40 cm", "1/dᵢ = 1/10 − 1/30 = 2/30 ← 15 cm."],
+    [15, "عدسة محدبة f = 10 cm، جسم على 5 cm. بعد الصورة وتكبيرها:", "−10 cm و +2", "+10 cm و −2", "−3.3 cm و +0.67", "+3.3 cm و −0.67", "1/dᵢ = 1/10 − 1/5 = −1/10، m = +10/5 = +2."],
+    [15, "عدسة مقعرة f = −15 cm، جسم على 30 cm. بعد الصورة:", "−10 cm", "+10 cm", "−30 cm", "+30 cm", "1/dᵢ = −1/15 − 1/30 = −3/30 ← −10 cm."],
+    [15, "عدسة محدبة f = 20 cm، جسم على 30 cm. تكبير الصورة:", "−2", "+2", "−0.5", "+0.5", "dᵢ = 60 cm ← m = −60/30 = −2."],
+    [15, "عدسة محدبة: dₒ = 30 cm و dᵢ = 15 cm. تكبيرها:", "−0.5", "+0.5", "−2", "+2", "m = −15/30 = −0.5."],
+    [15, "جسم ارتفاعه 1.0 cm وكوّنت عدسة تكبيرها −2 صورة. ارتفاع الصورة:", "−2.0 cm (مقلوبة)", "+2.0 cm", "−0.5 cm", "+0.5 cm", "hᵢ = m hₒ = −2 × 1.0 = −2.0 cm."],
+    [16, "الزيغ الكروي في العدسة ينتج عن:", "عدم تجمع الأشعة الطرفية والقريبة من المحور في نقطة واحدة", "اختلاف ألوان الضوء", "حيود الضوء حول الحواف", "الانعكاس الكلي داخل العدسة", "سطح العدسة الكروي لا يجمّع كل الأشعة في بؤرة واحدة."],
+    [16, "يعالج الزيغ الكروي بـ:", "حاجز يحجب الأشعة الطرفية أو عدسة غير كروية", "عدسة مزدوجة من زجاجين", "استعمال ضوء أحادي اللون فقط", "زيادة التردد", "الحاجز أو السطح غير الكروي يقللان الأشعة المنحرفة."],
+    [16, "الزيغ اللوني سببه:", "اختلاف معامل الانكسار باختلاف الطول الموجي", "شكل سطح العدسة الكروي", "انعكاس الضوء على السطح", "تداخل الأشعة", "كل لون ينكسر بمقدار مختلف فيتجمع في بؤرة مختلفة."],
+    [16, "يعالج الزيغ اللوني بـ:", "عدسة محدبة ملصوقة بمقعرة من زجاجين مختلفين", "عدسة مقعرة وحدها", "حاجز عند الحافة", "مرآة مقعرة فقط", "العدسة المزدوجة لونياً (Achromatic doublet)."],
+    [16, "أي لون يتجمع في بؤرة أقرب إلى عدسة محدبة بسيطة؟", "البنفسجي", "الأحمر", "الأخضر", "كلها في نفس النقطة", "البنفسجي ينكسر أكثر فتكون بؤرته أقرب."],
+    [17, "الشخص المصاب بقصر النظر (Myopia) تتكون صورة الأجسام البعيدة لديه:", "أمام الشبكية", "خلف الشبكية", "على الشبكية", "على القرنية", "العين طويلة أو العدسة شديدة التحدب."],
+    [17, "يُصحح قصر النظر باستخدام عدسة:", "مقعرة", "محدبة", "مستوية", "مزدوجة لونياً فقط", "المقعرة تفرق الأشعة فتتحرك الصورة إلى الخلف على الشبكية."],
+    [17, "شخص لا يستطيع قراءة كتاب إلا إذا أبعده عن عينيه. يعاني من:", "طول النظر ويصحح بعدسة محدبة", "قصر النظر ويصحح بعدسة محدبة", "قصر النظر ويصحح بعدسة مقعرة", "طول النظر ويصحح بعدسة مقعرة", "طول النظر: الصورة خلف الشبكية وتصحح بمحدبة."],
+    [17, "في طول النظر (Hyperopia) تتكون الصورة:", "خلف الشبكية", "أمام الشبكية", "على الشبكية", "في القرنية", "كرة العين قصيرة."],
+    [17, "العدسة المقعرة تصحح قصر النظر لأنها:", "تفرق الأشعة قبل دخولها العين", "تجمّع الأشعة أكثر", "تعكس الضوء", "تُنقص التردد", "إبعاد الصورة إلى الخلف نحو الشبكية."],
+    [18, "عند التداخل البنّاء لموجتين:", "تتحد قمة مع قمة فتزداد السعة ويظهر هدب مضيء", "تتحد قمة مع قاع فتنعدم السعة", "يتغير التردد", "تنكسر الموجتان", "التداخل البنّاء يعطي الهدب المضيء."],
+    [18, "فرق المسار الذي يعطي هدباً مظلماً (تداخلاً هدّاماً) هو:", "(m + ½)λ", "mλ", "2mλ", "λ²", "فرق مسار نصف عدد فردي من الأطوال الموجية."],
+    [18, "فرق المسار بين موجتين 1000 nm وطولهما الموجي 500 nm. نتيجة التداخل:", "بنّاء (هدب مضيء)", "هدّام (هدب مظلم)", "لا تداخل", "تلاشٍ جزئي", "1000/500 = 2 عدد صحيح من الأطوال الموجية."],
+    [18, "في تجربة الشق المزدوج بضوء أحادي اللون يظهر على الشاشة:", "أهداب مضيئة ومظلمة متبادلة", "هدب مضيء واحد فقط", "طيف ألوان فقط", "بقعة مظلمة واحدة", "تداخل الموجتين من الشقين."],
+    [18, "الهدب المركزي (m = 0) في تجربة الشق المزدوج:", "مضيء لأن المسارين متساويان", "مظلم لأن المسارين متساويان", "مظلم لأن فرق المسار λ/2", "غير موجود", "فرق المسار صفر ← تداخل بنّاء."],
+    [18, "يشترط لحدوث نمط تداخل ثابت من مصدرين أن يكونا:", "مترابطين (Coherent)", "مختلفي التردد", "مختلفي السعة بشدة", "متباعدين جداً", "المصدران المترابطان لهما فرق طور ثابت."],
+    [19, "λ = 600 nm، d = 0.20 mm، L = 1.5 m. بعد الهدب المضيء الأول عن المركز:", "4.5 mm", "0.45 mm", "45 mm", "9.0 mm", "x₁ = λL/d = (6.0×10⁻⁷ × 1.5)/2.0×10⁻⁴ = 4.5×10⁻³ m."],
+    [19, "بنفس المعطيات (λ = 600 nm، d = 0.20 mm، L = 1.5 m) بعد الهدب المضيء الثالث (m = 3):", "13.5 mm", "4.5 mm", "9.0 mm", "1.5 mm", "x₃ = 3 × 4.5 mm = 13.5 mm."],
+    [19, "d = 0.10 mm، L = 2.0 m، والهدب الأول على 12 mm. الطول الموجي:", "600 nm", "300 nm", "1200 nm", "60 nm", "λ = xd/L = 0.012 × 1.0×10⁻⁴ ÷ 2.0 = 6.0×10⁻⁷ m."],
+    [19, "λ = 500 nm، L = 1.0 m، الهدب الثاني (m = 2) على 5.0 mm. المسافة بين الشقين:", "0.20 mm", "0.50 mm", "0.10 mm", "2.0 mm", "d = mλL/x = 2 × 5.0×10⁻⁷ × 1.0 ÷ 5.0×10⁻³ = 2.0×10⁻⁴ m."],
+    [19, "ماذا يحدث للمسافة بين الأهداب إذا زدنا المسافة d بين الشقين فقط؟", "تقل", "تزداد", "لا تتغير", "تنعدم", "Δx = λL/d فهي تتناسب عكسياً مع d."],
+    [19, "ماذا يحدث للمسافة بين الأهداب عند استبدال الضوء الأحمر بالأزرق؟", "تقل لأن الطول الموجي أقصر", "تزداد", "لا تتغير", "تنعدم", "Δx تتناسب طردياً مع λ."],
+    [20, "الهدب المركزي عند استعمال ضوء أبيض في تجربة الشق المزدوج:", "أبيض", "أحمر", "بنفسجي", "مظلم", "كل الألوان تتداخل بنّاء عند m = 0."],
+    [20, "في الطيف الأول على جانب الهدب المركزي أي لون هو الأقرب للمركز؟", "البنفسجي", "الأحمر", "الأخضر", "الأصفر", "x تتناسب مع λ والبنفسجي أقصر."],
+    [20, "تظهر ألوان في نمط الشق المزدوج بالضوء الأبيض لأن:", "موضع الهدب المضيء يختلف باختلاف الطول الموجي", "الشقين ملونان", "الضوء الأبيض لا يتداخل", "اللون ينتج عن الانعكاس", "x = mλL/d."],
+    [20, "d = 0.20 mm و L = 2.0 m. موضع الهدب الأول للضوء الأحمر (700 nm):", "7.0 mm", "4.0 mm", "3.5 mm", "14 mm", "x₁ = 7.0×10⁻⁷ × 2.0 ÷ 2.0×10⁻⁴ = 7.0×10⁻³ m."],
+    [20, "بنفس المعطيات، عرض طيف الرتبة الأولى بين البنفسجي (400 nm) والأحمر (700 nm):", "3.0 mm", "11 mm", "7.0 mm", "4.0 mm", "7.0 − 4.0 = 3.0 mm."],
+    [21, "تداخل الغشاء الرقيق ينتج عن تداخل الموجة المنعكسة عن:", "السطحين العلوي والسفلي للغشاء", "السطح العلوي فقط", "الحافتين", "الشقين", "تعريف تداخل الغشاء الرقيق."],
+    [21, "عند الانعكاس عن سطح وسط معامل انكساره أكبر:", "تنقلب الموجة (فرق طور نصف طول موجي)", "لا تتغير الموجة", "تختفي الموجة", "يتغير التردد", "الانعكاس من وسط أكبر n يسبب انقلاب الطور."],
+    [21, "عند الانعكاس عن سطح وسط معامل انكساره أقل:", "لا تنقلب الموجة", "تنقلب الموجة", "تُمتص", "ينكسر الضوء فقط", "لا يحدث انقلاب للطور."],
+    [21, "غشاء صابون في الهواء أرق بكثير من الطول الموجي يبدو مظلماً لأن:", "انعكاساً واحداً فقط ينقلب فيحدث تداخل هدّام", "الانعكاسان يتقويان", "الغشاء يمتص الضوء", "الضوء لا ينعكس", "يتعاكس طور الموجتين."],
+    [21, "الطلاء المانع للانعكاس (n = 1.38) على زجاج (1.5) سمكه الأدنى لـ λ = 550 nm (في الهواء) يساوي تقريباً:", "100 nm", "200 nm", "50 nm", "400 nm", "t = λ/(4n) = 550/(4 × 1.38) ≈ 99.6 nm."],
+    [21, "تظهر ألوان بقعة الزيت على الماء بسبب:", "اختلاف سمك الغشاء الذي يغيّر شرط التداخل لكل لون", "تشتت الضوء في المنشور", "الحيود", "انعكاس منتظم", "كل لون يتداخل بنّاء عند سمك مختلف."],
+    [22, "عند مرور ضوء أحادي اللون بشق ضيق يتكوّن على الشاشة:", "هدب مركزي مضيء عريض وأهداب جانبية أضيق وأضعف", "هدب واحد فقط", "أهداب متساوية الشدة", "ظل حاد للشق", "نمط الحيود من شق مفرد."],
+    [22, "λ = 600 nm، L = 2.0 m، w = 0.10 mm. عرض الهدب المركزي:", "2.4 cm", "1.2 cm", "0.24 cm", "24 cm", "2x₁ = 2λL/w = 2 × 6.0×10⁻⁷ × 2.0 ÷ 1.0×10⁻⁴ = 0.024 m."],
+    [22, "عند تضييق عرض الشق فإن الهدب المركزي:", "يزداد عرضاً", "يقل عرضاً", "لا يتغير", "يختفي", "2x₁ تتناسب عكسياً مع w."],
+    [22, "الهدب المركزي للضوء الأحمر مقارنة بالأخضر (بنفس الشق):", "أعرض", "أضيق", "مساوٍ", "لا يتكوّن", "2x₁ تتناسب مع λ."],
+    [22, "λ = 500 nm، L = 1.5 m، عرض الهدب المركزي 3.0 cm. عرض الشق:", "0.050 mm", "0.50 mm", "0.0050 mm", "5.0 mm", "w = 2λL/(2x₁) = 2 × 5.0×10⁻⁷ × 1.5 ÷ 0.030 = 5.0×10⁻⁵ m."],
+    [22, "عند استعمال ضوء أبيض مع شق مفرد يظهر:", "هدب مركزي أبيض وحوافه ملونة", "هدب مركزي أحمر", "هدب مظلم", "ألوان متساوية العرض", "كل لون له عرض مركزي مختلف ويتراكب الأبيض في الوسط."],
+    [23, "محزوز الحيود هو:", "سطح فيه عدد كبير من الخطوط أو الشقوق المتوازية المتقاربة", "شق مفرد عريض", "عدسة محدبة", "منشور زجاجي", "تعريف المحزوز."],
+    [23, "مثال على محزوز انعكاس:", "القرص المدمج CD", "المرآة المستوية", "المنشور", "العدسة المكبّرة", "أخاديد القرص المدمج تكوّن محزوز انعكاس."],
+    [23, "يستخدم مطياف المحزوز في:", "تحليل الأحجار الكريمة وتعيين تركيب النجوم", "قياس السرعة", "تكبير الصور", "تصحيح قصر النظر", "يفرّق الضوء إلى أطواله الموجية."],
+    [23, "مقارنة بالشق المزدوج، أهداب المحزوز:", "أحدّ وأكثر تباعداً", "أعرض وأقل حدّة", "غير موجودة", "لا تتكوّن إلا بالضوء الأبيض", "كثرة الشقوق تجعل الأهداب المضيئة حادة جداً."],
+    [23, "ترتيب مكونات مطياف المحزوز:", "شق ← عدسة ← محزوز ← تلسكوب", "محزوز ← شق ← عدسة", "عدسة ← تلسكوب ← شق", "شق ← تلسكوب ← محزوز", "الضوء يمر بالشق ثم يصبح متوازياً ثم يتفرق بالمحزوز ثم يُرصد."],
+    [23, "يظهر قرص CD ألواناً عند تحريكه لأنه:", "يحيد الضوء ويفرق الأطوال الموجية", "يمتص بعض الألوان", "يكسر الضوء كمنشور", "يسخن الضوء", "كمحزوز انعكاس يعطي زاوية مختلفة لكل طول موجي."],
+    [24, "محزوز فيه 5000 خط/cm. المسافة d بين الخطوط:", "2.0×10⁻⁶ m", "5.0×10⁻⁶ m", "2.0×10⁻⁴ m", "5.0×10⁻³ m", "d = 1/5000 cm = 2.0×10⁻⁴ cm = 2.0×10⁻⁶ m."],
+    [24, "محزوز d = 2.0×10⁻⁶ m، λ = 500 nm، الرتبة الأولى. زاوية الحيود:", "14.5°", "30°", "7.2°", "25°", "sin θ = 5.0×10⁻⁷/2.0×10⁻⁶ = 0.25 ← 14.5°."],
+    [24, "بنفس المحزوز والطول الموجي، زاوية الرتبة الثانية:", "30°", "14.5°", "60°", "29°", "sin θ = 2 × 0.25 = 0.50 ← 30°."],
+    [24, "محزوز 6000 خط/cm: الرتبة الأولى عند 20.0°. الطول الموجي:", "570 nm", "1700 nm", "360 nm", "285 nm", "λ = d sin θ = 1.667×10⁻⁶ × 0.342 = 5.70×10⁻⁷ m."],
+    [24, "محزوز 300 خط/mm و λ = 600 nm. زاوية الرتبة الأولى:", "10.4°", "20.0°", "5.2°", "18°", "d = 3.33×10⁻⁶ m ← sin θ = 0.18 ← 10.4°."],
+    [24, "محزوز d = 2.0×10⁻⁶ m و λ = 500 nm. أكبر رتبة مرئية:", "3", "4", "2", "5", "d/λ = 4، والرتبة الرابعة عند 90° فلا تُرى، فالأكبر 3."]
+  ],
+  summary: `الفيزياء - الصف العاشر المتقدم - الفصل الأول (الهيكل الرسمي: 16 سؤالاً موضوعياً + 4 مقالية، 150 دقيقة، الآلة الحاسبة مسموحة؛ Inspire Physics الوحدة 4).
+
+1) (Q1 ص 4-5) الانعكاس المنتظم: سطح أملس ← أشعة متوازية وصورة. الانعكاس المنتشر: سطح خشن ← نرى الجسم من كل الجهات. قانون الانعكاس θᵢ = θᵣ من العمودي.
+2) (Q1, Q17 ص 6-8) الزاوية مع السطح: θᵢ = 90° − الزاوية. الزاوية بين الساقط والمنعكس = 2θᵢ.
+3) (Q2, Q5 ص 5-8) المرآة المستوية: dᵢ = dₒ، hᵢ = hₒ، صورة وهمية معتدلة معكوسة جانبياً. أقل طول للمرآة = نصف الطول.
+4) (Q17 ص 9-10) f = R/2. المقعرة مجمّعة (f+)، المحدبة مفرّقة (f−). المحور الرئيسي يمر بـ C و V.
+5) (Q3 ص 11-13) المقعرة: dₒ > 2f ← حقيقية مقلوبة مصغّرة؛ بين f و 2f ← حقيقية مقلوبة مكبّرة؛ داخل f ← وهمية معتدلة مكبّرة؛ عند f لا صورة.
+6) (Q17 ص 9-14) المحدبة: دائماً وهمية معتدلة مصغّرة. استخدامات: السيارات، المراقبة (محدبة)؛ المصابيح والحلاقة وطب الأسنان والتلسكوب (مقعرة).
+7) (Q4 ص 15-18) 1/f = 1/dₒ + 1/dᵢ. f+ للمقعرة، f− للمحدبة، dᵢ− وهمية. مقعرة 10 cm و30 cm ← 15 cm.
+8) (Q5 ص 18) m = −dᵢ/dₒ = hᵢ/hₒ. m− حقيقية مقلوبة، m+ وهمية معتدلة.
+9) (Q6, Q18 ص 19-23) n = c/v، n ≥ 1، التردد ثابت. زجاج 1.5 ← v = 2.0×10⁸ m/s. ماء 1.33 ← 2.26×10⁸.
+10) (Q18 ص 21) سنيل n₁ sin θ₁ = n₂ sin θ₂. هواء-زجاج 30° ← 19.5°. هواء-ماء 45° ← 32.1°.
+11) (Q7 ص 23-25) sin θc = n₂/n₁. زجاج 41.8°، ماء 48.8°، ألماس 24.4°، زجاج-ماء 62.5°. الانعكاس الكلي: من n أكبر إلى أقل وθ > θc. ألياف ضوئية.
+12) (Q8) التشتت: n يعتمد على λ. البنفسجي ينحرف أكثر والأحمر أقل.
+13) (Q9) قوس المطر: انكسار + تشتت + انعكاس كلي. السراب: انكسار في هواء ساخن. الألماس: انعكاس كلي.
+14) (Q10 ص 26-28) محدبة مجمّعة، مقعرة مفرّقة وتعطي دائماً وهمية معتدلة مصغّرة.
+15) (Q18 جزء 2 ص 29-30) 1/f = 1/dₒ + 1/dᵢ، m = −dᵢ/dₒ. محدبة f=10، dₒ=30 ← 15 cm؛ dₒ=5 ← −10 cm، m=+2؛ مقعرة f=−15، dₒ=30 ← −10 cm.
+16) (Q11 ص 31) الزيغ الكروي: حاجز أو سطح غير كروي. الزيغ اللوني: عدسة مزدوجة (محدبة + مقعرة).
+17) (Q12 ص 32-33) قصر النظر: صورة أمام الشبكية ← عدسة مقعرة. طول النظر: صورة خلف الشبكية ← عدسة محدبة.
+18) (Q13 ص 42-44) بنّاء: فرق المسار mλ، مضيء. هدّام: (m+½)λ، مظلم. Young: ضوء أحادي ومترابط.
+19) (Q19 ص 42-45) x_m = mλL/d. Δx = λL/d. 600 nm، 0.20 mm، 1.5 m ← 4.5 mm.
+20) (Q19) ضوء أبيض: مركز أبيض وأطياف، البنفسجي أقرب والأحمر أبعد (4.0 mm و7.0 mm).
+21) (Q14 ص 46-47) الغشاء الرقيق: انعكاس عن n أكبر ينقلب الطور. مانع الانعكاس t = λ/(4n) ≈ 100 nm.
+22) (Q20 ص 50-53) شق مفرد: 2x₁ = 2λL/w. الشق الأضيق ← هدب أعرض. 600 nm، 2 m، 0.10 mm ← 2.4 cm.
+23) (Q15, Q16 ص 53-54) محزوز: خطوط كثيرة، أهداب حادة. CD محزوز انعكاس. مطياف: شق، عدسة، محزوز، تلسكوب؛ يحلل الأحجار الكريمة والنجوم.
+24) (Q20 ص 55-56) mλ = d sin θ، d = 1/(خطوط لكل وحدة). 5000 خط/cm و500 nm ← 14.5° (m=1) و30° (m=2). أقصى رتبة m < d/λ.
+نصائح: حوّل الوحدات إلى متر، الزوايا من العمودي، اضبط الآلة على DEG، لا تنسَ قلب الناتج في 1/dᵢ.`
+};
+
+}catch(e){console.error('data10a physics.js',e)}
 var DATA10A_EN={};
 
 (function(){
   if(typeof DATA==='undefined')return;
   const order=['math','arabic','english','islamic','social','science','business','ai','french','pe','art'];
-  if(DATA.math){if(DATA.math.extraT)SUBJ.math.T=SUBJ.math.T.concat(DATA.math.extraT);if(DATA.math.extraQ)SUBJ.math.Q=SUBJ.math.Q.concat(DATA.math.extraQ);SUBJ.math.summary=DATA.math.summary||''}
+  if(DATA.math){if(DATA.math.extraT)SUBJ.math.T=SUBJ.math.T.concat(DATA.math.extraT);if(DATA.math.deep)SUBJ.math.T.forEach(t=>{if(DATA.math.deep[t.id])t.deep=DATA.math.deep[t.id]});if(DATA.math.extraQ)SUBJ.math.Q=SUBJ.math.Q.concat(DATA.math.extraQ);SUBJ.math.summary=DATA.math.summary||''}
   Object.keys(DATA).forEach(k=>{if(k!=='math'&&DATA[k]&&DATA[k].T&&DATA[k].Q)SUBJ[k]=DATA[k]});
   const o={};order.forEach(k=>{if(SUBJ[k])o[k]=SUBJ[k]});Object.keys(SUBJ).forEach(k=>{if(!o[k])o[k]=SUBJ[k]});
   Object.keys(SUBJ).forEach(k=>delete SUBJ[k]);Object.assign(SUBJ,o);
@@ -12438,7 +13264,7 @@ const GR={
 /* Grade 10 Advanced: own math/physics/chemistry/english (DATA10A); Arabic, Islamic, Social, AI, PE shared with Grade 10 General */
 const G10A_SHARED=['arabic','islamic','social','ai','pe'];
 (function(){
-  if(typeof DATA10A==='undefined'||!Object.keys(DATA10A).length)return;
+  if(typeof DATA10A==='undefined'||!['math','physics','chemistry','english'].every(k=>DATA10A[k]))return; /* open g10a only when its own subjects are all ready */
   const order=['math','physics','chemistry','arabic','english','islamic','social','ai','pe'];
   const S={};Object.keys(DATA10A).forEach(k=>{const s=DATA10A[k];if(s&&s.T&&s.Q){s.exam=s.exam||{n:Math.min(30,s.Q.length),mins:120};s.exam.n=Math.min(s.exam.n,s.Q.length);S[k]=s}});
   G10A_SHARED.forEach(k=>{if(GR.g10g.S[k]&&!S[k])S[k]=GR.g10g.S[k]});
@@ -12461,7 +13287,7 @@ let CUR='g10g';
 let TERM=null;
 const TERM_NAME=n=>L(['','الفصل الأول','الفصل الثاني','الفصل الثالث'][n],'Term '+n);
 function setTerm(n){TERM=n;store.set('term',n);setGrade(CUR);render()}
-function termBar(){return `<div class="tabs" role="tablist" aria-label="${L('الفصل الدراسي','Term')}" style="margin:14px 0 6px">${[1,2,3].map(n=>`<button class="${TERM===n?'on':''}" onclick="setTerm(${n})">📘 ${TERM_NAME(n)}</button>`).join('')}</div>`}
+function termBar(){return `<div class="tabs termbar" role="tablist" aria-label="${L('الفصل الدراسي','Term')}" style="margin:14px 0 6px">${[1,2,3].map(n=>`<button class="${TERM===n?'on':''}" onclick="setTerm(${n})">📘 ${TERM_NAME(n)}</button>`).join('')}</div>`}
 const NOTERM=()=>`<div class="card" style="text-align:center;background:var(--lav-soft)"><b style="font-size:18px">${L('بعدنا نشتغل على دروس '+TERM_NAME(TERM)+' 🛠️','We’re still working on '+TERM_NAME(TERM)+' lessons 🛠️')}</b><p class="mut">${L('بننزلها أول ما تنشرها المدرسة. حاليًا ذاكر دروس الفصل الأول 📚','We’ll add them as soon as school publishes them. For now, study Term 1 📚')}</p><button class="sec" onclick="setTerm(1)">${TERM_NAME(1)}</button></div>`;
 function setGrade(g){if(!GR[g])return;CUR=g;Object.keys(SUBJ).forEach(k=>delete SUBJ[k]);Object.assign(SUBJ,GR[g].S);
   if(LANG==='en')Object.keys(SUBJ).forEach(k=>{if(!AR_ONLY.includes(k)&&GR[g].E[k])SUBJ[k]=GR[g].E[k]});
@@ -12594,6 +13420,8 @@ function render(){
   $('#fab').classList.toggle('hidden',h==='assistant');
   if(h==='home')return vHome();
   if(GR[h]){if(h!==STU.grade){location.hash=STU.grade;return}return vGrade();}
+  const lm=h.match(/^(g\d+[ga])-([a-z0-9]+)-(\d+)$/);
+  if(lm&&GR[lm[1]]){if(lm[1]!==STU.grade){location.hash=STU.grade;return}if(SUBJ[lm[2]])return vLesson(lm[2],+lm[3])}
   const gm=h.match(/^(g\d+[ga])-([a-z0-9]+)$/);
   if(gm&&GR[gm[1]]){if(gm[1]!==STU.grade){location.hash=STU.grade;return}const k=gm[2];if(SUBJ[k])return vSubject(k,ctx.subj===k&&ctx.g===CUR?ctx.tab:'lessons')}
   if(h.startsWith('s-')){const k=h.slice(2);if(SUBJ[k])return vSubject(k,ctx.subj===k?ctx.tab:'lessons')}
@@ -12703,13 +13531,9 @@ function vSubject(k,tab){
   </div>
   <div id="sub"></div>`;
   if(tab==='lessons'){
-    $('#sub').innerHTML=`<p class="mut">${L('افتح الدرس، اقرأه أو اسمعه، وبعدها جرّب «اختبر نفسك» على نفس الدرس. ✓ يعني فتحته قبل.','Open a lesson, read it or listen to it, then try “Test yourself” on the same lesson. ✓ means you’ve opened it before.')}</p>`+
-    s.T.map(t=>`<details class="lesson" data-id="${t.id}" dir="${cd}" lang="${SL(s)}"><summary><span class="n">${t.id}</span><span class="t">${t.t} <span class="pill ${s.tone}">${t.q}</span></span>${p.seen.includes(t.id)?'<span class="done">✓</span>':''}</summary>
-     <div class="body ${cd==='ltr'?'en':''}">${t.html}
-      <div class="row" style="margin-top:10px" dir="${L('rtl','ltr')}" lang="${LANG}"><button class="sec" onclick="speak(SUBJ['${k}'].T.find(x=>x.id==${t.id}).say,'${SL(s)}',this)">${LISTEN()}</button>
-      <button class="ghost" onclick="startQuiz('${k}','practice',${t.id})">${L('🎯 اختبر نفسك','🎯 Test yourself')}</button>
-      <button class="ghost" onclick="askAbout('${k}',${t.id})">${L('🤖 اشرح لي أكثر','🤖 Explain more')}</button></div></div></details>`).join('');
-    document.querySelectorAll('.lesson').forEach(d=>d.addEventListener('toggle',()=>{if(d.open){const id=+d.dataset.id;if(!p.seen.includes(id)){p.seen.push(id);save();earn(5,L('فتحت درس جديد','You opened a new lesson'))}}}));
+    $('#sub').innerHTML=`<p class="mut">${L('اضغط على الدرس عشان تفتح صفحته: الشرح، الصوت، الشرح الأعمق، والتدريب. ✓ يعني فتحته قبل.','Tap a lesson to open its page: explanation, audio, deeper explanation and practice. ✓ means you’ve opened it before.')}</p>
+    <div class="lesslist">`+
+    s.T.map(t=>`<a class="lessrow" href="#${CUR}-${k}-${t.id}" dir="${cd}"><span class="n">${t.id}</span><span class="t">${t.t}<small class="mut">${t.q||''}</small></span>${p.seen.includes(t.id)?'<span class="done">✓</span>':'<span class="go">›</span>'}</a>`).join('')+`</div>`;
   } else if(tab==='practice'){
     $('#sub').innerHTML=`<div class="grid">
      <div class="tile" role="button" tabindex="0" onclick="startQuiz('${k}','mix')"><span class="ic">🎲</span><b>${L('تدريب سريع','Quick practice')}</b><small>${L('10 أسئلة عشوائية من كل الدروس، مع شرح فوري بعد كل جواب.','10 random questions from all lessons, with an instant explanation after each answer.')}</small></div>
@@ -12797,7 +13621,36 @@ function finishQuiz(){
   </div></div>`;
   $('#fab').classList.remove('hidden');
 }
-function openLesson(k,id){ctx.tab='lessons';location.hash=CUR+'-'+k;setTimeout(()=>{vSubject(k,'lessons');const d=document.querySelector(`.lesson[data-id="${id}"]`);if(d){d.open=true;d.scrollIntoView({behavior:'smooth',block:'start'})}},50)}
+function openLesson(k,id){ctx.tab='lessons';go(CUR+'-'+k+'-'+id)}
+/* ================= LESSON PAGE ================= */
+function vLesson(k,id){
+  const s=SUBJ[k], i=s.T.findIndex(x=>x.id===id); if(i<0){go(CUR+'-'+k);return}
+  const t=s.T[i], cd=CD(s), p=P(k), prev=s.T[i-1], next=s.T[i+1];
+  ctx={subj:k,tab:'lessons',g:CUR};
+  crumbs([[L('الرئيسية','Home'),'home'],[GR[CUR].short,CUR],[nm(k),CUR+'-'+k],[L('درس ','Lesson ')+t.id]]);
+  if(!p.seen.includes(id)){p.seen.push(id);save();earn(5,L('فتحت درس جديد','You opened a new lesson'))}
+  const nav=`<div class="lnav" dir="${L('rtl','ltr')}">${prev?`<a class="ghost btnlink" href="#${CUR}-${k}-${prev.id}">${L('→ الدرس السابق','← Previous')}</a>`:'<span></span>'}<a class="ghost btnlink" href="#${CUR}-${k}">${L('📚 كل الدروس','📚 All lessons')}</a>${next?`<a class="pri btnlink" href="#${CUR}-${k}-${next.id}">${L('الدرس التالي ←','Next →')}</a>`:'<span></span>'}</div>`;
+  $('#view').innerHTML=`<article class="lpage" dir="${cd}" lang="${SL(s)}">
+    <div class="mut" style="font-size:14px">${s.icon} ${nm(k)} · ${TERM_NAME(TERM)}</div>
+    <h1 style="margin:.2em 0"><span class="n">${t.id}</span> ${t.t}</h1>
+    ${t.q?`<span class="pill ${s.tone}">📌 ${t.q}</span>`:''}
+    <div class="row" style="margin:12px 0" dir="${L('rtl','ltr')}" lang="${LANG}"><button class="sec" onclick="speak(SUBJ['${k}'].T.find(x=>x.id==${t.id}).say,'${SL(s)}',this)">${LISTEN()}</button>
+      <button class="ghost" onclick="startQuiz('${k}','practice',${t.id})">${L('🎯 اختبر نفسك','🎯 Test yourself')}</button></div>
+    <div class="card body ${cd==='ltr'?'en':''}">${t.html}</div>
+    <div class="card deepbox" style="margin-top:14px">
+      <button class="pri" id="deepBtn" style="width:100%">${L('📖 أبا شرح أعمق','📖 Explain it in more depth')}</button>
+      <div id="deep" class="body ${cd==='ltr'?'en':''}" hidden></div>
+    </div>
+    ${nav}</article>`;
+  $('#deepBtn').onclick=()=>{
+    const d=$('#deep');
+    if(!d.hidden){d.hidden=true;$('#deepBtn').textContent=L('📖 أبا شرح أعمق','📖 Explain it in more depth');return}
+    d.hidden=false;$('#deepBtn').textContent=L('إخفاء الشرح الأعمق','Hide the deeper explanation');
+    if(t.deep){d.innerHTML=t.deep;d.scrollIntoView({behavior:'smooth',block:'start'});return}
+    d.innerHTML=`<p class="mut">${L('الشرح الأعمق لهذا الدرس بينزل قريب 🛠️ لين ذاك الوقت تقدر تسأل المساعد.','A deeper explanation for this lesson is coming soon 🛠️ Meanwhile, ask the study helper.')}</p><button class="sec" onclick="askAbout('${k}',${t.id})">${L('🤖 اسأل المساعد','🤖 Ask the helper')}</button>`;
+  };
+  window.scrollTo(0,0);
+}
 
 /* ================= IELTS ================= */
 function vIelts(tab){
@@ -13019,7 +13872,7 @@ function examStrip(){
   return `<div class="card" style="margin-top:14px;background:var(--pink-soft);border-color:var(--pink)">
     <div class="row" style="justify-content:space-between"><b style="font-size:18px">${r?r.icon+' '+r.txt:L(`📆 أقرب امتحان: ${nm(next.k)} بعد ${DAYS(next.n)}`,`📆 Next exam: ${nm(next.k)} in ${DAYS(next.n)}`)}</b>
     <button class="sec" onclick="enableNotif()" id="notifBtn">${L('🔔 فعّل التنبيهات','🔔 Turn on reminders')}</button></div>
-    <div class="row" style="margin-top:10px;gap:6px">${EL.map(e=>`<span class="pill ${e.n<=3?'p-pink':'p-lav'}" style="font-size:13.5px;padding:4px 10px">${e.s.icon} ${nm(e.k)} · ${WHEN(e.n)}</span>`).join('')}</div></div>`;
+    <div class="exgrid">${EL.map(e=>`<div class="exi ${e.n<=3?'soon':''}"><span class="exic">${e.s.icon}</span><span class="exn">${nm(e.k)}</span><span class="exd">${WHEN(e.n)}</span></div>`).join('')}</div></div>`;
 }
 function notifs(){return examList().map(e=>({e,r:reminderFor(e,STU&&STU.name)})).filter(x=>x.r&&x.e.n>=0)}
 function bellUpdate(){const n=notifs();const seen=store.get('seenNotif','');const key=n.map(x=>x.e.k+x.e.n).join('|');$('#bellDot').classList.toggle('hidden',!n.length||seen===key)}
