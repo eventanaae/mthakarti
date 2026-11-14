@@ -32053,7 +32053,6 @@ function vWelcome(){
      <p style="text-align:center;margin-top:12px"><a href="#" onclick="accLogout();return false">${L('تسجيل خروج من هذا الجهاز','Sign out on this device')}</a></p>`;
   }else{
     body=`<h1 style="margin-top:0">${L('أهلًا في مذاكرتي 🌸','Welcome to Mthakarti 🌸')}</h1>
-     <p class="mut" style="margin-top:0">${L('سجّل مرة وحدة، وتنحفظ مذاكرتك ووين وصلت على أي جهاز.','Register once and your progress is saved on any device.')}</p>
      ${LANG==='en'?'<p class="mut" style="margin-top:0;font-size:14px">Arabic Language, Islamic Education and Social Studies always stay in Arabic.</p>':''}
      <label for="stuName" style="font-weight:800">${L('شو اسمك؟','What’s your name?')}</label>
      <input id="stuName" autocomplete="given-name" maxlength="30" placeholder="${L('اكتب اسمك','Type your name')}" value="${esc(nameV)}" style="margin:6px 0 14px">
@@ -32093,15 +32092,14 @@ function vWelcome(){
     if(!name){err(L('اكتب اسمك أول 🙂','Type your name first 🙂'));$('#stuName').focus();return}
     if(!pick){err(L('اختر صفك ومسارك','Choose your grade and stream'));gs.focus();return}
     if(!hasContent(pick)){err(L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!'));gs.focus();return}
-    if(mode==='edit'){STU={name,grade:pick};store.set('student',STU);stuChip();accSave();location.hash='home';render();if(store.get('pushOn',false))syncPush();return}
+    if(mode==='edit'){STU={name,grade:pick};store.set('student',STU);stuChip();accSave().then(compAuto);location.hash='home';render();if(store.get('pushOn',false))syncPush();return}
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return err(L('اكتب إيميل صحيح','Enter a valid email'));
     if(!/^[0-9]{4,6}$/.test(pin))return err(L('اختر رقم سري من 4 إلى 6 أرقام','Choose a 4–6 digit PIN'));
     go.disabled=true;err('');
     try{STU={name,grade:pick};store.set('student',STU);
       const r=await rpc('acc_register',{p_email:email,p_pin:pin,p_name:name,p_grade:pick,p_lang:LANG,p_data:accDump()});const a=Array.isArray(r)?r[0]:r;
-      ACC={id:a.acc_id,secret:a.acc_secret,email};store.set('acct',ACC);accSave();
-      toast(L('تم إنشاء حسابك ✅ مذاكرتك محفوظة في السحابة','Account created ✅ Your progress is saved in the cloud'));
-      stuChip();location.hash='home';render();if(store.get('pushOn',false))syncPush();
+      ACC={id:a.acc_id,secret:a.acc_secret,email};store.set('acct',ACC);accSave().then(compAuto);
+      stuChip();location.hash='home';render();if(store.get('pushOn',false))syncPush();setTimeout(notifOffer,4000);
     }catch(e){go.disabled=false;err(accErr(e.message))}
   };
 }
@@ -32126,7 +32124,7 @@ function vHome(){
   ${examStrip()}
   <div class="card row" style="justify-content:space-between;margin-top:14px;background:var(--lav-soft)">
     <div><b style="font-size:18px">${L('🏆 مسابقة أكثر واحد يذاكر','🏆 Who studies the most? Competition')}</b><div class="mut" style="font-size:14px">${L(`كل درس وكل جواب صح يعطيك نقاط. نافس ربعك في ${GR[STU.grade].short}!`,`Every lesson and every right answer gives you points. Compete with your friends in ${GR[STU.grade].short}!`)}</div></div>
-    <button class="pri" onclick="go('compete')">${COMP.me?L('شوف الترتيب','See the leaderboard'):L('اشترك بالإيميل','Join with email')}</button>
+    <button class="pri" onclick="go('compete')">${L('شوف الترتيب','See the leaderboard')}</button>
   </div>
   <h2>${L('موادك','Your subjects')} · ${GR[STU.grade].name} ${GR[STU.grade].icon}</h2>
   ${termBar()}
@@ -32647,9 +32645,33 @@ function instOffer(force){
 }
 setTimeout(()=>{if(isIOS())instOffer()},2500);
 
+/* ===== Every 3 days: ask to turn on reminders (until they are on) ===== */
+function notifOffer(){
+  try{if(!ACC||!STU)return;
+    const on=store.get('pushOn',false)&&('Notification' in window)&&Notification.permission==='granted';
+    if(on)return;
+    if(('Notification' in window)&&Notification.permission==='denied')return; // they blocked it in the browser
+    const next=store.get('notifAskNext',0);if(next&&Date.now()<next)return;
+    if($('#instSheet')||$('#notifSheet'))return;
+    const s=document.createElement('div');s.id='notifSheet';s.className='instsheet';s.setAttribute('role','dialog');
+    s.innerHTML=`<div class="instcard"><div style="font-size:40px;line-height:1">🔔</div><div style="flex:1;min-width:0"><b style="font-size:17px">${L(`${esc(STU.name)}، فعّل التنبيهات!`,`${esc(STU.name)}, turn on reminders!`)}</b>
+      <div class="mut" style="font-size:14px">${L('نذكّرك كل يوم الساعة 4:30 العصر بالمذاكرة وكم باقي على امتحاناتك.','We’ll remind you every day at 4:30 PM to study and how many days are left until your exams.')}</div></div></div>
+      <div class="row" style="gap:8px;margin-top:12px"><button class="pri" id="notifGo" style="flex:1">${L('🔔 فعّل التنبيهات','🔔 Turn on reminders')}</button><button class="ghost" id="notifLater">${L('مب الحين','Not now')}</button></div>`;
+    document.body.appendChild(s);
+    const later=()=>{store.set('notifAskNext',Date.now()+3*864e5);s.remove()};
+    $('#notifLater').onclick=later;
+    $('#notifGo').onclick=()=>{later();enableNotif()};
+  }catch(e){}
+}
+setTimeout(notifOffer,5000);
+
 /* ================= COMPETITION (Supabase) ================= */
 const SB_URL='https://valzeoiilqbmmrosspsp.supabase.co', SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhbHplb2lpbHFibW1yb3NzcHNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2NzY0MzksImV4cCI6MjExMDI1MjQzOX0.JawQDFBJz50zM-P03QRNifi3ZiiH6n3ZtDK8oI968GA';
 const COMP={me:store.get('compMe',null),pend:0,timer:null};
+/* Everyone with an account is in the competition automatically (same email) */
+async function compAuto(){try{if(!ACC||!STU)return false;const r=await rpc('comp_auto',{p_acc_id:ACC.id,p_acc_secret:ACC.secret});const row=Array.isArray(r)?r[0]:r;if(!row)return false;
+  COMP.me={id:row.player_id,secret:row.player_secret,name:STU.name,grade:STU.grade,points:row.points||0};store.set('compMe',COMP.me);return true}catch(e){return false}}
+setTimeout(()=>{if(ACC&&STU&&(!COMP.me||COMP.me.grade!==STU.grade||COMP.me.name!==STU.name))compAuto()},1200);
 async function rpc(fn,args){const r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify(args)});const t=await r.text();let j=null;try{j=JSON.parse(t)}catch(e){}if(!r.ok)throw new Error((j&&j.message)||t||r.status);return j}
 function earn(n,why){
   if(!COMP.me||COMP.me.grade!==(STU&&STU.grade))return;
@@ -32668,17 +32690,9 @@ async function vCompete(){
    <div id="cmpTop"></div><div id="cmpBoard" class="card" style="margin-top:12px"><p class="mut">${L('جاري تحميل الترتيب…','Loading the leaderboard…')}</p></div></div>`;
   const top=$('#cmpTop');
   if(COMP.me&&COMP.me.grade===g){top.innerHTML=`<div class="card" style="background:var(--mint-soft)">👤 <b>${esc(COMP.me.name)}</b> · ${L('نقاطك:','Your points:')} <b id="myPts">${COMP.me.points||0}</b></div>`}
-  else{top.innerHTML=`<div class="card"><h3>${L('اشترك في المسابقة','Join the competition')}</h3>
-     <label for="cmpName">${L('الاسم اللي يطلع في الترتيب','Name shown on the leaderboard')}</label><input id="cmpName" maxlength="30" value="${esc(STU.name)}" style="margin:6px 0 10px">
-     <label for="cmpEmail">${L('الإيميل','Email')}</label><input id="cmpEmail" type="email" autocomplete="email" placeholder="name@example.com" style="margin:6px 0 10px" dir="ltr">
-     <p class="mut" style="font-size:13.5px">${L('🔒 الإيميل ما يطلع لأحد، بس اسمك ونقاطك تطلع لطلاب صفك. إذا عمرك أقل من 18، خذ موافقة ولي أمرك قبل التسجيل.','🔒 Your email is never shown to anyone — only your name and points are visible to students in your grade. If you are under 18, get your parent’s or guardian’s permission before signing up.')}</p>
-     <p id="cmpErr" style="color:var(--bad);min-height:1.4em"></p><button class="pri" id="cmpJoin" style="width:100%">${L('اشترك 🏆','Join 🏆')}</button></div>`;
-   $('#cmpJoin').onclick=async()=>{const name=$('#cmpName').value.trim(),email=$('#cmpEmail').value.trim();
-     if(!name||!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){$('#cmpErr').textContent=L('اكتب اسمك وإيميل صحيح','Enter your name and a valid email');return}
-     $('#cmpJoin').disabled=true;$('#cmpErr').textContent='';
-     try{const r=await rpc('join_competition',{p_name:name,p_email:email,p_grade:g});const row=Array.isArray(r)?r[0]:r;
-       COMP.me={id:row.player_id,secret:row.player_secret,name,grade:g,points:row.points||0};store.set('compMe',COMP.me);toast(L('أهلًا في المسابقة! 🎉','Welcome to the competition! 🎉'));vCompete()}
-     catch(e){$('#cmpJoin').disabled=false;$('#cmpErr').textContent=/email_taken/.test(e.message)?L('هذا الإيميل مسجّل من قبل','This email is already registered'):(/Failed to fetch|NetworkError|Load failed/i.test(e.message)?L('المسابقة تشتغل على موقع mthakarti.com','The competition works on mthakarti.com'):L('صار خطأ، جرّب مرة ثانية','Something went wrong — please try again'))}};
+  else{top.innerHTML=`<div class="card"><p class="mut">${L('جاري تجهيزك في المسابقة…','Setting you up in the competition…')}</p></div>`;
+    if(await compAuto())return vCompete();
+    top.innerHTML=`<div class="card"><p class="mut">${L('تأكد من الإنترنت وارجع للصفحة.','Check your internet and come back.')}</p></div>`;
   }
   try{await flushPts();const rows=await rpc('leaderboard',{p_grade:g});
     $('#cmpBoard').innerHTML=rows&&rows.length?`<table class="tbl"><tr><th>#</th><th>${L('الاسم','Name')}</th><th>${L('النقاط','Points')}</th></tr>${rows.map(r=>`<tr ${COMP.me&&r.player_id===COMP.me.id?'style="background:var(--pink-soft);font-weight:800"':''}><td>${r.rank<=3?['🥇','🥈','🥉'][r.rank-1]:r.rank}</td><td>${esc(r.name)}</td><td>${r.points}</td></tr>`).join('')}</table>`:`<p class="mut">${L('ما في متسابقين للحين. كن أول واحد! 🚀','No players yet. Be the first! 🚀')}</p>`;
