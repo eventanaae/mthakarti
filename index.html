@@ -208,8 +208,9 @@ html,body{overflow-x:hidden;overflow-x:clip}
   .top .crumbs{display:none!important}
   .hacts{gap:5px}
   .hbtn{width:36px;height:36px;border-radius:11px;font-size:14px}
-  .fab{padding:12px;border-radius:50%}
+  .fab{padding:0;width:56px;height:56px;border-radius:50%;justify-content:center}
   .fab span{display:none}
+  .fab .fabic{font-size:28px;line-height:1}
   .exgrid{grid-template-columns:1fr 1fr}
   .termbar button{font-size:14px}
 }
@@ -246,7 +247,7 @@ html,body{overflow-x:hidden;overflow-x:clip}
   </div>
 </div></header>
 <main class="wrap" id="view"></main>
-<button class="fab" id="fab" onclick="go('assistant')">🤖 <span>اسأل مدرسك الخصوصي</span></button>
+<button class="fab" id="fab" onclick="go('assistant')" aria-label="اسأل مدرسك الخصوصي"><b class="fabic">👩‍🏫</b> <span>اسأل مدرسك الخصوصي</span></button>
 </div>
 
 <script>
@@ -32132,7 +32133,7 @@ function vHome(){
       <p>${L('📌 خطة المذاكرة الذكية','📌 Smart study plan')}</p>
       <p><span class="tick">✓</span> ${L('اقرأ الدرس واسمعه 🎧','Read and listen to the lesson 🎧')}</p>
       <p><span class="tick">✓</span> ${L('حل 5 أسئلة تدريب 🎯','Solve 5 practice questions 🎯')}</p>
-      <p><span class="tick">✓</span> ${L('اسأل المساعد عن اللي ما فهمته 🤖','Ask the helper what you didn’t get 🤖')}</p>
+      <p><span class="tick">✓</span> ${L('اسأل مدرسك الخصوصي عن اللي ما فهمته 👩‍🏫','Ask your private tutor what you didn’t get 👩‍🏫')}</p>
       <p><span class="tick">✓</span> ${L('امتحان نهائي على الهيكل 🏆','Final exam on the official outline 🏆')}</p>
     </div>
   </section>
@@ -32435,7 +32436,7 @@ function vIelts(tab){
    <details style="margin-top:10px"><summary class="mut" style="cursor:pointer">Show transcript (after you finish)</summary><div class="passage">${IELTS_LISTEN.lines.map(l=>`<p>${l[1]}</p>`).join('')}</div></details></div>`}
   else if(tab==='writing'){ib.innerHTML=`<div class="card en"><h3>Writing Task 2 · 40 minutes</h3><p class="passage">${IELTS_WRITING}</p>
    <textarea id="essay" rows="12" placeholder="Write your essay here..."></textarea>
-   <div class="row" style="justify-content:space-between;margin-top:8px"><span class="mut" id="wc">0 words</span><button class="pri" onclick="gradeWriting()">🤖 Get band score & feedback</button></div>
+   <div class="row" style="justify-content:space-between;margin-top:8px"><span class="mut" id="wc">0 words</span><button class="pri" onclick="gradeWriting()">👩‍🏫 Get band score & feedback</button></div>
    <div id="wfb" class="msg a" style="max-width:100%;margin-top:10px;display:none"></div></div>`;
    $('#essay').oninput=e=>{$('#wc').textContent=(e.target.value.trim().split(/\s+/).filter(Boolean).length)+' words'};
    $('#essay').value=store.get('essay','');$('#essay').dispatchEvent(new Event('input'));$('#essay').addEventListener('change',e=>store.set('essay',e.target.value))}
@@ -32444,7 +32445,7 @@ function vIelts(tab){
    <p class="mut">1 minute to prepare, then speak for 1–2 minutes. Press the mic and speak, or type your answer.</p>
    <div class="row"><button class="sec" id="micB" onclick="toggleMic()">🎙️ Start speaking</button><span id="micS" class="mut"></span></div>
    <textarea id="spk" rows="7" style="margin-top:8px" placeholder="Your answer appears here..."></textarea>
-   <button class="pri" style="margin-top:8px" onclick="gradeSpeaking()">🤖 Get feedback</button>
+   <button class="pri" style="margin-top:8px" onclick="gradeSpeaking()">👩‍🏫 Get feedback</button>
    <div id="sfb" class="msg a" style="max-width:100%;margin-top:10px;display:none"></div></div>`}
   else {ib.innerHTML=`<div class="card en" style="text-align:center"><span class="pill p-pink">Word of the day</span><h2 style="font-size:36px;margin:8px 0">${w[0]}</h2><p style="font-size:20px">${w[1]}</p><p class="mut"><i>${w[2]}</i></p><button class="sec" onclick="speak('${w[0]}. ${w[2].replace(/'/g,"\\'")}','en',this)">${LISTEN()}</button></div>
    <h2>${L('💎 كل الكلمات','💎 All words')}</h2><div class="grid">${WORDS.map(x=>`<div class="card en"><b>${x[0]}</b> · <span>${x[1]}</span><div class="mut" style="font-size:14px">${x[2]}</div></div>`).join('')}</div>`}
