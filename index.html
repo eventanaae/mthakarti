@@ -1,34 +1,34 @@
-<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="مذاكرتي: منصة مذاكرة لطلاب الإمارات"><meta name="theme-color" content="#b5786a"><link rel="manifest" href="/manifest.json"><link rel="icon" href="/icon-192.png"><link rel="apple-touch-icon" href="/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="مذاكرتي"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style></head><body><title>مذاكرتي</title>
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="description" content="مذاكرتي: منصة مذاكرة لطلاب الإمارات"><meta name="theme-color" content="#ef5d98"><link rel="manifest" href="/manifest.json"><link rel="icon" href="/icon-192.png"><link rel="apple-touch-icon" href="/icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="مذاكرتي"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style></head><body><title>مذاكرتي</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&family=Baloo+Bhaijaan+2:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 /* Layout: one study app — sticky top bar, hash-routed views (home → grade → subject → lesson/practice/exam), floating AI helper. Pastel stationery palette. */
 :root{
-  --bg:#fbf6f1; --surface:#ffffff; --surface2:#f6eee7; --line:#ecdfd4;
-  --ink:#3d2f29; --mut:#8a776b;
-  --pink:#b5786a; --pink-soft:#f8e7e3;
+  --bg:#fff7fa; --surface:#ffffff; --surface2:#fff0f5; --line:#f6d3e1;
+  --ink:#3b2531; --mut:#8c6a7a;
+  --pink:#ef5d98; --pink-soft:#ffe3ee;
   --lav:#7b62e8; --lav-soft:#efeaff;
   --mint:#1fa77a; --mint-soft:#e3f7ef;
   --sun:#c98500; --sun-soft:#fff4d9;
   --sky:#2f86d6; --sky-soft:#e7f3ff;
   --bad:#d9435a; --bad-soft:#fde6ea;
-  --shadow:0 6px 22px rgba(150,105,85,.10);
+  --shadow:0 6px 22px rgba(239,93,152,.10);
   --f-disp:"Baloo Bhaijaan 2","Tajawal",system-ui,sans-serif;
   --f-body:"Tajawal","Segoe UI",Tahoma,system-ui,sans-serif;
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#1d1815; --surface:#27201c; --surface2:#2f2722; --line:#4a3d35;
-  --ink:#f4ebe4; --mut:#c2b1a4;
-  --pink:#e2b2a4; --pink-soft:#4a332c; --lav:#a996ff; --lav-soft:#2f2a4d;
+  --bg:#1c1420; --surface:#261c2b; --surface2:#2f2235; --line:#4a3550;
+  --ink:#f6e9f0; --mut:#c3a8b6;
+  --pink:#ff86b5; --pink-soft:#4a2438; --lav:#a996ff; --lav-soft:#2f2a4d;
   --mint:#5fd7a8; --mint-soft:#1d3a30; --sun:#ffc861; --sun-soft:#3d3218;
   --sky:#7cc4ff; --sky-soft:#1b3047; --bad:#ff8496; --bad-soft:#47202a;
   --shadow:0 6px 22px rgba(0,0,0,.35); color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#1d1815; --surface:#27201c; --surface2:#2f2722; --line:#4a3d35;
-  --ink:#f4ebe4; --mut:#c2b1a4;
-  --pink:#e2b2a4; --pink-soft:#4a332c; --lav:#a996ff; --lav-soft:#2f2a4d;
+  --bg:#1c1420; --surface:#261c2b; --surface2:#2f2235; --line:#4a3550;
+  --ink:#f6e9f0; --mut:#c3a8b6;
+  --pink:#ff86b5; --pink-soft:#4a2438; --lav:#a996ff; --lav-soft:#2f2a4d;
   --mint:#5fd7a8; --mint-soft:#1d3a30; --sun:#ffc861; --sun-soft:#3d3218;
   --sky:#7cc4ff; --sky-soft:#1b3047; --bad:#ff8496; --bad-soft:#47202a;
   --shadow:0 6px 22px rgba(0,0,0,.35); color-scheme:dark}
@@ -30095,7 +30095,7 @@ function vWelcome(){
      <button class="pri" id="welGo" style="width:100%">${L('حفظ ✓','Save ✓')}</button>
      <p style="text-align:center;margin-top:12px"><a href="#" onclick="accLogout();return false">${L('تسجيل خروج من هذا الجهاز','Sign out on this device')}</a></p>`;
   }else{
-    body=`<h1 style="margin-top:0">${L('أهلًا في مذاكرتي ✨','Welcome to Mthakarti ✨')}</h1>
+    body=`<h1 style="margin-top:0">${L('أهلًا في مذاكرتي 🌸','Welcome to Mthakarti 🌸')}</h1>
      <p class="mut" style="margin-top:0">${L('سجّل مرة وحدة، وتنحفظ مذاكرتك ووين وصلت على أي جهاز.','Register once and your progress is saved on any device.')}</p>
      ${LANG==='en'?'<p class="mut" style="margin-top:0;font-size:14px">Arabic Language, Islamic Education and Social Studies always stay in Arabic.</p>':''}
      <label for="stuName" style="font-weight:800">${L('شو اسمك؟','What’s your name?')}</label>
@@ -30177,7 +30177,7 @@ function vHome(){
    ${Object.entries(SUBJ).filter(([k,s])=>!s.noTerm).map(([k,s])=>`<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small>${L(`${s.T.length} دروس`,`${s.T.length} lessons`)}</small></div>`).join('')}
   </div>`}
   <p class="mut" style="text-align:center;margin-top:14px">${L('مب صفك؟','Not your grade?')} <a href="#welcome">${L('غيّر الاسم أو الصف','Change name or grade')}</a></p>
-  <p class="foot">${L('مذاكرتي · mthakarti.com · محتوى تعليمي مساعد، ارجع دائمًا لكتابك ومعلمك ✨','Mthakarti · mthakarti.com · Supporting study material — always check your textbook and teacher ✨')}</p>`;
+  <p class="foot">${L('مذاكرتي · mthakarti.com · محتوى تعليمي مساعد، ارجع دائمًا لكتابك ومعلمك 🌸','Mthakarti · mthakarti.com · Supporting study material — always check your textbook and teacher 🌸')}</p>`;
 }
 function subjProgress(k){const s=SUBJ[k],p=P(k);if(!s.T.length)return 0;const seen=p.seen.filter(id=>s.T.some(t=>t.id===id)).length/s.T.length;const ex=p.exam?p.exam/100:0;return Math.round((seen*.5+ex*.5)*100)}
 function vGrade(){
@@ -30202,7 +30202,6 @@ function vSubject(k,tab){
   $('#view').innerHTML=`
   <h1>${s.icon} ${nmH(k)}</h1>
   ${termBar()}
-  ${s.note?`<p class="note" dir="${cd}">📌 ${TERM_NAME(TERM)} · ${s.note}</p>`:''}
   <div class="tabs" role="tablist">
    <button class="${tab==='lessons'?'on':''}" onclick="vSubject('${k}','lessons')">${L('📚 الدروس','📚 Lessons')}</button>
    <button class="${tab==='practice'?'on':''}" onclick="vSubject('${k}','practice')">${L('🎯 تدريب','🎯 Practice')}</button>
@@ -30466,7 +30465,7 @@ async function vAssistant(){
    <h1 style="margin-bottom:0">${L('🤖 مساعد مذاكرتي','🤖 Mthakarti helper')}</h1>
    <p class="mut" style="margin-top:0">${L('اسأل أي سؤال، أو صوّر سؤال من الكتاب أو الورقة. يعتمد على محتوى المادة أولًا.','Ask any question, or take a photo of a question from your book or worksheet. It relies on the subject content first.')}</p>
    <div class="row"><label for="aiSub" class="mut">${L('المادة:','Subject:')}</label><select id="aiSub" style="max-width:220px">${opts.map(([k,n])=>`<option value="${k}" ${chat.k===k?'selected':''}>${n}</option>`).join('')}</select><button class="ghost" onclick="chat.turns=[];vAssistant()">${L('🧹 محادثة جديدة','🧹 New chat')}</button></div>
-   <div id="aiOff" class="note hidden">${L('المساعد الذكي يشتغل لما تفتح الموقع من رابط Claude وأنت مسجّل دخول. (في نسخة mthakarti.com بيشتغل بدون تسجيل.)','The smart helper works when you open the site from the Claude link while signed in. (On mthakarti.com it works without signing in.)')}</div>
+   <div id="aiOff" class="hidden"></div>
    <div class="msgs" id="msgs">${chat.turns.length?'':`<div class="msg a">${L('هلا! 👋 أنا مساعدك للمذاكرة. جرّب:','Hi! 👋 I’m your study helper. Try:')}<div class="chips" style="margin-top:8px">${chips.map(c=>`<button onclick="$('#aiIn').value=this.textContent;$('#aiIn').focus()">${c}</button>`).join('')}</div></div>`}</div>
    <div id="imgPrev" class="row"></div>
    <div class="composer">
@@ -30506,12 +30505,12 @@ async function vAssistant(){
 function addBubble(who,html){const d=document.createElement('div');d.className='msg '+who;d.innerHTML=html;$('#msgs').appendChild(d);d.scrollIntoView({block:'end'});return d}
 async function gradeWriting(){const t=$('#essay').value.trim();store.set('essay',t);const out=$('#wfb');out.style.display='block';
   const n=t.split(/\s+/).filter(Boolean).length;if(n<80){out.innerHTML='Write at least 80 words first so the feedback is useful (the real task needs 250).';return}
-  const s=await sampleReady;if(!s){out.innerHTML=L('التصحيح الذكي يشتغل من رابط Claude وأنت مسجّل دخول.','AI marking works when you open the site from the Claude link while signed in.');return}
+  const s=await sampleReady;if(!s){out.innerHTML=L('التصحيح الذكي مب متاح حاليًا. قارن إجابتك بالنموذج.','AI marking isn’t available right now. Compare with the model answer.');return}
   out.innerHTML='<span class="mut">Marking your essay... ✍️</span>';
   try{const {text}=await s(`You are an experienced IELTS examiner. Mark this IELTS Academic Writing Task 2 essay using the four official criteria (Task Response, Coherence and Cohesion, Lexical Resource, Grammatical Range and Accuracy). Give: an estimated overall band (e.g. 6.0) and a band for each criterion; 3 strengths; the 5 most important corrections quoting the student's words and the improved version; one improved sample paragraph. The student is a Grade 10 student in the UAE; ${L('add a one-line summary in simple Arabic at the end.','add a one-line summary in simple English at the end.')} Keep it clear and encouraging.\n\nTASK: ${IELTS_WRITING}\n\nESSAY (${n} words):\n${t}`,{cache:false,onText:({text})=>{out.innerHTML=md(text)}});out.innerHTML=md(text)}catch(e){out.innerHTML=e&&e.text?md(e.text):aiMsg(e)}}
 async function gradeSpeaking(){const t=$('#spk').value.trim();const out=$('#sfb');out.style.display='block';
   if(t.split(/\s+/).length<30){out.innerHTML='Speak or type at least 30 words first.';return}
-  const s=await sampleReady;if(!s){out.innerHTML=L('التقييم الذكي يشتغل من رابط Claude وأنت مسجّل دخول.','AI feedback works when you open the site from the Claude link while signed in.');return}
+  const s=await sampleReady;if(!s){out.innerHTML=L('التقييم الذكي مب متاح حاليًا.','AI feedback isn’t available right now.');return}
   out.innerHTML='<span class="mut">Listening to your answer... 🎧</span>';
   try{const {text}=await s(`You are an IELTS speaking examiner. This is a transcript of a Grade 10 UAE student's Part 2 answer (it may be dictated, so ignore punctuation). Cue card: "${IELTS_SPEAKING.card}" (${IELTS_SPEAKING.points.join('; ')}). Estimate bands for Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy (pronunciation cannot be judged from text — say so). Give 3 specific tips, 5 better words/phrases they could use, and two likely Part 3 follow-up questions. End with one encouraging line in simple ${L('Arabic','English')}.\n\nANSWER:\n${t}`,{cache:false,onText:({text})=>{out.innerHTML=md(text)}});out.innerHTML=md(text)}catch(e){out.innerHTML=e&&e.text?md(e.text):aiMsg(e)}}
 
@@ -30533,14 +30532,14 @@ function reminderFor(e,name){
     if(e.n===0)return {lvl:3,icon:'🌟',txt:`Today is your ${s} exam! ${t} · Take a deep breath, ${who} — you’re ready. Don’t forget your calculator and laptop 💪`};
     if(e.n===1)return {lvl:3,icon:'⏰',txt:`Your ${s} exam is tomorrow! A quick review of the traps ⚠️ and an early night, ${who} 😴`};
     if(e.n<=3)return {lvl:2,icon:'🔥',txt:`Only ${d} left until ${s}! Time for mock exams, ${who} 🏆`};
-    if(e.n<=7)return {lvl:1,icon:'📆',txt:`${d} left until ${s}. Two lessons a day and you’ll finish the syllabus, ${who} ✨`};
+    if(e.n<=7)return {lvl:1,icon:'📆',txt:`${d} left until ${s}. Two lessons a day and you’ll finish the syllabus, ${who} 🌸`};
     if(e.n<=10)return {lvl:1,icon:'📚',txt:`Come on ${who}, time to study! ${d} left until your ${s} exam 🎯`};
     return null;
   }
   if(e.n===0)return {lvl:3,icon:'🌟',txt:`اليوم امتحان ${s}! ${t} · خذ نفس عميق يا ${who}، أنت جاهز، ولا تنسى الحاسبة واللابتوب 💪`};
   if(e.n===1)return {lvl:3,icon:'⏰',txt:`بكرة امتحان ${s}! مراجعة سريعة للأفخاخ ⚠️ ونوم بدري يا ${who} 😴`};
   if(e.n<=3)return {lvl:2,icon:'🔥',txt:`باقي ${d} على ${s}! وقت الامتحانات التجريبية يا ${who} 🏆`};
-  if(e.n<=7)return {lvl:1,icon:'📆',txt:`باقي ${d} على ${s}. درسين كل يوم وتخلص المنهج يا ${who} ✨`};
+  if(e.n<=7)return {lvl:1,icon:'📆',txt:`باقي ${d} على ${s}. درسين كل يوم وتخلص المنهج يا ${who} 🌸`};
   if(e.n<=10)return {lvl:1,icon:'📚',txt:`يالله يا ${who}، قوم ذاكر! باقي ${d} على امتحان ${s} 🎯`};
   return null;
 }
@@ -30798,7 +30797,891 @@ IELTS_DATA.reading.push({
   ]
 });
 
+IELTS_DATA.reading.push({
+  id: 6,
+  title: "Practice Test 6",
+  passages: [
+    {
+      title: "Searching for Worlds Around Other Stars",
+      html: "<p><b>A</b> Until the middle of the 1990s, astronomers could only guess whether planets existed around stars other than the Sun. The Solar System was the only example available, and nobody knew whether it was typical or exceptional. That changed in 1995, when two Swiss astronomers announced the discovery of a planet orbiting a Sun-like star in the constellation Pegasus. The planet, about half the mass of Jupiter, circled its star in roughly four days, far closer than Mercury is to the Sun. Many scientists doubted that such a planet could exist, but the result was soon confirmed, and the discoverers were later awarded a Nobel Prize. Today, more than five thousand planets beyond the Solar System have been confirmed.</p>" +
+        "<p><b>B</b> The 1995 discovery relied on the ‘radial velocity’ method. A planet does not simply circle a stationary star; both bodies orbit their common centre of mass, so the star moves in a small circle of its own. From Earth, this motion appears as a regular wobble, first towards us and then away from us. When a star moves towards an observer, the wavelengths of its light are slightly compressed and the colour shifts towards the blue end of the spectrum, and when it moves away the light shifts towards the red. By measuring these tiny changes, astronomers can estimate the mass and orbit of an unseen planet. The method works best for heavy planets close to their stars, which cause the strongest wobble.</p>" +
+        "<p><b>C</b> A second technique looks for transits. If the orbit of a planet is aligned so that it passes in front of its star as seen from Earth, it blocks a small fraction of the starlight and the star becomes slightly dimmer for a few hours. The Kepler space telescope, launched in 2009, used this method on a grand scale. For four years it stared continuously at a single patch of sky containing around 150,000 stars, watching for these brief dips in brightness. It found thousands of planet candidates, and statistical analysis of the results led to a striking conclusion: planets are not rare. The average star in our galaxy is likely to have at least one planet, and small, rocky worlds are common.</p>" +
+        "<p><b>D</b> Photographing an exoplanet directly is far harder than detecting it indirectly. A star can be a billion times brighter than the light reflected by a planet beside it, and the glare tends to drown out the faint signal in the same way that a car’s headlights hide a firefly. Astronomers use a device called a coronagraph, which places a small disc in the telescope to block the star’s light, but even then only certain planets can be seen. The best targets are young, massive planets that orbit far from their stars and are still hot enough from their formation to glow brightly in infrared light.</p>" +
+        "<p><b>E</b> Interest in the field is driven largely by one question: is there life elsewhere? Scientists therefore pay special attention to planets in the ‘habitable zone’, the range of distances from a star at which water could exist as a liquid on a planet’s surface. This is not a guarantee of habitability. A planet in the zone may have no atmosphere, or an atmosphere so thick that it traps heat in the way that Venus does. Among the best-known targets is Proxima b, which orbits the star nearest to the Sun, about 4.2 light-years away. Another is the TRAPPIST-1 system, some forty light-years from Earth, where seven rocky planets circle a small, cool star and several of them lie in the habitable zone.</p>" +
+        "<p><b>F</b> The next stage is to study the air of these worlds. The James Webb Space Telescope, launched in December 2021, can analyse starlight that has passed through a planet’s atmosphere during a transit. Different gases absorb different wavelengths, leaving a pattern like a chemical fingerprint. In 2022, the telescope detected carbon dioxide in the atmosphere of a gas giant, the first clear evidence of this gas on a planet outside our Solar System. Smaller, rocky planets are much more difficult to study, because their atmospheres are thin compared to the planets themselves, and many transits must be observed before the signal can be separated from the noise.</p>" +
+        "<p><b>G</b> Even if a promising gas is found, interpreting it will be a challenge. Oxygen, for example, is produced on Earth by living things, but it can also be created by chemical processes that involve no biology at all. A ‘biosignature’ must therefore be judged in its full context, and astronomers are wary of announcing a discovery that later turns out to be a false alarm. Most researchers expect the search for convincing evidence of life to take decades, and some caution that the answer may be that it is rarer than hoped. Yet few doubt that the question can finally be examined with real data, something that would have seemed impossible to the astronomers of thirty years ago.</p>",
+      groups: [
+        {
+          type: "match_info",
+          instr: "Questions 1–5. The passage has seven paragraphs, A–G. Which paragraph contains the following information? Write the correct letter, A–G. You may use any letter more than once.",
+          options: ["A", "B", "C", "D", "E", "F", "G"],
+          items: [
+            { n: 1, q: "an account of a discovery that changed scientists’ views about planets near Sun-like stars", a: ["A"], why: "Paragraph A: the 1995 discovery." },
+            { n: 2, q: "an explanation of how changes in the colour of starlight reveal the presence of a planet", a: ["B"], why: "Paragraph B: blue and red shifts." },
+            { n: 3, q: "a description of an instrument that observed a single region of the sky for several years", a: ["C"], why: "Paragraph C: Kepler stared at one patch of sky for four years." },
+            { n: 4, q: "a reason why the brightness of a star makes some planets difficult to photograph", a: ["D"], why: "Paragraph D: the glare drowns out the planet." },
+            { n: 5, q: "a warning that a chemical signal may not be reliable proof of living things", a: ["G"], why: "Paragraph G: oxygen can be produced without biology." }
+          ]
+        },
+        {
+          type: "tfng",
+          instr: "Questions 6–9. Do the following statements agree with the information given in the passage? Write TRUE, FALSE or NOT GIVEN.",
+          items: [
+            { n: 6, q: "The planet discovered in 1995 orbited its star more closely than Mercury orbits the Sun.", a: ["TRUE"], why: "Paragraph A: four-day orbit, far closer than Mercury." },
+            { n: 7, q: "The Kepler telescope showed that planets are unusual around ordinary stars.", a: ["FALSE"], why: "Paragraph C: planets are not rare." },
+            { n: 8, q: "Every planet that lies within the habitable zone has liquid water on its surface.", a: ["FALSE"], why: "Paragraph E: this is not a guarantee of habitability." },
+            { n: 9, q: "The Kepler telescope was operated by a European space agency.", a: ["NOT GIVEN"], why: "The operator of Kepler is not mentioned." }
+          ]
+        },
+        {
+          type: "short",
+          instr: "Questions 10–13. Answer the questions below. Choose NO MORE THAN TWO WORDS from the passage for each answer.",
+          items: [
+            { n: 10, q: "What name is given to the range of distances at which water could be liquid on a planet’s surface?", a: ["habitable zone", "the habitable zone"], why: "Paragraph E." },
+            { n: 11, q: "What device is used to block the light of a star when photographing planets?", a: ["coronagraph", "a coronagraph"], why: "Paragraph D." },
+            { n: 12, q: "Which gas was detected in the atmosphere of a gas giant in 2022?", a: ["carbon dioxide"], why: "Paragraph F." },
+            { n: 13, q: "What term is used for a signal that may indicate the presence of life?", a: ["biosignature", "a biosignature"], why: "Paragraph G." }
+          ]
+        }
+      ]
+    },
+    {
+      title: "The Science of Fermentation",
+      html: "<p>Fermentation is among the oldest food technologies. In its scientific sense, it describes a process in which microorganisms break down sugars in the absence of oxygen, producing acids, gases or alcohol. Humans were using it long before they had any idea what was happening. Chemical analysis of pottery from a Neolithic village in China suggests that people there were making a fermented drink of rice, honey and fruit around 7000 BCE, and similar evidence from the Middle East, Africa and the Caucasus indicates that the practice emerged independently in many parts of the world. For thousands of years, bakers, brewers and cheesemakers relied on methods passed from one generation to the next, and judged success by taste and smell.</p>" +
+        "<p>It was not until the nineteenth century that the explanation was found. Before then, many scientists believed that fermentation was a purely chemical decay. In the 1850s and 1860s, the French chemist Louis Pasteur demonstrated that yeast is a living organism and that its activity is responsible for turning grape juice into wine. His work helped to establish the discipline of microbiology, and it also showed why some batches of food went wrong: unwanted microbes had taken over.</p>" +
+        "<p>Different groups of microorganisms are responsible for different foods. Lactic acid bacteria convert sugars into lactic acid, which gives yoghurt, sauerkraut and kimchi their sharp taste. The acid lowers the pH of the food so far that most spoilage bacteria cannot survive, which is why fermented vegetables could be stored through winter without refrigeration. Yeasts, by contrast, produce ethanol and carbon dioxide. In beer and wine the alcohol is the desired product, while in bread it is the gas that matters, as the bubbles trapped in the dough make it rise. A third group, the moulds, plays a central role in East Asian cooking. Soy sauce and miso are made with a mould known as koji, Aspergillus oryzae, which produces enzymes that break down proteins and starches into savoury flavour compounds.</p>" +
+        "<p>Preservation was often the main reason for fermenting. In hot regions, milk spoils within hours, and the traditional solution was to turn it into a product that lasted longer. Laban, a fermented milk drink common across the Arabian Peninsula, stays safe to drink for considerably longer than fresh milk, because the acid produced by the bacteria prevents harmful organisms from growing. Salt is also widely used. A concentration of two to three per cent in a vegetable ferment discourages many harmful microbes but allows lactic acid bacteria to flourish, so that the useful organisms win the competition. Food scientists now study these conditions carefully, since temperature, salt level and the amount of oxygen present all affect which microbes dominate.</p>" +
+        "<p>Fermentation can also change the nutritional value of food. Many microbes synthesise B vitamins as they grow, so some fermented foods contain more of these nutrients than the raw ingredients. The process can also reduce substances such as phytic acid in cereals and pulses, which otherwise interfere with the absorption of minerals. The most publicised claim, however, concerns probiotics, live bacteria that are said to benefit the digestive system. The evidence here is mixed. Some clinical trials report improvements in certain conditions, while others find no effect, and the results seem to depend on the strain of bacterium and the health of the person eating it. It should also be remembered that many products sold as fermented contain no living microbes at all, since bread is baked, and many sauces and pickles are heated after fermentation to make them shelf-stable.</p>" +
+        "<p>Modern industry has taken the craft in new directions. Large producers no longer leave fermentation to chance but add carefully selected starter cultures, so that each batch has the same flavour and quality. A more recent development is ‘precision fermentation’, in which microbes are genetically modified to produce one specific ingredient. The best-established example is chymosin, an enzyme once extracted from the stomachs of calves for cheesemaking and now produced mainly by engineered microbes. Companies are now using the same approach to make proteins that are identical to those in milk and eggs, without the need for animals. Supporters believe that this could reduce the environmental footprint of food production, while critics question whether consumers will accept products made this way.</p>" +
+        "<p>What is clear is that fermentation, once regarded as an art, has become a science without losing its place in traditional kitchens. The same microbes that preserved food for early farmers are now the subject of laboratory research, and understanding them better may help to create foods that are safer, more nutritious and more sustainable.</p>",
+      groups: [
+        {
+          type: "gap",
+          instr: "Questions 14–18. Complete the sentences below. Choose NO MORE THAN TWO WORDS from the passage for each answer.",
+          items: [
+            { n: 14, q: "During fermentation, microorganisms break down ____ without using oxygen.", a: ["sugars"], why: "Paragraph 1." },
+            { n: 15, q: "The scientist ____ proved in the nineteenth century that yeast is a living organism.", a: ["Pasteur", "Louis Pasteur"], why: "Paragraph 2." },
+            { n: 16, q: "Lactic acid in fermented vegetables prevents ____ bacteria from surviving.", a: ["spoilage"], why: "Paragraph 3." },
+            { n: 17, q: "Bread rises because yeast produces bubbles of ____ in the dough.", a: ["carbon dioxide"], why: "Paragraph 3." },
+            { n: 18, q: "Soy sauce and miso are made using a mould called ____.", a: ["koji", "Aspergillus oryzae"], why: "Paragraph 3." }
+          ]
+        },
+        {
+          type: "mcq",
+          instr: "Questions 19–22. Choose the correct letter, A, B, C or D.",
+          items: [
+            { n: 19, q: "What does the writer suggest about early fermentation?", options: ["A It developed in only one part of the world.", "B It was practised successfully without any scientific understanding.", "C It depended on equipment that has since been lost.", "D It was less reliable than modern methods in every respect."], a: ["B"], why: "Paragraph 1: humans used it long before they knew what was happening; judged by taste and smell." },
+            { n: 20, q: "Why is salt added to many vegetable ferments?", options: ["A It supplies the nutrients that bacteria need.", "B It improves the flavour of lactic acid.", "C It gives useful microbes an advantage over harmful ones.", "D It prevents the vegetables from losing water."], a: ["C"], why: "Paragraph 4: discourages harmful microbes but allows lactic acid bacteria to flourish." },
+            { n: 21, q: "What does the writer say about the health claims made for probiotics?", options: ["A They have been rejected by all clinical trials.", "B They apply to every fermented food.", "C The evidence for them is inconsistent.", "D They are only true for people with a digestive condition."], a: ["C"], why: "Paragraph 5: the evidence is mixed." },
+            { n: 22, q: "What is ‘precision fermentation’?", options: ["A The use of starter cultures to obtain a uniform product", "B The use of modified microbes to make a particular ingredient", "C The careful control of temperature in large factories", "D The extraction of enzymes from the stomachs of animals"], a: ["B"], why: "Paragraph 6: microbes are genetically modified to produce one specific ingredient." }
+          ]
+        },
+        {
+          type: "sentence_end",
+          instr: "Questions 23–26. Complete each sentence with the correct ending, A–F, from the box below.",
+          options: [
+            "A a consistent flavour and quality in every batch.",
+            "B it remains safe to drink for longer than fresh milk.",
+            "C they are heated or baked after fermentation.",
+            "D the microbes produce them as they grow.",
+            "E they use up the oxygen in the container.",
+            "F the amount of salt that is needed can be reduced."
+          ],
+          items: [
+            { n: 23, q: "Laban was traditionally valued in hot regions because ____", a: ["B"], why: "Paragraph 4." },
+            { n: 24, q: "Some fermented foods contain more B vitamins than their ingredients because ____", a: ["D"], why: "Paragraph 5: many microbes synthesise B vitamins as they grow." },
+            { n: 25, q: "Many shelf-stable products contain no live microbes because ____", a: ["C"], why: "Paragraph 5." },
+            { n: 26, q: "Large producers add starter cultures in order to obtain ____", a: ["A"], why: "Paragraph 6: so that each batch has the same flavour and quality." }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Learning by Retrieval: Why Testing Helps",
+      html: "<p>Ask a student how they prepare for an examination, and the answer is usually the same: they read their notes again, perhaps highlighting the important parts, and then read them once more. These habits are popular because they feel productive. The text becomes familiar, and familiarity is easily mistaken for understanding. Cognitive psychologists have spent decades showing that this feeling is misleading. Material that seems well known while it is in front of us is often impossible to reproduce once the page is closed, and rereading, though it requires little effort, is one of the least effective ways of studying.</p>" +
+        "<p>The alternative that research supports is known as retrieval practice. Instead of taking information in again, learners close the book and try to recall it, by answering questions, writing down everything they can remember, or explaining the topic to someone else. The act of retrieving a memory appears to strengthen it, and to make it easier to retrieve in future, in a way that passive review does not. This is sometimes called the testing effect. A widely cited experiment, published in 2006, illustrates it. Students read short passages and then either read them a second time or took a test on them. When they were assessed five minutes later, the students who had reread did better. But when they were tested a week later, the pattern reversed, and those who had practised retrieval remembered considerably more.</p>" +
+        "<p>The result is a good example of what the psychologist Robert Bjork has called ‘desirable difficulties’: conditions that make learning feel harder and slower at the time but that improve long-term retention. Retrieval is one; spacing is another. The spacing effect, first described in the nineteenth century, holds that information is learned better when study sessions are spread over days or weeks than when the same time is concentrated into a single session, the familiar habit of cramming. A third is interleaving, in which different kinds of problem are mixed together instead of being practised in blocks. Learners usually feel that these methods are less effective, because they make mistakes and struggle to remember, and this struggle is easy to interpret as failure. In fact, it is the struggle that is doing the work.</p>" +
+        "<p>The findings have also been tested outside the laboratory. In one study conducted in a United States middle school, teachers gave short quizzes on some topics in science lessons but not on others. When the students took their end-of-unit examinations, they performed noticeably better on the material that had been quizzed, by an amount that the researchers compared to a difference of about one letter grade. Similar benefits have been reported in university courses and in medical training. Importantly, retrieval practice has been found to help with complex concepts and not merely with isolated facts, which answers a common objection that it encourages only rote memorisation.</p>" +
+        "<p>The method has its limits, and critics have raised some fair concerns. One is anxiety. Some educators fear that frequent testing will make learners nervous and put them off the subject, though studies of ‘low-stakes’ quizzes, which count for little or nothing towards a final grade, suggest that most students come to find them useful. A second concern is accuracy. If a learner retrieves a wrong answer and is never corrected, the mistake can be strengthened rather than removed. Feedback is therefore an essential part of the process, and a quiz that is not followed by a check of the correct answers may do more harm than good. A third is that teachers are under pressure to cover a large curriculum, and finding time for repeated practice is not always easy.</p>" +
+        "<p>Perhaps the greatest obstacle is the beliefs of the learners themselves. When students are asked which of two strategies is more effective, most choose rereading, even after they have experienced the benefits of testing for themselves. Educators have therefore concluded that it is not enough to tell students to use better methods; they need to be shown why the methods work, and structured so that good habits are built into courses. This implies a change in how we think about tests. Rather than being used only to measure what has been learned, they can be treated as a tool for learning. If that idea were taken seriously, a school week might contain more quizzes, but each one would count for less, and the purpose of all of them would be to help students remember.</p>",
+      groups: [
+        {
+          type: "ynng",
+          instr: "Questions 27–32. Do the following statements agree with the claims of the writer? Write YES, NO or NOT GIVEN.",
+          items: [
+            { n: 27, q: "Rereading can create a feeling of understanding that is not justified.", a: ["YES"], why: "Paragraph 1: familiarity is mistaken for understanding." },
+            { n: 28, q: "In the 2006 experiment, rereading gave better results than testing after a short delay.", a: ["YES"], why: "Paragraph 2: after five minutes the rereaders did better." },
+            { n: 29, q: "Retrieval practice is useful only for learning simple facts.", a: ["NO"], why: "Paragraph 4: it also helps with complex concepts." },
+            { n: 30, q: "Students find low-stakes quizzes more stressful than traditional examinations.", a: ["NOT GIVEN"], why: "No comparison of stress levels is made." },
+            { n: 31, q: "Retrieval practice may be harmful if learners do not receive feedback.", a: ["YES"], why: "Paragraph 5: a quiz without a check of answers may do more harm than good." },
+            { n: 32, q: "Most students correctly identify testing as the most effective way to study.", a: ["NO"], why: "Paragraph 6: most choose rereading." }
+          ]
+        },
+        {
+          type: "mcq",
+          instr: "Questions 33–36. Choose the correct letter, A, B, C or D.",
+          items: [
+            { n: 33, q: "Why does the writer describe the 2006 experiment?", options: ["A To show that rereading is never useful", "B To demonstrate that the best method depends on when learning is measured", "C To prove that students prefer tests to rereading", "D To explain why memory declines after a week"], a: ["B"], why: "Paragraph 2: results reversed between five minutes and one week." },
+            { n: 34, q: "What does the term ‘desirable difficulties’ refer to?", options: ["A Tasks that are too hard for learners to complete", "B Problems that teachers should avoid setting", "C Conditions that slow learning but improve long-term memory", "D Techniques that make studying more enjoyable"], a: ["C"], why: "Paragraph 3." },
+            { n: 35, q: "What did the middle school study find?", options: ["A Quizzes had no effect on examination results.", "B Students did better on topics on which they had been quizzed.", "C Teachers disliked giving frequent quizzes.", "D Science lessons benefited more than other subjects."], a: ["B"], why: "Paragraph 4." },
+            { n: 36, q: "What is the writer’s main conclusion?", options: ["A Examinations should be abolished.", "B Students should be left to choose their own methods.", "C Tests should be regarded as a way of learning as well as a way of measuring.", "D Teachers should give more demanding tests."], a: ["C"], why: "Paragraph 6." }
+          ]
+        },
+        {
+          type: "gap",
+          instr: "Questions 37–40. Complete the summary below. Choose NO MORE THAN ONE WORD from the passage for each answer.",
+          items: [
+            { n: 37, q: "Learners should spread their study over days or weeks rather than ____, which means concentrating it into a single session.", a: ["cramming"], why: "Paragraph 3." },
+            { n: 38, q: "Mixing different types of problem together is a technique known as ____.", a: ["interleaving"], why: "Paragraph 3." },
+            { n: 39, q: "If a wrong answer is never corrected after a quiz, the ____ can be strengthened rather than removed.", a: ["mistake", "mistakes"], why: "Paragraph 5: the mistake can be strengthened." },
+            { n: 40, q: "Teachers can reduce anxiety by using ____ quizzes that count for little towards a final grade.", a: ["low-stakes"], why: "Paragraph 5." }
+          ]
+        }
+      ]
+    }
+  ]
+});
+
+IELTS_DATA.reading.push({
+  id: 7,
+  title: "Practice Test 7",
+  passages: [
+    {
+      title: "The Blue That Cost More Than Gold",
+      html: "<p>When we look at a painting from the Renaissance, we rarely think about the cost of the materials. Yet for painters of that period, colour was a serious financial matter, and no colour was more troublesome than blue. Unlike reds, yellows and browns, which could be made from common earths and plants, a stable and brilliant blue was extremely hard to find in nature. The most widely available source was azurite, a copper mineral that produced a respectable blue but with a slightly greenish tone and a tendency to darken over time. For a truly intense, deep colour, artists needed something far rarer.</p>" +
+        "<p>That something was ultramarine, made from the semi-precious stone lapis lazuli. Lapis had been mined for some six thousand years in the mountains of Badakhshan, in what is now Afghanistan, and traders carried it across Asia to the Mediterranean. The name of the pigment reflects this journey: ‘ultramarine’ means ‘beyond the sea’, since it reached Europe from distant lands overseas. Lapis could not simply be ground into powder, because the stone contains a high proportion of grey and white minerals, and the result would be a dull, pale colour. A laborious process was needed to separate the blue particles. Around the year 1400, the Italian painter Cennino Cennini described the method in his handbook for artists. The ground stone was mixed with wax, resin and oil to make a dough, which was then kneaded repeatedly in a solution of lye. The blue particles gradually escaped into the liquid and sank to the bottom, where they were collected and dried.</p>" +
+        "<p>The process was extremely wasteful. The first extraction produced the deepest and most valuable colour; each later extraction gave a paler, greyer result, and the final batches, known as ultramarine ash, were worth only a fraction of the first. It is not surprising that the pigment became immensely expensive. In the fifteenth and sixteenth centuries, its price was comparable to that of gold, and contracts between painters and their patrons sometimes specified exactly how much ultramarine was to be used, and of what quality, so that the artist could not economise by substituting cheaper blues. Painters usually reserved it for the most important figures in a composition. The robe of the Virgin Mary is the best-known example, and historians believe that the expense of the pigment contributed to the long association between the colour blue and holiness.</p>" +
+        "<p>Not all painters followed the convention that ultramarine was a sacred colour. The Dutch artist Johannes Vermeer, working in the seventeenth century, used it with remarkable generosity, including in scenes of ordinary domestic life. Scientific analysis of his paintings has identified it in places where a cheaper pigment would probably have served, and some scholars have wondered whether this extravagance contributed to the financial difficulties his family suffered. The evidence is circumstantial, however, and the relationship between his spending on materials and his debts has never been established.</p>" +
+        "<p>The monopoly of the natural pigment was broken by accident. Around 1706, a colour maker in Berlin named Diesbach was attempting to produce a red dye when a contaminated batch of chemicals turned an unexpected deep blue. The new pigment, which became known as Prussian blue, was inexpensive, intense and easy to manufacture, and it spread rapidly across Europe. It was also exported to Asia, and in the nineteenth century Japanese printmakers began to use imported Prussian blue in their work. The vivid blue in the famous woodblock print known as The Great Wave is the best-known example.</p>" +
+        "<p>The final blow to the price of ultramarine came in the 1820s, when a French society offered a prize for anyone who could make the pigment artificially. In 1828, the chemist Jean-Baptiste Guimet claimed the reward with a recipe for synthetic ultramarine, made by heating clay, soda and sulphur together. Within a few years the pigment cost a small fraction of its former price, and a colour that had once been reserved for saints and kings could be bought by any student.</p>" +
+        "<p>The search for new blues has not stopped. In 1960, the French artist Yves Klein patented a paint he called International Klein Blue, which used synthetic ultramarine suspended in a special resin so that the powder kept its intensity instead of looking flat. More recently, in 2009, chemists at Oregon State University accidentally produced a vivid new blue while experimenting with materials for electronics. Called YInMn blue, after the elements yttrium, indium and manganese from which it is made, it was approved for commercial use in 2020. Artists, it seems, will always be searching for the perfect blue.</p>",
+      groups: [
+        {
+          type: "mcq",
+          instr: "Questions 1–4. Choose the correct letter, A, B, C or D.",
+          items: [
+            { n: 1, q: "What is the writer’s point about azurite?", options: ["A It was more expensive than ultramarine.", "B It was only available in small quantities.", "C Its colour was less satisfactory than ultramarine.", "D It was used only for religious paintings."], a: ["C"], why: "Paragraph 1: slightly greenish tone and tendency to darken." },
+            { n: 2, q: "What does the name ‘ultramarine’ indicate?", options: ["A The pigment was made from a marine mineral.", "B The pigment was brought to Europe from overseas.", "C The colour resembled that of the deep ocean.", "D The pigment was invented by Italian painters."], a: ["B"], why: "Paragraph 2: ‘beyond the sea’." },
+            { n: 3, q: "According to the writer, why did blue become associated with holiness?", options: ["A It was required by the Church.", "B It was the colour of the Virgin Mary’s own clothes.", "C The high cost of the pigment may have been a factor.", "D It was the only colour that did not fade."], a: ["C"], why: "Paragraph 3: historians believe the expense contributed to the association." },
+            { n: 4, q: "What is mentioned about the discovery of Prussian blue?", options: ["A It resulted from an attempt to make a different colour.", "B It was funded by the Prussian government.", "C It was first used by Japanese printmakers.", "D It was made from lapis lazuli."], a: ["A"], why: "Paragraph 5: the colour maker was trying to produce a red dye." }
+          ]
+        },
+        {
+          type: "tfng",
+          instr: "Questions 5–9. Do the following statements agree with the information given in the passage? Write TRUE, FALSE or NOT GIVEN.",
+          items: [
+            { n: 5, q: "The lapis lazuli used for ultramarine was mined in Europe.", a: ["FALSE"], why: "Paragraph 2: mined in Badakhshan, in what is now Afghanistan." },
+            { n: 6, q: "The first extraction of the pigment gave the best quality of blue.", a: ["TRUE"], why: "Paragraph 3." },
+            { n: 7, q: "Some Renaissance contracts specified the quality of ultramarine to be used.", a: ["TRUE"], why: "Paragraph 3." },
+            { n: 8, q: "Vermeer went bankrupt because of the money he spent on ultramarine.", a: ["NOT GIVEN"], why: "Paragraph 4: the relationship has never been established." },
+            { n: 9, q: "Prussian blue was used by artists in Japan in the nineteenth century.", a: ["TRUE"], why: "Paragraph 5." }
+          ]
+        },
+        {
+          type: "gap",
+          instr: "Questions 10–13. Complete the notes below. Choose NO MORE THAN TWO WORDS from the passage for each answer.",
+          items: [
+            { n: 10, q: "c.1400: Cennini describes kneading a dough of ground lapis, wax and resin in a solution of ____.", a: ["lye"], why: "Paragraph 2." },
+            { n: 11, q: "c.1706: Prussian blue is discovered in ____.", a: ["Berlin"], why: "Paragraph 5." },
+            { n: 12, q: "1828: Guimet wins a prize with his recipe for ____ ultramarine.", a: ["synthetic", "artificial"], why: "Paragraph 6: synthetic ultramarine." },
+            { n: 13, q: "2009: chemists in Oregon accidentally create a new blue pigment called ____.", a: ["YInMn blue", "YInMn"], why: "Paragraph 7." }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Storing the Sun and the Wind",
+      html: "<p><b>A</b> Solar panels and wind turbines have become the cheapest sources of new electricity in many parts of the world, yet they share a fundamental weakness: they produce power when the weather allows, not when people need it. In sunny regions, solar output peaks at midday, when demand is often moderate, and disappears at sunset, just as families return home and switch on lights and air conditioning. Grid operators in California, one of the first places to experience this, drew a graph of the demand left for other power stations once solar output was subtracted. Its shape, a deep dip at midday followed by a steep climb in the evening, gave it the nickname ‘the duck curve’. The steepness of that climb is the problem, since conventional plants must be ready to increase their output rapidly. The obvious remedy is storage, and engineers have developed several technologies to provide it.</p>" +
+        "<p><b>B</b> The oldest and still the most widespread is pumped-storage hydropower. When electricity is plentiful, surplus power is used to pump water from a lower reservoir to a higher one; when demand rises, the water is released back down through turbines. Pumped storage still accounts for the large majority of the world’s storage capacity, and it can operate for decades. Its limitation is geography. It requires two reservoirs at different heights, close to each other, and suitable sites are scarce and often controversial, because building a reservoir floods land.</p>" +
+        "<p><b>C</b> Batteries have grown in importance more quickly than any other option. The price of lithium-ion batteries has fallen by around ninety per cent over the past decade, a decline driven largely by the electric vehicle industry, and large battery installations are now being added to grids on every continent. Batteries can respond within a fraction of a second, which makes them excellent at stabilising the frequency of the grid. They are, however, best suited to storage for a few hours. Storing energy for days or weeks would require far larger and more costly installations, and the mining of lithium, cobalt and nickel raises its own environmental and ethical questions.</p>" +
+        "<p><b>D</b> For longer periods, many researchers look to hydrogen. In this approach, surplus renewable electricity is used to split water into hydrogen and oxygen in a device called an electrolyser. The hydrogen, known as ‘green hydrogen’ when made in this way, can be stored in tanks or underground for months and later burned or converted back into electricity in a fuel cell. This makes it one of the few options suitable for storing summer energy for use in winter. The weakness is efficiency. Energy is lost in each stage of the conversion, and only a third to a half of the original electricity may be recovered, so hydrogen is likely to be used only where nothing else will serve.</p>" +
+        "<p><b>E</b> A different approach is to store heat rather than electricity. Concentrated solar power plants use fields of mirrors to focus sunlight onto a receiver at the top of a tall tower. The receiver heats a salt mixture to more than five hundred degrees Celsius, so that it becomes liquid, and the molten salt is kept in insulated tanks. When power is needed, perhaps hours after sunset, the hot salt is used to produce steam, which drives a turbine in the same way as in a conventional power station. The Mohammed bin Rashid Al Maktoum Solar Park near Dubai includes a plant of this type designed to hold enough heat to generate electricity for around fifteen hours without sunshine. Such plants are costly to build, however, and they work best in places with very strong direct sunlight.</p>" +
+        "<p><b>F</b> Other possibilities are still being tested. Compressed-air storage pumps air into underground salt caverns and releases it through turbines when needed, though it depends on the right kind of rock formation and only a handful of plants operate worldwide. Engineers are also experimenting with heavy blocks raised and lowered by cranes, and with flywheels that store energy as rotation. Most of these ideas are interesting, but none has yet been proved at scale.</p>" +
+        "<p><b>G</b> No single technology is likely to solve the storage problem on its own. Each of the options has a different mix of cost, speed, duration and geographical requirements, and a modern grid will probably need several of them working together: batteries for the short term, hydrogen or pumped storage for the long term, and heat storage where the sun is strong. What is clear is that without large-scale storage, the transition to renewable electricity will be slower and more expensive than it needs to be.</p>",
+      groups: [
+        {
+          type: "match_feature",
+          instr: "Questions 14–18. Look at the following statements (Questions 14–18) and the list of storage technologies below. Match each statement with the correct technology, A–E. You may use any letter more than once.",
+          options: [
+            "A Pumped-storage hydropower",
+            "B Lithium-ion batteries",
+            "C Green hydrogen",
+            "D Molten-salt heat storage",
+            "E Compressed-air storage"
+          ],
+          items: [
+            { n: 14, q: "It currently provides the greatest share of the world’s storage capacity.", a: ["A"], why: "Paragraph B." },
+            { n: 15, q: "Its cost has fallen sharply in the last ten years.", a: ["B"], why: "Paragraph C." },
+            { n: 16, q: "It makes it possible to keep energy for months at a time.", a: ["C"], why: "Paragraph D." },
+            { n: 17, q: "It stores energy as heat before turning it into electricity.", a: ["D"], why: "Paragraph E." },
+            { n: 18, q: "It depends on a particular type of underground rock formation.", a: ["E"], why: "Paragraph F." }
+          ]
+        },
+        {
+          type: "mcq",
+          instr: "Questions 19–22. Choose the correct letter, A, B, C or D.",
+          items: [
+            { n: 19, q: "What problem is illustrated by the ‘duck curve’?", options: ["A Solar panels produce too little power in the afternoon.", "B Power stations must rapidly increase output after the sun sets.", "C Demand for electricity is lowest in the evening.", "D Grid operators cannot predict the weather."], a: ["B"], why: "Paragraph A: the steep climb in the evening." },
+            { n: 20, q: "What limitation of lithium-ion batteries does the writer mention?", options: ["A They react too slowly to changes in demand.", "B They are unsuitable for use in vehicles.", "C They are best suited to storage over a few hours.", "D They cannot be used to stabilise the grid."], a: ["C"], why: "Paragraph C." },
+            { n: 21, q: "What is said about the efficiency of green hydrogen?", options: ["A Most of the original electricity can be recovered.", "B A large part of the energy is lost during conversion.", "C It is more efficient than batteries.", "D Its efficiency depends on the season."], a: ["B"], why: "Paragraph D: only a third to a half may be recovered." },
+            { n: 22, q: "What is the writer’s conclusion?", options: ["A Pumped storage will eventually replace all other methods.", "B Storage technology is not yet necessary.", "C A combination of technologies will probably be required.", "D Heat storage is the best option for every country."], a: ["C"], why: "Paragraph G." }
+          ]
+        },
+        {
+          type: "gap",
+          instr: "Questions 23–26. Complete the summary below. Choose ONE WORD ONLY from the passage for each answer.",
+          items: [
+            { n: 23, q: "In a concentrated solar power plant, mirrors focus sunlight onto a receiver at the top of a ____.", a: ["tower"], why: "Paragraph E." },
+            { n: 24, q: "The heated salt becomes liquid and is stored in insulated ____.", a: ["tanks"], why: "Paragraph E." },
+            { n: 25, q: "When electricity is needed, the hot salt is used to produce ____.", a: ["steam"], why: "Paragraph E." },
+            { n: 26, q: "The steam then drives a ____, as in a conventional power station.", a: ["turbine"], why: "Paragraph E." }
+          ]
+        }
+      ]
+    },
+    {
+      title: "The Placebo Puzzle",
+      html: "<p>Few ideas in medicine are as puzzling as the placebo effect. A placebo is a treatment with no active ingredient, such as a sugar pill or an injection of salt water, yet patients who receive one often report real improvements in their symptoms. The word comes from the Latin for ‘I shall please’, and for much of history, doctors prescribed such remedies to reassure patients rather than to cure them. It was only in the twentieth century that researchers began to study the phenomenon seriously, and the more they learned, the less simple it appeared.</p>" +
+        "<p>A landmark paper published in 1955 by the American anaesthetist Henry Beecher concluded that roughly a third of patients improved after receiving a placebo. The figure was quoted for decades, but it has since been heavily criticised. Beecher did not compare placebo groups with groups who received no treatment at all, so he could not tell how much of the improvement was caused by the placebo and how much would have happened anyway. Many conditions improve by themselves over time, and patients tend to seek help when their symptoms are at their worst, which means that they are likely to feel better later regardless of treatment, a statistical phenomenon known as regression to the mean. Later reviews that did include untreated groups found that placebos have little measurable influence on objective conditions, but can produce a genuine effect on subjective experiences such as pain, nausea and fatigue.</p>" +
+        "<p>Evidence is growing that these effects are not simply imagined. Brain-imaging and laboratory studies suggest that when a person expects to feel less pain, the brain releases its own natural painkillers, known as endorphins. When volunteers are given a drug called naloxone, which blocks the action of such chemicals, the pain-relieving power of a placebo largely disappears. In patients with Parkinson’s disease, scans have shown the release of dopamine, the chemical in which these patients are deficient, after they were given an inactive injection they believed to be a real drug. Placebos, it seems, can trigger measurable biological changes, although these changes appear to be confined to systems regulated by the brain.</p>" +
+        "<p>Another surprising finding is that the way a placebo is presented influences how well it works. Capsules tend to work better than tablets, and injections better than pills. Larger doses have a stronger effect than smaller ones, and branded packaging produces better results than plain packaging. In one widely discussed experiment, volunteers given an electric shock reported more pain relief from a placebo that they were told cost a high price than from an identical one described as discounted. The context in which treatment is given, from the appearance of the medicine to the manner of the doctor, seems to alter what the patient feels.</p>" +
+        "<p>The reverse is also true. The ‘nocebo’ effect describes negative symptoms that arise from negative expectations. Patients who are warned about possible side effects of a drug often report them, even when the pill they have received contains nothing. This puts doctors in a difficult position, since they are ethically obliged to inform patients of risks yet may thereby cause some of the harm they describe.</p>" +
+        "<p>The ethical issues surrounding placebos have long limited their clinical use, because giving a patient an inactive treatment while pretending that it is real involves deception. A series of experiments has challenged this assumption. In the best known, patients with irritable bowel syndrome were told honestly that they were receiving pills with no active ingredient, but that such pills had been shown to help some people through the body’s own processes. Patients in this ‘open-label’ group reported greater relief from their symptoms than a group that received no pills, even though they knew precisely what they were taking. The results are promising but preliminary. The trials have been small, they have concerned conditions with subjective symptoms, and it is not known whether the benefits last.</p>" +
+        "<p>For pharmaceutical companies, the placebo response is a nuisance as much as a curiosity. Every new drug must be tested against a placebo to show that it works better than expectation alone, and in some fields, notably pain and depression, the placebo response in trials appears to have grown over the years, making it harder to demonstrate a benefit. For doctors, the lesson is different. Clear explanations, empathy and attention can all strengthen the patient’s expectation of improvement, and they cost nothing. It would be wrong, however, to suggest that placebos can do everything. There is no evidence that they shrink tumours or cure bacterial infections, and a doctor who relied on them in place of effective treatment would be failing the patient.</p>",
+      groups: [
+        {
+          type: "ynng",
+          instr: "Questions 27–31. Do the following statements agree with the claims of the writer? Write YES, NO or NOT GIVEN.",
+          items: [
+            { n: 27, q: "The figure published by Beecher in 1955 is still accepted by most researchers.", a: ["NO"], why: "Paragraph 2: it has since been heavily criticised." },
+            { n: 28, q: "Some patients who receive a placebo would have recovered without any treatment.", a: ["YES"], why: "Paragraph 2: many conditions improve by themselves." },
+            { n: 29, q: "Placebos have been shown to have a strong effect on objective conditions such as tumours.", a: ["NO"], why: "Paragraphs 2 and 7: little effect on objective conditions; no evidence they shrink tumours." },
+            { n: 30, q: "The appearance and price of a placebo can affect how much relief patients report.", a: ["YES"], why: "Paragraph 4." },
+            { n: 31, q: "Doctors in most countries are allowed to prescribe open-label placebos.", a: ["NOT GIVEN"], why: "Legal status is not discussed." }
+          ]
+        },
+        {
+          type: "mcq",
+          instr: "Questions 32–35. Choose the correct letter, A, B, C or D.",
+          items: [
+            { n: 32, q: "Why does the writer mention naloxone?", options: ["A To show that placebos can be harmful", "B To suggest that the brain’s natural painkillers are involved in placebo relief", "C To explain how pharmaceutical companies test new drugs", "D To prove that endorphins cannot be measured"], a: ["B"], why: "Paragraph 3: when naloxone blocks these chemicals, the placebo’s effect largely disappears." },
+            { n: 33, q: "What does the example of Parkinson’s disease show?", options: ["A Placebos can bring about measurable biological changes.", "B Placebos cure serious illnesses.", "C Patients cannot tell real drugs from placebos.", "D Dopamine has no effect on the brain."], a: ["A"], why: "Paragraph 3." },
+            { n: 34, q: "What does the term ‘nocebo effect’ describe?", options: ["A Improvement caused by a real drug", "B Harm caused by contaminated medicines", "C Negative symptoms caused by negative expectations", "D The absence of any response to treatment"], a: ["C"], why: "Paragraph 5." },
+            { n: 35, q: "What did the experiment on irritable bowel syndrome find?", options: ["A Patients improved only when they believed the pills were real.", "B Patients who knew the pills were inactive still reported greater relief.", "C The pills were more effective than conventional drugs.", "D The benefits were shown to last for many years."], a: ["B"], why: "Paragraph 6." }
+          ]
+        },
+        {
+          type: "gap",
+          instr: "Questions 36–40. Complete the summary below. Choose NO MORE THAN TWO WORDS from the passage for each answer.",
+          items: [
+            { n: 36, q: "Every new drug must be compared with a placebo to show that it works better than ____ alone.", a: ["expectation"], why: "Paragraph 7." },
+            { n: 37, q: "In some areas, such as pain and depression, a growing placebo ____ in trials makes it harder to show a benefit.", a: ["response"], why: "Paragraph 7." },
+            { n: 38, q: "Doctors can strengthen a patient’s expectation of improvement with clear explanations, empathy and ____.", a: ["attention"], why: "Paragraph 7." },
+            { n: 39, q: "There is no evidence that placebos can shrink ____.", a: ["tumours", "tumors"], why: "Paragraph 7." },
+            { n: 40, q: "Nor is there evidence that placebos can cure bacterial ____.", a: ["infections", "infection"], why: "Paragraph 7." }
+          ]
+        }
+      ]
+    }
+  ]
+});
+
 }catch(e){console.error('ielts data_reading_b.js',e)}
+/* ---- ielts data_reading_c.js ---- */
+try{
+IELTS_DATA.reading.push({
+  id: 8,
+  title: "Practice Test 8",
+  passages: [
+    {
+      title: "The Social Lives of Crows",
+      html: "<p>Crows, ravens, jays and magpies belong to a family of birds known as corvids, and for more than a century they have had a reputation for cleverness. Their brains are small in absolute terms, but relative to the size of their bodies they are comparable to those of some great apes. For many years, researchers who wished to demonstrate this intelligence concentrated on tool use: New Caledonian crows, for instance, shape twigs and leaf edges into hooks to extract insects from crevices. Only more recently have scientists turned their attention to the social lives of corvids, and the picture that has emerged is at least as remarkable as the toolmaking.</p><p>Many corvid species live in family groups rather than as isolated pairs. In the American crow, young birds often remain with their parents for several years after they are fully grown. During that time they help to raise the next generation of chicks, bringing food to the nest and joining in its defence. This arrangement, known as cooperative breeding, is rare among birds. The helpers are usually the older siblings of the nestlings, although unrelated adults occasionally assist as well. Biologists believe that the arrangement benefits the young helpers because it allows them to learn parenting skills and to inherit a safe, food-rich territory before they breed themselves.</p><p>Crows are also unusually good at recognising individual humans. In a well-known series of field experiments, researchers wore a rubber mask while capturing and ringing wild crows on a university campus. Afterwards, the birds scolded anyone wearing that mask, while ignoring people in other masks. Several years later the behaviour was still observed. More surprisingly, crows that had never been trapped began to scold the masked researcher too. The scientists concluded that the birds had learned to identify the \"dangerous\" face by watching their companions' reactions, and probably through their calls, rather than through personal experience.</p><p>Observers have also noted that when a crow dies, others gather around the body, calling loudly. The gatherings have sometimes been described as funerals, and it is tempting to interpret them as mourning. Most researchers reject this view. In experiments in which crows were shown a dead bird, the living birds afterwards avoided the place where it lay and became more cautious around the person who had presented it. The researchers interpret the gathering as a form of risk assessment: the birds are trying to work out what killed one of their number so that they can avoid the same fate.</p><p>In winter, crows in many regions come together in enormous communal roosts, sometimes containing tens of thousands of birds. Why they do so has been debated for decades. One influential idea, the \"information centre\" hypothesis, proposes that birds that have failed to find food during the day follow more successful roost-mates to the locations of food the next morning. The evidence for this is mixed, and some studies have found no sign of such following. A simpler explanation is that sleeping in a crowd provides protection from owls, which hunt crows at night, as there are many more eyes to detect an approaching predator.</p><p>Communication within these groups is complex. Crows use a wide range of calls, and there is evidence that populations in different areas have their own vocal \"dialects\". Young birds that have recently left the nest use special begging calls to ask adults for food, and these calls change as the birds mature. Captive ravens, meanwhile, have been recorded imitating the sounds of their surroundings, from engines to human voices, although they are generally less accomplished mimics than parrots.</p><p>Crows have also adapted to cities with great success. In Japan, carrion crows have been filmed placing hard-shelled nuts on roads so that passing cars will crack them open. The birds then wait beside a pedestrian crossing until the traffic lights turn red and retrieve the nut safely. Whether each bird works this out independently or learns it from others is not yet clear, but the behaviour has spread in some urban areas, which suggests that social learning plays a role.</p><p>Living in groups is not without costs. Group members compete for food, and some corvids take advantage of their neighbours. Ravens, for example, hide food in caches, but they are known to steal from the caches of others. Experiments show that a raven that realises it has been watched while hiding food will often wait until the observer has gone and then move the food to a new location. Researchers disagree about whether this amounts to deliberate deception or a simpler learned response, but it clearly shows an awareness of what other individuals can see.</p><p>Understanding crow society has practical value as well as scientific interest. When the West Nile virus reached North America in the late 1990s, it caused a sharp fall in American crow numbers in several regions. Because crows are so closely tied to family and neighbours, the loss of even a few individuals can disrupt a group's ability to breed and defend its territory. Conservationists therefore argue that protecting these birds requires an understanding not only of their numbers but of the social bonds that hold their populations together.</p>",
+      groups: [
+        {
+          type: "tfng",
+          instr: "Questions 1–7. Do the following statements agree with the information given in the passage? Write TRUE if the statement agrees with the information, FALSE if the statement contradicts the information, or NOT GIVEN if there is no information on this.",
+          items: [
+            { n: 1, q: "Corvids have brains that are large in proportion to their bodies.", a: ["TRUE"], why: "Paragraph 1: relative to body size their brains are comparable to those of some great apes." },
+            { n: 2, q: "Scientists studied tool use in corvids before they studied their social behaviour.", a: ["TRUE"], why: "Paragraph 1: for many years researchers concentrated on tool use; only more recently have they turned to social lives." },
+            { n: 3, q: "The helpers at American crow nests are always older siblings of the chicks.", a: ["FALSE"], why: "Paragraph 2: helpers are usually older siblings, but unrelated adults occasionally help too." },
+            { n: 4, q: "Crows that had never been captured came to scold the masked researcher.", a: ["TRUE"], why: "Paragraph 3: crows that had never been trapped began to scold the masked researcher too." },
+            { n: 5, q: "The gathering of crows around a dead bird shows that they feel grief.", a: ["FALSE"], why: "Paragraph 4: most researchers reject the mourning interpretation and see risk assessment instead." },
+            { n: 6, q: "Winter roosts in cities contain more birds than roosts in the countryside.", a: ["NOT GIVEN"], why: "No comparison of urban and rural roosts is made." },
+            { n: 7, q: "A raven can change the position of hidden food if it knows it has been observed.", a: ["TRUE"], why: "Paragraph 8: a raven that realises it was watched will often move the food to a new location." }
+          ]
+        },
+        {
+          type: "gap",
+          instr: "Questions 8–13. Complete the sentences below. Write NO MORE THAN TWO WORDS from the passage for each answer.",
+          items: [
+            { n: 8, q: "In Japan, carrion crows place hard ____ on roads so that cars will crack them open.", a: ["nuts", "hard-shelled nuts"], why: "Paragraph 7: hard-shelled nuts on roads." },
+            { n: 9, q: "The crows wait until the ____ turn red before collecting the food.", a: ["traffic lights"], why: "Paragraph 7: they wait until the traffic lights turn red." },
+            { n: 10, q: "According to the 'information centre' hypothesis, roosting birds follow others to the location of ____.", a: ["food"], why: "Paragraph 5: birds follow successful roost-mates to the locations of food." },
+            { n: 11, q: "Roosting in large groups may protect crows from ____ at night.", a: ["owls"], why: "Paragraph 5: protection from owls, which hunt crows at night." },
+            { n: 12, q: "Young crows that have recently left the nest use ____ calls to ask adults for food.", a: ["begging"], why: "Paragraph 6: special begging calls." },
+            { n: 13, q: "The ____ virus caused a sharp fall in American crow numbers in several regions.", a: ["West Nile", "West Nile virus"], why: "Paragraph 9: the West Nile virus reached North America and caused a sharp fall." }
+          ]
+        }
+      ]
+    },
+    {
+      title: "The Incense Route",
+      html: "<p><b>A</b> For much of the ancient world, the most valuable cargo that crossed the Arabian Peninsula was not gold or silk but tree resin. Frankincense and myrrh, collected from trees that grow in the arid highlands of what is now Oman, Yemen and the Horn of Africa, were burned in temples, used in medicine and cosmetics, and employed in the embalming of the dead. Demand in Egypt, Mesopotamia, Greece and later Rome was enormous, yet the trees grew only in a few remote regions. The overland network that carried the resins northwards to the Mediterranean, a distance of more than two thousand kilometres, became known as the Incense Route.</p><p><b>B</b> The route would have been impossible without the camel. Although donkeys had been used for short journeys, it was probably around 1000 BCE that the domesticated dromedary began to be employed in large numbers in Arabia. A camel can carry a load of around two hundred kilograms and can travel for days without drinking, living off the fat stored in its hump and conserving water with remarkable efficiency. This ability allowed caravans to cross stretches of desert that no other animal could manage. The Roman writer Pliny the Elder recorded that the journey from southern Arabia to the Mediterranean coast at Gaza was divided into sixty-five stages, each corresponding roughly to a day's travel between watering places.</p><p><b>C</b> The merchants who owned the incense did not control the whole route. It passed through the territories of a succession of kingdoms, among them the Sabaeans, the Minaeans and later the Nabataeans, and each of them demanded payment. There were fees for water, fodder, lodging and protection, as well as taxes levied on the goods themselves. Pliny claimed that by the time a load reached the Mediterranean, these costs had increased its price many times over. For the kingdoms along the way, however, the system was highly lucrative, and the tolls financed palaces, temples and irrigation works in otherwise barren country.</p><p><b>D</b> The producers also had reasons to keep the sources of incense obscure. The Greek historian Herodotus reported that frankincense trees were guarded by winged serpents, and that the traders had to drive them away with smoke from burning resin. Modern historians generally consider such stories to be deliberate inventions, spread by merchants to discourage outsiders from travelling to the source and cutting out the middlemen. By making the harvest sound dangerous and mysterious, the traders protected their monopoly and justified their high prices.</p><p><b>E</b> No settlement benefited more than Petra, in modern-day Jordan. The Nabataeans, originally a nomadic people, recognised that whoever controlled the junction where several caravan routes met could grow rich without ever growing a crop or mining a metal. They built a city carved into rose-coloured cliffs and solved the problem of water in the desert with an elaborate system of channels, cisterns to store the rare rainfall, and dams to control flash floods. Petra became a cosmopolitan trading hub with a population of tens of thousands. Its independence ended in 106 CE, when the Roman Empire annexed the Nabataean kingdom and made it a province.</p><p><b>F</b> The Incense Route did not vanish overnight, but its importance declined for several reasons. By the first century CE, Greek and Roman sailors had learned to exploit the seasonal monsoon winds and could sail directly from Red Sea ports to India, carrying larger cargoes more cheaply than any caravan. The sea also gave Rome access to spices and textiles that had never travelled by the desert road. Later, as the Roman Empire weakened and Christianity replaced older religions, the burning of incense in temples and at funerals diminished, and with it the demand that had kept the caravans moving.</p><p><b>G</b> Today the route survives in archaeological remains and in the landscape itself. The Land of Frankincense in southern Oman, which includes ancient trees, the remains of a caravan oasis and a frontier port, was added to the UNESCO World Heritage List in 2000. The desert cities of the Negev in Israel, which formed part of the northern section of the route, were recognised in 2005. Researchers continue to find evidence of how widely the trade extended, and the story has attracted renewed interest in a region whose own heritage is increasingly valued by its modern inhabitants.</p>",
+      groups: [
+        {
+          type: "heading",
+          instr: "Questions 14–18. The passage has seven paragraphs, A–G. Choose the correct heading for paragraphs B–F from the list of headings below. Write the correct number, i–viii.",
+          options: [
+            "i Why resins were in demand",
+            "ii Protecting commercial secrets",
+            "iii An animal that transformed desert travel",
+            "iv The causes of decline",
+            "v A desert city built on trade",
+            "vi Profit through taxation",
+            "vii Modern attempts to revive the trade",
+            "viii Disputes between neighbouring kingdoms"
+          ],
+          items: [
+            { n: 14, q: "Paragraph B", a: ["iii"], why: "The paragraph explains how the camel made the route possible." },
+            { n: 15, q: "Paragraph C", a: ["vi"], why: "Kingdoms charged fees and taxes along the way." },
+            { n: 16, q: "Paragraph D", a: ["ii"], why: "Merchants invented stories about serpents to keep the source secret." },
+            { n: 17, q: "Paragraph E", a: ["v"], why: "Petra grew rich as a trading hub." },
+            { n: 18, q: "Paragraph F", a: ["iv"], why: "Sea trade and falling demand reduced the route's importance." }
+          ]
+        },
+        {
+          type: "match_info",
+          instr: "Questions 19–22. Which paragraph contains the following information? Write the correct letter, A–G.",
+          items: [
+            { n: 19, q: "a reference to a political event that ended the independence of a trading kingdom", a: ["E"], why: "Paragraph E: Rome annexed the Nabataean kingdom in 106 CE." },
+            { n: 20, q: "an explanation of why traders may have exaggerated the dangers of collecting resin", a: ["D"], why: "Paragraph D: stories invented to discourage outsiders and protect the monopoly." },
+            { n: 21, q: "a description of a biological feature that made desert caravans possible", a: ["B"], why: "Paragraph B: camels can travel for days without water." },
+            { n: 22, q: "a mention of a cheaper means of transport that reduced the importance of the overland route", a: ["F"], why: "Paragraph F: direct sea voyages using the monsoon winds." }
+          ]
+        },
+        {
+          type: "short",
+          instr: "Questions 23–26. Answer the questions below. Write NO MORE THAN TWO WORDS AND/OR A NUMBER from the passage for each answer.",
+          items: [
+            { n: 23, q: "According to Herodotus, what kind of creature guarded the frankincense trees?", a: ["winged serpents", "serpents"], why: "Paragraph D: winged serpents." },
+            { n: 24, q: "How many stages did Pliny record for the journey to Gaza?", a: ["65", "sixty-five", "sixty five"], why: "Paragraph B: sixty-five stages." },
+            { n: 25, q: "What did the Nabataeans build to store the rare rainfall?", a: ["cisterns"], why: "Paragraph E: cisterns to store the rare rainfall." },
+            { n: 26, q: "In which country is the Land of Frankincense World Heritage site?", a: ["Oman"], why: "Paragraph G: southern Oman." }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Rethinking the Eight Hours",
+      html: "<p>For most of the twentieth century, the advice given to anyone who complained of feeling tired was simple: sleep for eight hours, in one unbroken stretch, every night. Doctors, public health campaigns and even employers adopted the figure as a kind of natural law. Anyone who woke in the small hours was assumed to be suffering from a disorder. Yet over the past two decades, historians, biologists and anthropologists have assembled a body of evidence suggesting that the familiar pattern is neither as universal nor as natural as we have supposed.</p><p>The first challenge came from the archives. A historian studying the history of the night spent years searching diaries, court records, medical books and literature from pre-industrial Europe, and found hundreds of references to a pattern of \"first sleep\" and \"second sleep\". People went to bed soon after dark, woke after a few hours, and remained awake for an hour or more before sleeping again until morning. The waking interval was used for praying, talking, tending the fire or visiting neighbours. The references are so numerous and so casual, written as though every reader would understand them, that it is difficult to dismiss the idea that this was once a common way of sleeping.</p><p>Laboratory research appears to support the historical findings. In an experiment carried out in the 1990s, healthy volunteers were kept in darkness for fourteen hours every night for a month, mimicking the long winter nights before artificial lighting. At first they slept deeply for long periods, apparently repaying a sleep debt. Gradually, however, their sleep settled into two distinct segments separated by a period of quiet wakefulness lasting one to three hours. These results do not prove that segmented sleep is our biological default, but they do show that the single block of eight hours is not the only pattern our bodies can adopt.</p><p>A different line of evidence comes from communities that live without electricity. Researchers who monitored the sleep of hunter-gatherer and small-scale farming groups in Africa and South America expected to find that people sleep longer than those in industrial societies, since they have no screens or street lights to keep them awake. They found the opposite. Participants slept between roughly six and seven hours a night, which is no more than many people in cities, and they rarely took daytime naps. What these communities did share was a close relationship between sleep and temperature: they tended to fall asleep as the air cooled in the evening and wake around the coldest point of the night, shortly before dawn.</p><p>None of this means that sleep is unimportant. The brain appears to use sleep for a number of vital tasks. One is the consolidation of memory: studies show that newly learned material is better retained after a period of sleep than after the same period awake, probably because the brain replays and strengthens the connections formed during the day. Another is the removal of waste. Experiments on mice suggest that the fluid surrounding brain cells flows more freely during sleep, clearing away by-products of cellular activity that accumulate while the animal is awake. Whether the same process operates in humans to the same degree is still being investigated.</p><p>The pressure to sleep itself seems to arise from two systems. The first is the circadian rhythm, an internal clock of roughly twenty-four hours that rises and falls with the cycle of light and darkness. The second is a chemical called adenosine, which builds up in the brain the longer we are awake. Caffeine works by blocking the receptors that detect adenosine, so a cup of coffee does not remove the need for sleep; it merely hides the signal. When the caffeine wears off, the accumulated adenosine is still there, which explains the sudden fatigue many people feel in the afternoon.</p><p>The internal clock also varies between individuals. Some people are naturally inclined to wake early and others to stay up late, a difference that is partly inherited. Teenagers, in particular, experience a shift in their body clocks during puberty, so that their rhythm runs later than that of children or adults. This is one reason why a number of schools that have experimented with later start times have reported improved attendance and alertness. Shift workers face the opposite problem: their schedules force them to be awake when their bodies expect to sleep, and long-term studies link this mismatch with a higher risk of several health problems. Some researchers now suggest that irregular timing of sleep may be harmful even when the total number of hours is adequate.</p><p>The modern response to these discoveries has not always been helpful. Sleep-tracking watches and rings now give millions of people a nightly score, and some sleep specialists have noticed a new problem, which they call orthosomnia: an unhealthy preoccupation with achieving perfect sleep data. Patients who worry about their numbers become anxious about bed, and the anxiety itself makes it harder to fall asleep. The history and biology of sleep suggest a more relaxed conclusion. Needs vary from person to person, patterns have varied across time and place, and consistency may matter more than a particular number of hours. For most people, waking briefly in the night is probably nothing to worry about.</p>",
+      groups: [
+        {
+          type: "ynng",
+          instr: "Questions 27–31. Do the following statements agree with the views of the writer in the passage? Write YES if the statement agrees with the views of the writer, NO if the statement contradicts the views of the writer, or NOT GIVEN if it is impossible to say what the writer thinks about this.",
+          items: [
+            { n: 27, q: "A single block of eight hours is the only natural pattern of human sleep.", a: ["NO"], why: "Paragraph 1 and 3: the familiar pattern is neither universal nor natural; the experiment shows other patterns are possible." },
+            { n: 28, q: "The historical references to two sleeps are difficult to dismiss.", a: ["YES"], why: "Paragraph 2: so numerous and casual that it is difficult to dismiss the idea." },
+            { n: 29, q: "People in communities without electricity sleep much longer than people in industrial societies.", a: ["NO"], why: "Paragraph 4: they slept roughly six to seven hours, no more than many city dwellers." },
+            { n: 30, q: "Irregular sleep timing may damage health even if total sleep is sufficient.", a: ["YES"], why: "Paragraph 7: some researchers suggest this; the writer reports it as a plausible finding." },
+            { n: 31, q: "Sleep-tracking devices have improved the sleep of most of their users.", a: ["NOT GIVEN"], why: "The writer only discusses the problem of orthosomnia; nothing is said about most users." }
+          ]
+        },
+        {
+          type: "mcq",
+          instr: "Questions 32–35. Choose the correct letter, A, B, C or D.",
+          items: [
+            { n: 32, q: "What did the experiment in the 1990s show?", options: ["A Volunteers could not adapt to long periods of darkness.", "B Volunteers slept more deeply once their sleep debt was repaid.", "C Volunteers eventually slept in two separate segments.", "D Volunteers needed fewer hours of sleep than they had expected."], a: ["C"], why: "Paragraph 3: their sleep settled into two distinct segments." },
+            { n: 33, q: "Why does the writer mention studies of communities without electricity?", options: ["A to show that artificial light is the main cause of short sleep", "B to challenge an assumption about how long people sleep without modern technology", "C to prove that daytime naps are essential", "D to suggest that sleep in cold climates is longer"], a: ["B"], why: "Paragraph 4: researchers expected longer sleep but found the opposite." },
+            { n: 34, q: "What does the writer say about caffeine?", options: ["A It increases the amount of adenosine in the brain.", "B It prevents the brain from detecting the need for sleep.", "C It permanently reduces the need for sleep.", "D It affects the internal clock more than adenosine does."], a: ["B"], why: "Paragraph 6: it blocks adenosine receptors and hides the signal." },
+            { n: 35, q: "What is the writer's main conclusion?", options: ["A People should try to return to a pattern of two sleeps.", "B Sleep trackers are the best way to improve sleep.", "C Teenagers need more sleep than adults.", "D Sleep needs vary and regular timing may matter more than hours."], a: ["D"], why: "Final paragraph: needs vary, patterns have varied, consistency may matter more." }
+          ]
+        },
+        {
+          type: "sentence_end",
+          instr: "Questions 36–40. Complete each sentence with the correct ending, A–G, below.",
+          options: [
+            "A are cleared more efficiently during sleep than while the animal is awake.",
+            "B build up in the brain during waking hours and create pressure to sleep.",
+            "C run later than those of children or adults.",
+            "D can make sleep problems worse by increasing worry.",
+            "E are less affected by artificial light than other people.",
+            "F conflict with the natural rhythm of the body.",
+            "G strengthen newly learned information."
+          ],
+          items: [
+            { n: 36, q: "Many teenagers feel most alert late at night because their body clocks ____", a: ["C"], why: "Paragraph 7: their rhythm runs later than that of children or adults." },
+            { n: 37, q: "Researchers believe that sleep helps memory because it allows the brain to ____", a: ["G"], why: "Paragraph 5: the brain strengthens connections formed during the day." },
+            { n: 38, q: "Experiments on mice suggest that waste products in the brain ____", a: ["A"], why: "Paragraph 5: fluid flows more freely during sleep, clearing by-products." },
+            { n: 39, q: "Too much concern about sleep data ____", a: ["D"], why: "Paragraph 8: anxiety makes it harder to fall asleep." },
+            { n: 40, q: "Shift workers are at risk of health problems because their working hours ____", a: ["F"], why: "Paragraph 7: they must be awake when their bodies expect to sleep." }
+          ]
+        }
+      ]
+    }
+  ]
+});
+
+IELTS_DATA.reading.push({
+  id: 9,
+  title: "Practice Test 9",
+  passages: [
+    {
+      title: "Concrete That Mends Itself",
+      html: "<p>Concrete is the most widely used man-made material on Earth. Roads, bridges, dams, tower blocks and airports are all built from it, and every year the world produces several billion tonnes. Its popularity is easy to explain: it is cheap, strong when squeezed, and can be poured into almost any shape. Yet it has two well-known weaknesses. It is weak when stretched, which is why it is usually reinforced with steel bars, and it cracks. Engineers can reduce cracking by careful mixing and curing, but they cannot eliminate it. Shrinkage as the concrete dries, changes in temperature and the weight of traffic all create tiny fractures sooner or later.</p><p>Small cracks may look harmless, but they are the beginning of a much bigger problem. Rainwater, often carrying salt or dissolved carbon dioxide, seeps into the fractures and reaches the steel reinforcement. Once the steel begins to rust, it expands, pushing the surrounding concrete apart and creating larger cracks that let in still more water. Repairing such damage is expensive and often disruptive, because it can mean closing a bridge or draining a tunnel. There is an environmental cost as well. Cement, the binding ingredient in concrete, is made by heating limestone to very high temperatures, a process responsible for a significant share of the world's carbon dioxide emissions. Any technique that lengthens the life of a structure therefore reduces the need to build a replacement.</p><p>This is the motivation behind a growing field of research into self-healing concrete. The simplest version is not new. Engineers have long known that concrete can close very narrow, hairline cracks by itself. Particles of cement that did not react with water during the original mixing remain in the material, and when moisture enters a crack they begin to react, forming crystals that gradually fill the gap. The process, known as autogenous healing, is unreliable and works only on cracks narrower than about 0.2 millimetres. Researchers have therefore looked for ways to make the effect stronger and more dependable.</p><p>One of the most promising approaches uses bacteria. A research group in the Netherlands developed a concrete that contains the dormant spores of bacteria from the genus Bacillus, which are commonly found in alkaline lakes and soils and can therefore tolerate the harsh chemistry of cement. The spores are mixed into the concrete inside tiny clay capsules, together with a nutrient in the form of calcium lactate. While the concrete is intact, the spores do nothing, and they can remain dormant for many years. When a crack forms, the capsules break open and water enters. The spores wake up, feed on the nutrient and, as a by-product of their metabolism, produce limestone. The limestone fills the crack and seals it against further water. Laboratory tests have shown that the method can close cracks up to about 0.8 millimetres wide.</p><p>The biological method is not without drawbacks. The capsules make up part of the volume of the mix and can slightly reduce its strength, and because the specialised ingredients are costly, bacterial concrete is currently more expensive than the ordinary kind. Its supporters argue that the higher initial price can be justified for structures that are very difficult to inspect or repair, such as tunnels, foundations and underground car parks. Trial sections have been laid in canal walls and road surfaces, but there is as yet little long-term evidence from the field.</p><p>A second approach takes its inspiration from the human body. Just as blood vessels carry repair materials to a wound, a vascular system of hollow channels can be built into the concrete. The channels are filled with a liquid adhesive. When a crack breaks the channel, the adhesive flows out, fills the gap and hardens on contact with the air. Because the supply is stored in a network, it can in principle deliver material to the damage repeatedly, unlike capsules, which can be used only once. The challenge is practical: the channels must be strong enough to survive the mixing and pouring of the concrete, yet fragile enough to break when a crack passes through them.</p><p>Other researchers are experimenting with fibres made from special plastics that shrink when heated, closing cracks as they contract, or with chemical additives that expand when they contact water. Each method has strengths and limitations, and it is likely that future self-healing concrete will combine several of them. Whatever the method, the aim is the same: to reduce the need for expensive repairs over the lifetime of a structure. If it succeeds, the buildings and bridges of the future may last far longer than those of today, and the carbon emitted in constructing them will be spread over many more years of use.</p>",
+      groups: [
+        {
+          type: "tfng",
+          instr: "Questions 1–6. Do the following statements agree with the information given in the passage? Write TRUE if the statement agrees with the information, FALSE if the statement contradicts the information, or NOT GIVEN if there is no information on this.",
+          items: [
+            { n: 1, q: "More concrete is used than any other man-made material.", a: ["TRUE"], why: "Paragraph 1: the most widely used man-made material on Earth." },
+            { n: 2, q: "Cracking can be completely prevented by careful mixing and curing.", a: ["FALSE"], why: "Paragraph 1: engineers can reduce cracking but cannot eliminate it." },
+            { n: 3, q: "Water that reaches steel bars inside concrete can make the damage worse.", a: ["TRUE"], why: "Paragraph 2: rusting steel expands and creates larger cracks." },
+            { n: 4, q: "The bacterial spores begin to produce limestone as soon as the concrete is poured.", a: ["FALSE"], why: "Paragraph 4: they stay dormant until a crack forms and water enters." },
+            { n: 5, q: "Bacterial concrete has been tested in extremely hot environments.", a: ["NOT GIVEN"], why: "Climate or temperature of the test sites is never mentioned." },
+            { n: 6, q: "Concrete containing bacteria currently costs more than ordinary concrete.", a: ["TRUE"], why: "Paragraph 5: more expensive than the ordinary kind." }
+          ]
+        },
+        {
+          type: "gap",
+          instr: "Questions 7–13. Complete the notes below. Write NO MORE THAN TWO WORDS from the passage for each answer.",
+          items: [
+            { n: 7, q: "Autogenous healing: unreacted ____ particles left in the mix react when moisture enters a crack.", a: ["cement"], why: "Paragraph 3: particles of cement that did not react remain in the material." },
+            { n: 8, q: "Autogenous healing only works on ____ cracks narrower than about 0.2 millimetres.", a: ["hairline"], why: "Paragraph 3: very narrow, hairline cracks." },
+            { n: 9, q: "Bacterial method: the bacteria produce ____, which seals the crack.", a: ["limestone"], why: "Paragraph 4." },
+            { n: 10, q: "Bacterial method: the spores are supplied with a nutrient called ____.", a: ["calcium lactate"], why: "Paragraph 4." },
+            { n: 11, q: "Vascular method: the design was inspired by the ____ of the human body.", a: ["blood vessels"], why: "Paragraph 6: just as blood vessels carry repair materials to a wound." },
+            { n: 12, q: "Vascular method: the hollow channels contain a liquid ____ that hardens in the air.", a: ["adhesive"], why: "Paragraph 6." },
+            { n: 13, q: "The overall aim of self-healing concrete is to reduce the need for expensive ____.", a: ["repairs"], why: "Paragraph 7: to reduce the need for expensive repairs." }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Life in the Sand",
+      html: "<p><b>A</b> To many people, a desert is an empty, lifeless place. In reality, deserts support a surprising variety of living things, and they cover about a fifth of the land surface of the Earth. Scientists usually define a desert by its lack of rainfall rather than by its heat: a region that receives less than about 250 millimetres of precipitation a year is generally classed as arid. By this measure, cold areas such as the Gobi, where winter temperatures fall far below freezing, are as much deserts as the Arabian sands. What unites them is that water is scarce and unpredictable, and every organism that lives there has had to find a way to cope with it.</p><p><b>B</b> Desert plants have evolved several different strategies. Some, known as ephemerals, simply avoid the dry periods. Their seeds can lie dormant in the soil for years, sometimes decades, until a rare downpour triggers germination. The plants then grow, flower and produce new seeds within a few weeks, before the soil dries out again. In some years the Atacama Desert in Chile is transformed by carpets of flowers that appear after unusual rain. Other plants, such as cacti, store water in swollen stems. A third group seeks water below the ground: the mesquite tree sends its roots down several tens of metres to reach groundwater that surface-dwelling plants cannot.</p><p><b>C</b> Animals face the double problem of finding water and avoiding overheating. Most desert mammals are nocturnal, spending the day in burrows where the temperature is lower and the air is more humid than on the surface. The kangaroo rat of North America is an extreme example. It can live its whole life without drinking, obtaining the moisture it needs from the dry seeds it eats, since the chemical breakdown of food produces a small amount of water. Its kidneys are so efficient that its urine is far more concentrated than that of most mammals, and it loses very little moisture when it breathes because its nasal passages recapture much of the water vapour.</p><p><b>D</b> Insects have developed equally ingenious solutions. In the Namib Desert, where fog rolls in from the Atlantic Ocean but rain almost never falls, one species of darkling beetle climbs to the top of a dune on foggy mornings and stands with its head pointing downwards. Droplets condense on its textured back and roll towards its mouth. The Saharan silver ant has found a different advantage in the heat itself. It leaves its nest in the middle of the day, when the lizards that prey on it have retreated to the shade, and scavenges for the bodies of insects killed by the heat. Its body is covered in specially shaped silvery hairs that reflect sunlight, and its long legs lift it above the burning sand, which can exceed sixty degrees Celsius.</p><p><b>E</b> Desert life is not distributed evenly. Ecologists describe shrubs as \"islands of fertility\", because the shade they provide reduces evaporation, and the leaves that fall beneath them enrich the soil. Seedlings of other plants often germinate under these shrubs, which are known as nurse plants, and later outgrow them. The bare ground between them is not entirely lifeless either. In many deserts it is covered with a thin, dark layer called a biological soil crust, made of tiny organisms such as cyanobacteria, lichens and mosses. The crust binds loose particles, reduces erosion and adds nitrogen to the soil. It is extremely fragile: a single vehicle driven off a track can break it, and recovery may take several decades.</p><p><b>F</b> Because their ecosystems operate close to the limits of survival, deserts are vulnerable to human activity. The pumping of groundwater for agriculture and cities lowers water tables faster than they can be replenished, and a changing climate is shifting rainfall patterns. Hunting, too, can be devastating. The Arabian oryx, a desert antelope, was hunted to extinction in the wild by 1972. A breeding programme using animals from zoos and private collections allowed a herd to be reintroduced in Oman in 1982, and reintroductions followed in other countries of the region, including the United Arab Emirates. In 2011 the species was reclassified from Endangered to Vulnerable, one of the first recoveries of its kind. Conservationists point to it as evidence that damage is not always irreversible, but they also warn that few desert species can be rescued in this way.</p>",
+      groups: [
+        {
+          type: "match_info",
+          instr: "Questions 14–18. Which paragraph contains the following information? Write the correct letter, A–F.",
+          items: [
+            { n: 14, q: "a definition of a desert based on rainfall", a: ["A"], why: "Paragraph A: less than about 250 millimetres a year." },
+            { n: 15, q: "an example of a species that has been brought back after disappearing from the wild", a: ["F"], why: "Paragraph F: Arabian oryx." },
+            { n: 16, q: "a description of plants that wait for years before growing", a: ["B"], why: "Paragraph B: ephemerals whose seeds lie dormant." },
+            { n: 17, q: "a reference to damage caused by driving off roads", a: ["E"], why: "Paragraph E: a single vehicle driven off a track can break the crust." },
+            { n: 18, q: "an explanation of why mammals spend the day underground", a: ["C"], why: "Paragraph C: burrows are cooler and more humid." }
+          ]
+        },
+        {
+          type: "match_feature",
+          instr: "Questions 19–22. Match each statement with the correct organism, A–D. You may use any letter more than once.",
+          options: [
+            "A the kangaroo rat",
+            "B the Saharan silver ant",
+            "C the Namib darkling beetle",
+            "D the mesquite tree"
+          ],
+          items: [
+            { n: 19, q: "It collects water from fog.", a: ["C"], why: "Paragraph D." },
+            { n: 20, q: "It can survive without drinking by using the water produced when it digests dry seeds.", a: ["A"], why: "Paragraph C." },
+            { n: 21, q: "It uses specialised hairs to reflect the sun's rays.", a: ["B"], why: "Paragraph D." },
+            { n: 22, q: "It reaches underground water with very long roots.", a: ["D"], why: "Paragraph B." }
+          ]
+        },
+        {
+          type: "mcq",
+          instr: "Questions 23–26. Choose the correct letter, A, B, C or D.",
+          items: [
+            { n: 23, q: "What point does the writer make about deserts in paragraph A?", options: ["A They are defined mainly by how little water they receive.", "B They are always extremely hot during the day.", "C They are growing at a faster rate than other environments.", "D They contain fewer species than most people think."], a: ["A"], why: "Paragraph A: defined by lack of rainfall rather than heat." },
+            { n: 24, q: "What is the advantage of the ephemeral plants' strategy?", options: ["A They need very little water to grow.", "B They avoid the dry periods by surviving as seeds.", "C They can store water in their stems.", "D They are able to grow in cold deserts."], a: ["B"], why: "Paragraph B: seeds lie dormant until rain." },
+            { n: 25, q: "According to paragraph E, shrubs help seedlings because they", options: ["A prevent the soil from forming a crust.", "B attract animals that spread seeds.", "C produce shade and improve the soil.", "D draw up water from deep underground."], a: ["C"], why: "Paragraph E: shade reduces evaporation; fallen leaves enrich the soil." },
+            { n: 26, q: "What is the writer's view of the oryx recovery in paragraph F?", options: ["A It shows that most desert species can be saved.", "B It proves that breeding programmes are cheap.", "C It is encouraging but unlikely to be repeated for many species.", "D It was less successful than conservationists claim."], a: ["C"], why: "Paragraph F: damage is not always irreversible, but few species can be rescued this way." }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Music and the Mind",
+      html: "<p>Few human activities are as universal as music. Archaeologists have found bone flutes that are more than forty thousand years old, and no known society has ever been without some form of song. Yet until recently, psychologists treated music as a curiosity, a pleasant extra rather than a subject that might reveal how the brain works. That view has changed. Music is now studied by cognitive scientists because it engages so many mental processes at once, including perception, memory, movement and emotion, and because it can be manipulated in precise ways in the laboratory.</p><p>When we listen to music, no single part of the brain is responsible. The auditory cortex analyses pitch and timbre, but regions that control movement also become active, even when the listener sits perfectly still. This is most obvious in our response to rhythm. Infants only a few months old respond to a steady beat, and by adulthood most people can tap in time with music without being taught. The ability to synchronise movement to a beat, long assumed to be uniquely human, has been demonstrated in only a handful of other species, notably certain parrots. Researchers suggest that it depends on strong connections between the auditory and motor systems, which these animals share with us.</p><p>Emotion is the aspect of music that most listeners find most important. Brain-imaging studies have shown that when people listen to a piece they love, particularly at the moments that give them a shiver of pleasure, the brain releases dopamine in a region associated with reward, the same chemical system that responds to food and other pleasures. What is unusual is that music offers no obvious survival benefit. One suggestion is that the pleasure arises from the interplay of prediction and surprise: the brain constantly guesses what will come next, and is rewarded when the music satisfies, delays or cleverly violates that expectation.</p><p>Are such responses universal or learned? A study among a community in rural Cameroon who had never been exposed to Western music is often cited. The participants listened to short extracts of Western piano pieces and were asked whether they sounded happy, sad or scary. They identified the emotions at a level well above chance, which suggests that certain basic cues, such as fast tempo for happiness or dissonance for fear, may be recognised without cultural training. However, the same research showed that the listeners did not share the Western preference for harmonious chords, so the picture is mixed. Cultural learning clearly shapes what we find beautiful, even if some foundations are shared.</p><p>Perhaps no claim about music has attracted more publicity than the so-called Mozart effect. In the early 1990s, a small experiment reported that students who had listened to a Mozart sonata performed slightly better on a spatial reasoning task than those who had sat in silence. The press quickly concluded that playing classical music to babies would make them more intelligent, and some governments even distributed recordings to new parents. Later studies failed to reproduce the effect as a general boost to intelligence. The improvement, where it appeared, was short-lived and confined to one type of task, and it seemed to result from the general arousal and enjoyment produced by any pleasant stimulus, not from something special in Mozart.</p><p>A more sober claim concerns musical training. Brain scans show that professional musicians have larger regions in areas associated with hearing and movement than non-musicians, and children who take music lessons often perform better in tests of language and memory. It is tempting to conclude that practising an instrument physically changes the brain for the better. But the evidence is largely correlational. Children who begin lessons may differ from the start in motivation, family background or aptitude, and the differences seen in adult musicians could partly reflect pre-existing traits. Long-term studies that randomly assign children to music lessons are still too few to settle the question.</p><p>The therapeutic uses of music rest on firmer ground. Patients with Parkinson's disease, who often struggle to walk, can improve their stride when they walk to a regular beat. Some stroke patients who have lost the ability to speak can still sing familiar words, and therapists use this to help them recover speech. Among people with dementia, songs from their youth sometimes bring back memories that conversation cannot reach. These results are encouraging, yet many of the trials are small and short, and it remains unclear how long the benefits last. More extensive, carefully controlled research is needed before music therapy can be recommended with confidence.</p><p>Taken together, the research presents a field that is exciting but easily overstated. Music clearly engages the brain in rich and unusual ways, and it can help to illuminate processes that are hard to isolate in other tasks. But the headlines that promise to make children cleverer or to cure disease with a playlist run ahead of the data. The most reliable conclusion may be the simplest: music matters to people because it combines pattern, emotion and movement in a way that few other experiences do, and understanding why is a worthwhile scientific question in its own right.</p>",
+      groups: [
+        {
+          type: "gap",
+          instr: "Questions 27–31. Complete the summary below. Write NO MORE THAN TWO WORDS from the passage for each answer.",
+          items: [
+            { n: 27, q: "Even when people listen to music without moving, regions controlling ____ also become active.", a: ["movement"], why: "Paragraph 2: regions that control movement become active." },
+            { n: 28, q: "Very young infants respond to a steady ____.", a: ["beat"], why: "Paragraph 2." },
+            { n: 29, q: "Listening to a favourite piece causes the release of ____ in a reward area of the brain.", a: ["dopamine"], why: "Paragraph 3." },
+            { n: 30, q: "Patients with ____ disease can improve the way they walk when they follow a regular beat.", a: ["Parkinson's", "Parkinsons"], why: "Paragraph 7." },
+            { n: 31, q: "In people with dementia, ____ from their youth can bring back lost memories.", a: ["songs", "familiar songs"], why: "Paragraph 7: songs from their youth." }
+          ]
+        },
+        {
+          type: "ynng",
+          instr: "Questions 32–36. Do the following statements agree with the views of the writer in the passage? Write YES if the statement agrees with the views of the writer, NO if the statement contradicts the views of the writer, or NOT GIVEN if it is impossible to say what the writer thinks about this.",
+          items: [
+            { n: 32, q: "Listening to Mozart makes children more intelligent in general.", a: ["NO"], why: "Paragraph 5: later studies failed to reproduce a general boost." },
+            { n: 33, q: "The brain differences found in adult musicians prove that practising an instrument changes the brain.", a: ["NO"], why: "Paragraph 6: the evidence is largely correlational; differences may pre-exist." },
+            { n: 34, q: "Some emotional responses to music may be shared across cultures.", a: ["YES"], why: "Paragraph 4: certain basic cues may be recognised without cultural training." },
+            { n: 35, q: "Music therapy should replace medication for patients with Parkinson's disease.", a: ["NOT GIVEN"], why: "Medication is never discussed." },
+            { n: 36, q: "Further large-scale research is needed on the long-term benefits of music therapy.", a: ["YES"], why: "Paragraph 7: more extensive, carefully controlled research is needed." }
+          ]
+        },
+        {
+          type: "mcq",
+          instr: "Questions 37–40. Choose the correct letter, A, B, C or D.",
+          items: [
+            { n: 37, q: "Why does the writer mention parrots in paragraph 2?", options: ["A to show that animals can be taught to enjoy music", "B to suggest that the ability to follow a beat is not unique to humans", "C to prove that rhythm is learned rather than inherited", "D to explain why infants respond to rhythm"], a: ["B"], why: "Paragraph 2: demonstrated in a handful of other species, notably certain parrots." },
+            { n: 38, q: "Why do later researchers doubt the Mozart effect?", options: ["A The original experiment used too many students.", "B The improvement was brief and limited to one kind of task.", "C Governments refused to support further studies.", "D Classical music was found to harm some babies."], a: ["B"], why: "Paragraph 5." },
+            { n: 39, q: "What do the results of the Cameroon study suggest?", options: ["A People everywhere prefer the same kinds of chords.", "B Western music is more emotional than other music.", "C Some emotional cues in music may be understood without cultural training.", "D Musical taste is fixed at birth."], a: ["C"], why: "Paragraph 4." },
+            { n: 40, q: "What is the writer's attitude to research on music and the brain?", options: ["A uncritical enthusiasm", "B complete scepticism", "C reluctant disapproval", "D cautious interest"], a: ["D"], why: "Final paragraph: exciting but easily overstated; headlines run ahead of data." }
+          ]
+        }
+      ]
+    }
+  ]
+});
+
+IELTS_DATA.reading.push({
+  id: 10,
+  title: "Practice Test 10",
+  passages: [
+    {
+      title: "How the Railways Changed Time",
+      html: "<p>It is easy to forget that the idea of a single, shared time across a whole country is quite recent. Until the middle of the nineteenth century, every town in Britain set its clocks by the sun. Noon was the moment when the sun stood highest in the sky, and because the sun reaches that point later as one travels west, a town in the west of the country was always a little behind one in the east. Bristol, for example, was about ten minutes behind London. In an age of horse-drawn coaches, such differences scarcely mattered, since a journey of a hundred miles took a day or more and nobody could check the time at both ends.</p><p>The railways changed that. A train could cover the same distance in a few hours, and passengers needed to know exactly when to arrive at the station. Timetables became a serious problem. A timetable that listed departures according to local time in every town was confusing, and early publications often had to print several columns of times, or warn travellers to add or subtract minutes as they went. Mistakes were frequent, and missing a train because of a clock was a common complaint. The danger was not merely inconvenience: on single-track lines, two trains whose crews disagreed about the time could end up on a collision course.</p><p>The Great Western Railway was the first major British company to solve the problem. In 1840 it adopted London time for all of its stations and timetables, and other companies gradually followed. Many towns resisted at first. Some installed clocks with two minute hands, one showing local time and the other railway time. In 1847 the Railway Clearing House, an organisation that coordinated the accounts of the different railway companies, recommended that all lines use Greenwich Mean Time, and within a few years the great majority did. The decisive factor was the electric telegraph, which ran alongside the tracks and allowed a signal from the Royal Observatory at Greenwich to be sent to stations across the country. It was not until 1880, however, that an Act of Parliament made Greenwich Mean Time the legal time throughout Great Britain.</p><p>The problem was far greater in North America, where the continent is so wide that the sun's noon differs by hours between the east and west coasts. By the 1880s, American railways were operating with dozens of different local times, and a traveller crossing the country might have to adjust a watch many times. A Canadian engineer named Sandford Fleming, who is said to have missed a train in Ireland because a timetable had printed the departure in the evening rather than the morning, became a leading campaigner for a worldwide system of standard time. In 1883 the American railway companies agreed to act on their own. On 18 November, which became known as the \"day of two noons\", they divided the continent into four time zones. In some cities clocks were set back so that noon occurred twice on the same day.</p><p>The change in the United States was an arrangement made by private companies, not a government policy. Many cities, and some state governments, objected to being told what time to keep, and for decades a patchwork of local times continued to exist alongside the railway zones. It was not until 1918 that Congress passed a law officially establishing the zones.</p><p>Internationally, the movement towards standard time culminated in an international conference held in Washington in 1884. Delegates from more than twenty-five nations voted to choose Greenwich as the prime meridian, the line from which longitude is measured, and recommended a universal day. The decision was not accepted by everyone. France abstained from the vote and continued to use Paris time for its railways until 1911, and many other countries took years to bring their clocks into line.</p><p>The introduction of railway time had effects that went far beyond the timetable. It encouraged people to think about time as something that could be measured in minutes and shared across great distances, and it prepared the ground for the factory shifts, school bells and broadcast schedules that now structure daily life. Some contemporary writers regretted the change, believing that standardised time robbed each community of its own natural rhythm. Most travellers, however, soon decided that they preferred arriving at the right platform at the right time.</p>",
+      groups: [
+        {
+          type: "gap",
+          instr: "Questions 1–6. Complete the notes below. Write NO MORE THAN TWO WORDS AND/OR A NUMBER from the passage for each answer.",
+          items: [
+            { n: 1, q: "In 1840 the Great Western Railway began to use ____ time at all of its stations.", a: ["London"], why: "Paragraph 3: it adopted London time." },
+            { n: 2, q: "Bristol was about ____ minutes behind London before railway time.", a: ["10", "ten"], why: "Paragraph 1." },
+            { n: 3, q: "In ____, the Railway Clearing House recommended that all lines use Greenwich Mean Time.", a: ["1847"], why: "Paragraph 3." },
+            { n: 4, q: "Greenwich Mean Time became legal time throughout Great Britain in ____.", a: ["1880"], why: "Paragraph 3: an Act of Parliament in 1880." },
+            { n: 5, q: "On 18 November 1883, the American railways divided the continent into ____ time zones.", a: ["four", "4"], why: "Paragraph 4." },
+            { n: 6, q: "Sandford Fleming is said to have missed a ____ in Ireland because of a printing error in a timetable.", a: ["train"], why: "Paragraph 4." }
+          ]
+        },
+        {
+          type: "tfng",
+          instr: "Questions 7–13. Do the following statements agree with the information given in the passage? Write TRUE if the statement agrees with the information, FALSE if the statement contradicts the information, or NOT GIVEN if there is no information on this.",
+          items: [
+            { n: 7, q: "Before the railways, British towns kept their own local time.", a: ["TRUE"], why: "Paragraph 1: every town set its clocks by the sun." },
+            { n: 8, q: "Early railway timetables were simple for passengers to follow.", a: ["FALSE"], why: "Paragraph 2: they were confusing and often printed several columns of times." },
+            { n: 9, q: "Railway employees were strongly opposed to the introduction of standard time.", a: ["NOT GIVEN"], why: "Only towns and city governments are said to have resisted; railway staff are not mentioned." },
+            { n: 10, q: "The 1883 time zones in the United States were introduced by a law passed by Congress.", a: ["FALSE"], why: "Paragraph 5: they were an arrangement made by private companies; the law came in 1918." },
+            { n: 11, q: "On the day of the change, noon occurred twice in some American cities.", a: ["TRUE"], why: "Paragraph 4." },
+            { n: 12, q: "The 1884 conference in Washington chose Greenwich as the prime meridian.", a: ["TRUE"], why: "Paragraph 6." },
+            { n: 13, q: "All countries began using the conference's recommendation at once.", a: ["FALSE"], why: "Paragraph 6: France continued to use Paris time until 1911 and others took years." }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Singapore's Four National Taps",
+      html: "<p><b>A</b> Singapore is a small, densely populated island with no rivers or lakes of any size and almost no underground water. By the standards of the United Nations, it is one of the most water-scarce countries in the world. When it became independent in 1965, its leaders were acutely aware that its survival depended on securing a reliable supply, since a large share of its water was bought from its neighbour, Malaysia, under agreements signed in 1961 and 1962. The first of these expired in 2011, and the second runs until 2061. Over the following decades, the government developed what it calls the Four National Taps: a diversified strategy designed so that the country would never depend on a single source.</p><p><b>B</b> The first tap is local rainfall. Singapore receives plenty of rain, but it is a small place with little land on which to store it. Authorities therefore turned much of the island into a catchment, with networks of drains and canals leading to reservoirs. The most ambitious project was the Marina Barrage, completed in 2008, which closed off the mouth of a channel in the middle of the city and created a freshwater reservoir that is now surrounded by gardens and public spaces. The barrage has a second function: it can release excess water to the sea during heavy storms, and so helps to reduce flooding in low-lying areas of the city.</p><p><b>C</b> The second tap is imported water, piped from the neighbouring state of Johor. This has been an inexpensive source, but also a sensitive one. The prices and quantities were fixed in agreements made many decades ago, and each time the terms have been discussed, the issue has become entangled in wider political relations. Singapore's planners concluded that no country should leave something as essential as drinking water in the hands of another, and they resolved to make the island as self-sufficient as possible by the time the agreements ended.</p><p><b>D</b> The third tap is reclaimed water, which the authorities call NEWater. Used water from homes and industry is collected and then cleaned in several stages: it passes through very fine membranes, is forced through a second membrane that removes dissolved salts and chemicals, and is finally disinfected with ultraviolet light. The result is purer than ordinary tap water. It is used mostly in industry, particularly in the factories that make electronic components, which need extremely clean water, and a small proportion is added to reservoirs. The greatest obstacle was not technical but psychological. Many people disliked the idea of drinking recycled sewage. The government responded by giving the product a brand name, opening a visitor centre where schoolchildren could see the process, and serving bottled samples at national events. Senior politicians drank it in public, and acceptance gradually grew.</p><p><b>E</b> The fourth tap is desalinated seawater. The first large plant opened in 2005, and others have followed. Since seawater is effectively unlimited and unaffected by rainfall, desalination offers security against drought. Its disadvantage is cost. The process uses far more energy than reclamation, which makes it expensive and a source of carbon emissions, so researchers are working on ways to reduce the energy needed, including better membranes and the use of renewable power. Despite this, the proportion of Singapore's water supplied by desalination is expected to increase as demand grows.</p><p><b>F</b> Supply is only half the equation. Singapore also tries to reduce demand. Water is priced to reflect its true cost, and heavy users pay disproportionately more. Washing machines and taps must carry efficiency labels, and public campaigns encourage people to shorten their showers. The government is aiming to bring average consumption down to about 130 litres per person per day by 2030. Used water is gathered through a network of deep underground tunnels that carries it to central treatment plants, so that very little escapes into the environment and nearly all of it can be reused. Other countries, including several in the Gulf region that depend heavily on desalination, have studied the system closely. The lesson most often drawn is that there is no single solution: success lies in combining several sources with a culture of careful use.</p>",
+      groups: [
+        {
+          type: "heading",
+          instr: "Questions 14–18. The passage has six paragraphs, A–F. Choose the correct heading for paragraphs B–F from the list of headings below. Write the correct number, i–viii.",
+          options: [
+            "i Cutting waste through price and education",
+            "ii Collecting rain in a crowded city",
+            "iii Dependence on a neighbouring country",
+            "iv Making recycled water acceptable to the public",
+            "v Turning seawater into drinking water",
+            "vi The history of land reclamation",
+            "vii Lessons for other countries",
+            "viii Risks of rising sea levels"
+          ],
+          items: [
+            { n: 14, q: "Paragraph B", a: ["ii"], why: "Rain collected through drains, canals and reservoirs." },
+            { n: 15, q: "Paragraph C", a: ["iii"], why: "Imported water from Johor." },
+            { n: 16, q: "Paragraph D", a: ["iv"], why: "Branding and public acceptance of NEWater." },
+            { n: 17, q: "Paragraph E", a: ["v"], why: "Desalination." },
+            { n: 18, q: "Paragraph F", a: ["i"], why: "Pricing, labels and campaigns to reduce demand." }
+          ]
+        },
+        {
+          type: "match_feature",
+          instr: "Questions 19–22. Look at the following statements and the list of water sources below. Match each statement with the correct source, A–D.",
+          options: [
+            "A water collected locally from rainfall",
+            "B water bought from a neighbouring state",
+            "C reclaimed used water",
+            "D water obtained from the sea"
+          ],
+          items: [
+            { n: 19, q: "It requires more energy than the method of reclaiming used water.", a: ["D"], why: "Paragraph E." },
+            { n: 20, q: "Its price and quantity are set by agreements made long ago.", a: ["B"], why: "Paragraph C." },
+            { n: 21, q: "It is cleaned using fine membranes and ultraviolet light.", a: ["C"], why: "Paragraph D." },
+            { n: 22, q: "It depends on a system of drains and reservoirs on land.", a: ["A"], why: "Paragraph B." }
+          ]
+        },
+        {
+          type: "gap",
+          instr: "Questions 23–26. Complete the sentences below. Write NO MORE THAN TWO WORDS AND/OR A NUMBER from the passage for each answer.",
+          items: [
+            { n: 23, q: "As well as storing water, the Marina Barrage helps to reduce ____ in low-lying areas.", a: ["flooding"], why: "Paragraph B." },
+            { n: 24, q: "Reclaimed water is given the brand name ____.", a: ["NEWater"], why: "Paragraph D." },
+            { n: 25, q: "The government wants average water use to fall to about ____ litres per person per day by 2030.", a: ["130"], why: "Paragraph F." },
+            { n: 26, q: "Used water is carried to treatment plants through deep underground ____.", a: ["tunnels"], why: "Paragraph F." }
+          ]
+        }
+      ]
+    },
+    {
+      title: "Robots That Learn",
+      html: "<p>The robots that have transformed factories since the 1960s are, in an important sense, not very clever. A welding arm on a car assembly line repeats an identical sequence of movements thousands of times a day with extraordinary precision, but only because the engineers who installed it have programmed every step in advance and arranged for every component to arrive in exactly the right position. Take away that controlled environment, and the machine is helpless. If a part is slightly misplaced, the arm will carry on regardless, welding thin air. This rigidity has long limited where robots could be used: they have flourished in places designed for them, and failed almost everywhere else.</p><p>Roboticists have a name for one of the reasons: Moravec's paradox. In the 1980s, researchers noticed that tasks that humans find intellectually demanding, such as playing chess or solving equations, are often relatively easy for computers, whereas tasks that a child performs without thinking, such as picking up an egg, folding a towel or walking across a cluttered room, are enormously difficult. The explanation is that these everyday skills are the product of hundreds of millions of years of evolution, and are so deeply embedded in our nervous systems that we are unaware of their complexity. A robot must achieve the same results with cameras, motors and software, and it has no such inheritance to rely on.</p><p>The current wave of progress comes from machine learning. Instead of writing explicit rules, engineers allow the robot to improve through experience. In reinforcement learning, for example, the machine tries actions, receives a score for how well each attempt worked, and gradually adjusts its behaviour to achieve higher scores. Because real robots are slow, expensive and easily damaged, much of this training takes place in computer simulations, where thousands of virtual robots can practise at once, millions of times faster than in real life. A control system that took years of manual programming might now be trained in days.</p><p>The difficulty is that simulations are never perfect. Friction, the springiness of materials, the way a camera sees in changing light: each of these is modelled imperfectly, and a policy that works flawlessly in the virtual world may fail as soon as it is transferred to a real machine. This is known as the \"reality gap\". One technique for bridging it is called domain randomisation. Instead of trying to make the simulation more realistic, engineers deliberately make it more varied, changing the lighting, textures, weights and other properties from one practice run to the next. A robot trained under such unpredictable conditions learns to be flexible, and so it is more likely to cope when it meets the unfamiliar variations of the real world.</p><p>A second approach is learning from demonstration. A human operator guides the robot's arm, or controls it remotely, while it records what happens, and the machine learns to reproduce, and then to generalise, the behaviour. This has been used to teach robots to pour liquids, open drawers and sort objects. Success also depends on the sense of touch, which has received less attention than vision. A robot that can see an egg but cannot feel how hard it is gripping will crush it. Sensors made from soft, flexible materials are now being developed that can detect pressure and slippage, and many researchers believe that tactile sensing will matter as much for delicate handling as cameras do.</p><p>These advances come with a price. A traditional robot, though rigid, is predictable: its movements can be inspected and its behaviour checked. A system that has learned from data is harder to analyse, and may behave in surprising ways in situations that its trainers never anticipated. Engineers therefore surround such machines with several layers of protection. Collaborative robots, designed to work alongside people, are fitted with sensors that stop them at once if they detect contact with a person, and their joints have limited force. New behaviours are tested extensively in simulation before being used in the real world, and professional bodies are calling for international standards to govern what learning machines may and may not do. Surgical robots, which are often assumed to be autonomous, remain in the hands of human surgeons who control every movement.</p><p>Predictions about the future of robotics have a poor record, and it would be unwise to add to the list. The recent progress is real, and robots that can sort parcels in warehouses or assist in factories alongside humans are already in service. The notion of a general-purpose robot that can clean a house, cook a meal and tidy the shelves is another matter. It would need to cope with an almost unlimited variety of objects and situations, and the combination of skills it requires is far beyond anything achieved so far. Such a machine is unlikely to appear within the next few years, and trade unions and economists continue to debate how automation of simpler jobs will affect employment. What is certain is that the most useful robots of the coming decade will be those that can learn on the job, not those that simply follow a script.</p>",
+      groups: [
+        {
+          type: "mcq",
+          instr: "Questions 27–30. Choose the correct letter, A, B, C or D.",
+          items: [
+            { n: 27, q: "Why can a traditional industrial robot work with such precision?", options: ["A It learns from its mistakes.", "B It repeats programmed movements in a carefully controlled environment.", "C It uses cameras to correct its position.", "D It is able to adapt to changes in its components."], a: ["B"], why: "Paragraph 1." },
+            { n: 28, q: "What does Moravec's paradox say about robots?", options: ["A Tasks that seem simple to humans are often the hardest for machines.", "B Machines will soon beat humans at every intellectual task.", "C Robots cannot be made to play chess well.", "D Humans have no skills that machines cannot copy."], a: ["A"], why: "Paragraph 2." },
+            { n: 29, q: "What is the main problem with training robots in simulation?", options: ["A It is slower than training real robots.", "B It damages the machines.", "C Differences from the real world can cause failures.", "D It cannot be used with reinforcement learning."], a: ["C"], why: "Paragraph 4: the reality gap." },
+            { n: 30, q: "How does domain randomisation help to bridge the reality gap?", options: ["A It makes the simulation exactly like real life.", "B It exposes the robot to many varied conditions so that it becomes flexible.", "C It reduces the number of practice runs needed.", "D It replaces simulation with human operators."], a: ["B"], why: "Paragraph 4." }
+          ]
+        },
+        {
+          type: "ynng",
+          instr: "Questions 31–36. Do the following statements agree with the views of the writer in the passage? Write YES if the statement agrees with the views of the writer, NO if the statement contradicts the views of the writer, or NOT GIVEN if it is impossible to say what the writer thinks about this.",
+          items: [
+            { n: 31, q: "A traditional industrial robot can adjust its movements when a component is out of position.", a: ["NO"], why: "Paragraph 1: the arm carries on regardless, welding thin air." },
+            { n: 32, q: "Touch sensing is likely to be as important as vision for handling delicate objects.", a: ["YES"], why: "Paragraph 5." },
+            { n: 33, q: "Surgical robots usually operate without human control.", a: ["NO"], why: "Paragraph 6: surgeons control every movement." },
+            { n: 34, q: "Systems that learn from data are harder to predict than traditionally programmed ones.", a: ["YES"], why: "Paragraph 6." },
+            { n: 35, q: "Companies spend more on warehouse robots than on any other kind of robot.", a: ["NOT GIVEN"], why: "Spending is never mentioned." },
+            { n: 36, q: "A general-purpose household robot is unlikely to appear in the near future.", a: ["YES"], why: "Paragraph 7." }
+          ]
+        },
+        {
+          type: "gap",
+          instr: "Questions 37–40. Complete the summary below. Write NO MORE THAN TWO WORDS from the passage for each answer.",
+          items: [
+            { n: 37, q: "Collaborative robots are fitted with sensors that stop them when they detect ____ with a person.", a: ["contact"], why: "Paragraph 6." },
+            { n: 38, q: "New behaviours are tested extensively in ____ before being used in the real world.", a: ["simulation"], why: "Paragraph 6." },
+            { n: 39, q: "Professional bodies are calling for international ____ to govern what learning machines may do.", a: ["standards"], why: "Paragraph 6." },
+            { n: 40, q: "Trade unions and economists debate how automation will affect ____.", a: ["employment"], why: "Paragraph 7." }
+          ]
+        }
+      ]
+    }
+  ]
+});
+
+}catch(e){console.error('ielts data_reading_c.js',e)}
+/* ---- ielts data_speaking.js ---- */
+try{
+IELTS_DATA.speaking.push({
+  id: 1, title: "Practice Test 1",
+  p1: { topic: "Hometown", qs: ["Where is your hometown?", "What do you like most about living there?", "Has your hometown changed much in recent years?", "Would you like to live there in the future?"] },
+  p1b: { topic: "Studies", qs: ["What subjects are you studying at the moment?", "Why did you choose those subjects?", "Is there a subject you find difficult?"] },
+  p2: {
+    card: "Describe a teacher who has influenced you.",
+    points: ["who this teacher was", "what subject he or she taught", "what he or she was like as a person", "and explain how this teacher influenced you."],
+    model: `<p>I would like to talk about my chemistry teacher, Mr Hassan, who taught me for two years at secondary school. He was in his early forties, quite tall, and always wore a slightly crumpled jacket because he was constantly moving around the laboratory.</p><p>What made him special was his enthusiasm. Most of my classmates thought chemistry was a collection of formulas to memorise, but he treated every lesson like a small adventure. He would start by asking a puzzling question, for example why a candle goes out when you cover it, and then let us experiment until we found the answer ourselves. He was also extremely patient. If a student was struggling, he would stay after class and explain the topic again, using everyday examples instead of complicated language.</p><p>As a person, he was friendly but firm. He expected us to arrive on time and finish our homework, yet he never humiliated anyone for making a mistake. He used to say that mistakes were simply data.</p><p>He influenced me in two main ways. Firstly, my results improved dramatically, because I finally understood the logic behind the subject instead of just learning facts. Secondly, and more importantly, he changed how I approach problems in general. Whenever I face a difficulty now, I try to stay calm, collect information and test possible solutions one by one. That habit has helped me in other subjects and even in my personal life.</p><p>I am still grateful to him, and the reason I am planning to study science at university is largely because of his classes.</p>`
+  },
+  p3: {
+    qs: ["What qualities make a good teacher?", "Some people say that teachers were more respected in the past. Do you agree?", "How has technology changed the way students learn?", "Should students choose their own subjects at school?", "Do you think teachers will be replaced by computers in the future?"],
+    model: [
+      `<p>I think patience and passion are the most important qualities. A good teacher has to explain the same idea in different ways until everyone understands, and they must clearly enjoy the subject, because that enthusiasm is contagious. In addition, fairness matters a great deal, since students quickly lose motivation if they feel some pupils are favoured.</p>`,
+      `<p>To some extent, yes. In the past, teachers were seen as almost the only source of knowledge, so people treated them with great respect. Today, students can look up information on their phones, and some parents question teachers' decisions. However, I believe that respect still exists for teachers who show genuine care and expertise.</p>`,
+      `<p>Technology has changed learning enormously. Students can watch lectures online, use apps to practise vocabulary and collaborate on shared documents, even when they are in different places. On the other hand, it can be distracting, because notifications and social media compete for attention, so students need self-discipline to benefit from it.</p>`,
+      `<p>I think they should have some choice, especially in the later years of school. When students study subjects they are interested in, they work harder and perform better. However, younger children should follow a broad curriculum, because they may not yet know what they enjoy or what skills they will need as adults.</p>`,
+      `<p>I doubt it. Computers can deliver information and mark tests efficiently, but teaching also involves motivating, encouraging and understanding students emotionally, and machines cannot do that well. I think technology will become a powerful assistant for teachers, giving them more time for personal support, rather than replacing them completely.</p>`
+    ]
+  }
+});
+
+IELTS_DATA.speaking.push({
+  id: 2, title: "Practice Test 2",
+  p1: { topic: "Food and cooking", qs: ["What kind of food do you enjoy eating most?", "Do you often cook at home?", "Is there any food you disliked as a child but like now?", "Do you prefer eating at home or in restaurants?"] },
+  p1b: { topic: "Weather", qs: ["What is the weather like in your country in summer?", "What kind of weather do you like best?", "Does the weather affect your mood?"] },
+  p2: {
+    card: "Describe a place you visited that was very different from where you live.",
+    points: ["where this place was", "when you went there", "what you did there", "and explain why it was so different from your home area."],
+    model: `<p>I would like to describe a trip I made two years ago to a small mountain village in northern Italy. I went there with my family during the summer holidays, and it was in complete contrast to the busy, hot city where I live.</p><p>We stayed in a wooden guesthouse run by an elderly couple, and we spent about a week there. During the day, we went hiking on trails that passed through green meadows and pine forests, and in the evenings we sat on the balcony and watched the sun go down behind the peaks. One day, we also visited a local farm, where I learned how cheese is made, which I found fascinating.</p><p>The differences from my home area were striking. First of all, the climate was so cool and fresh that I needed a jacket even in July, whereas back home temperatures regularly go above forty degrees. Secondly, the pace of life was incredibly slow. There were hardly any cars, the shops closed in the afternoon, and everybody greeted each other in the street. In my city, by contrast, people are always in a hurry, and the roads are crowded with traffic. Finally, the air was so clean that I could see thousands of stars at night, something that is impossible to see in the city because of the lights.</p><p>I found the experience very refreshing. It made me realise how stressful my daily routine can be, and since then I have tried to spend more time outdoors. I would definitely like to go back one day.</p>`
+  },
+  p3: {
+    qs: ["Why do people like to travel to different countries?", "What are the benefits of tourism for a country?", "Do you think travelling is better than learning about a place from books or films?", "Can tourism cause problems for local people?", "How might travel change in the future?"],
+    model: [
+      `<p>I think curiosity is the main reason. People want to experience different cultures, food and landscapes, and travel gives them a break from routine. Some also travel for practical reasons, such as practising a foreign language or visiting relatives who live abroad, while others simply want to relax and escape work pressure.</p>`,
+      `<p>The most obvious benefit is money. Tourists spend on hotels, restaurants and souvenirs, which creates jobs and brings foreign currency into the economy. Tourism can also encourage governments to protect historic sites and natural parks, because these are the main attractions that bring visitors in.</p>`,
+      `<p>In my opinion, nothing completely replaces actually being there. Books and documentaries give useful information, but you cannot smell the streets, taste the food or talk to the people. That said, they are a good way to prepare, and for people who cannot afford to travel, they are an excellent alternative.</p>`,
+      `<p>Definitely. When too many visitors arrive, prices go up, so residents can no longer afford to live in their own neighbourhoods. There is also the problem of crowding, noise and rubbish, and sometimes local traditions turn into performances for tourists rather than genuine customs.</p>`,
+      `<p>I expect travel to become more sustainable. Airlines are developing cleaner fuels, and many travellers now prefer trains or quieter destinations. Technology will also make planning easier, with apps translating languages instantly, although I think virtual tours will only supplement real travel, not replace it.</p>`
+    ]
+  }
+});
+
+IELTS_DATA.speaking.push({
+  id: 3, title: "Practice Test 3",
+  p1: { topic: "Mobile phones", qs: ["How often do you use your mobile phone?", "What do you mainly use it for?", "Do you think people spend too much time on their phones?", "Have you ever lived without your phone for a long time?"] },
+  p1b: { topic: "Music", qs: ["What kind of music do you like?", "Do you play any musical instruments?", "Do you prefer listening to music alone or with other people?"] },
+  p2: {
+    card: "Describe a piece of technology you use often.",
+    points: ["what it is", "how long you have had it", "what you use it for", "and explain why it is important to you."],
+    model: `<p>The piece of technology I would like to describe is my laptop, which I use almost every day. I bought it about three years ago, just before I started the final stage of secondary school, using money that I had saved from birthday gifts and a part-time job.</p><p>It is a fairly light, silver laptop with a good battery, which means I can carry it to school or the library without worrying about finding a socket. I use it for a wide range of things. The most important is studying: I write essays, research topics, watch online lessons and prepare presentations. I also use it to keep in touch with friends through video calls, and in my free time, I edit photos and sometimes watch films on it.</p><p>It is important to me for several reasons. First, it is my main tool for learning. Without it, I would have to spend hours in a library looking for information that I can now find within minutes. Second, it helps me to stay organised. All my notes, deadlines and files are stored in one place, and I can access them from my phone as well. Third, it connects me to people. When my cousin moved abroad, we used the laptop to talk every weekend, which made the distance feel much smaller.</p><p>Of course, I realise that I could become too dependent on it, so I try to take regular breaks and do my reading on paper occasionally. Even so, I cannot imagine my studies without it, and I will probably keep it for several more years.</p>`
+  },
+  p3: {
+    qs: ["How has technology changed the way people communicate?", "Do you think older people find it harder to use new technology?", "What are the negative effects of too much technology?", "Should children be taught how to use technology at school?", "Do you think technology will make our lives easier in the future?"],
+    model: [
+      `<p>It has made communication faster and cheaper. We can send messages instantly to anyone in the world and see them on video, which was unimaginable a few decades ago. On the other hand, I think face-to-face conversations have become less common, and some people find it harder to build deep relationships.</p>`,
+      `<p>Generally, yes, because they did not grow up with these devices and may be afraid of making mistakes. However, this is not true for everyone. Many older people learn quickly when someone is patient with them, and they often enjoy it, especially when they discover how it helps them stay in touch with family.</p>`,
+      `<p>Overuse can harm health, for example through lack of sleep, eye strain and not getting enough exercise. It can also reduce concentration, because people are constantly interrupted by notifications. Moreover, privacy is a worry, as companies collect large amounts of personal data.</p>`,
+      `<p>Yes, absolutely. Technology is part of almost every job today, so children need to learn practical skills such as typing, searching for reliable information and protecting their data. They should also learn about online safety and how to use technology responsibly, which is just as important as the technical side.</p>`,
+      `<p>I think so, in many areas. Automation will take over repetitive tasks, medical technology will help doctors detect diseases earlier, and smart systems may reduce traffic and energy use. However, we must make sure that people are trained for new jobs, otherwise some will be left behind.</p>`
+    ]
+  }
+});
+
+IELTS_DATA.speaking.push({
+  id: 4, title: "Practice Test 4",
+  p1: { topic: "Friends", qs: ["Do you have many friends?", "How often do you see your friends?", "What do you usually do together?", "Do you think it is important to have friends who are similar to you?"] },
+  p1b: { topic: "Weekends", qs: ["What do you usually do at weekends?", "Do you prefer to be busy or relax at weekends?", "How is your weekend different from the rest of the week?"] },
+  p2: {
+    card: "Describe a time when you helped someone.",
+    points: ["who you helped", "what the problem was", "how you helped this person", "and explain how you felt about helping."],
+    model: `<p>I would like to talk about a time last year when I helped a younger neighbour, a boy called Omar, with his maths homework. He was about twelve, and his parents both work long hours, so he was often alone in the afternoons.</p><p>One day, I met him on the stairs looking very upset. When I asked what was wrong, he told me that he had an important exam coming up and that he could not understand fractions at all. He had been failing his practice tests and was afraid his teacher would be disappointed. I offered to help, and we agreed to meet three times a week at my place after school.</p><p>At first, it was quite challenging, because he was very discouraged and kept saying that he was bad at maths. So, instead of starting with textbook exercises, I used examples from daily life, such as dividing a pizza or sharing sweets among friends. Gradually, he started to see the logic. I also made a small chart where he could record his scores, so he could see his progress.</p><p>After about a month, he took his exam and got a much higher mark than he had expected, and he came to my door with a box of chocolates to thank me.</p><p>I felt extremely happy and proud. Teaching him also helped me, because explaining something to others made me understand it better myself. It was a reminder that a little time and patience can really change someone's confidence, and I would gladly do it again.</p>`
+  },
+  p3: {
+    qs: ["Why do some people enjoy volunteering?", "Should schools encourage students to do volunteer work?", "Who should be responsible for helping elderly people, the family or the government?", "Do you think people are less willing to help others than in the past?", "What kinds of help do communities need most nowadays?"],
+    model: [
+      `<p>I think volunteering gives people a sense of purpose. They see that their time makes a real difference, which is satisfying. It can also help them meet new people, learn new skills and gain experience that is useful for their careers, so there are personal rewards as well as benefits for society.</p>`,
+      `<p>I think so, because it teaches teenagers responsibility and empathy. When students work in a care home or help clean a beach, they understand problems that they might never see otherwise. However, I think it should be encouraged rather than forced, because people give more when they choose to.</p>`,
+      `<p>Ideally, both should share the responsibility. Family members can give emotional support and daily care, which no institution can fully replace. However, governments must provide pensions, healthcare and care homes for those with no family or with serious medical needs, because families alone cannot always cope.</p>`,
+      `<p>Not necessarily. In big cities, people may be busier and may not know their neighbours, so there seems to be less everyday help. But when a disaster occurs, people often give generously, and social media has made it easier to organise help quickly, so I do not think generosity has disappeared.</p>`,
+      `<p>I would say support for older people and for those who feel isolated. Many elderly residents live alone, and a simple visit or phone call can make a big difference. Communities also need help with environmental projects, such as planting trees and keeping parks clean.</p>`
+    ]
+  }
+});
+
+IELTS_DATA.speaking.push({
+  id: 5, title: "Practice Test 5",
+  p1: { topic: "Sports and exercise", qs: ["Do you play any sports?", "What sports are popular in your country?", "Did you do a lot of sport when you were a child?", "Do you prefer playing sport or watching it?"] },
+  p1b: { topic: "Daily routine", qs: ["What is your typical day like?", "Are you a morning person or an evening person?", "Would you like to change anything about your daily routine?"] },
+  p2: {
+    card: "Describe a sport or physical activity that you enjoy.",
+    points: ["what it is", "where and when you do it", "who you do it with", "and explain why you enjoy it."],
+    model: `<p>The activity I would like to talk about is swimming, which I have enjoyed since I was about six years old. My father taught me in the pool at our apartment building, and I later joined a swimming club at my school.</p><p>Nowadays, I swim two or three times a week at a public pool near my home, usually early in the morning before classes or in the evening when it is less crowded. Sometimes I go on my own, but more often I go with my cousin, who is also quite serious about it. We compete in a friendly way, trying to beat each other's time over fifty metres, and then we have a cold drink and chat afterwards.</p><p>There are several reasons why I enjoy it so much. First of all, it is excellent for my health. It works the whole body, and because water supports your weight, there is little risk of injury. I have noticed that I have more energy during the day and I sleep much better at night. Secondly, swimming helps me deal with stress. When I am in the water, I can only focus on my breathing and my movements, so worries about exams or homework seem to disappear for a while. Thirdly, it gives me a sense of achievement. Last year, I managed to swim a full kilometre without stopping, which I had never imagined I could do.</p><p>Finally, it suits our climate, because in the hot summer months, it is a lovely way to stay active while staying cool. I hope I will continue to swim for many years.</p>`
+  },
+  p3: {
+    qs: ["Why do some people not do enough exercise?", "Should physical education be compulsory at school?", "Do you think professional athletes are paid too much?", "How do international sports events benefit a country?", "How can governments encourage people to be more active?"],
+    model: [
+      `<p>Mainly because of lack of time and modern lifestyles. Many people have desk jobs, travel by car and relax in front of screens, so they do not move much during the day. Some also feel embarrassed about their fitness level or simply have no motivation to start, so exercise slips down their list of priorities.</p>`,
+      `<p>Yes, I think it should be, because it is the one time when all children are guaranteed to be active. It also teaches teamwork, discipline and healthy habits. However, schools should offer a variety of activities, so that students who dislike competitive sports can try something such as yoga or swimming instead.</p>`,
+      `<p>In some cases, yes. Top footballers earn millions, whereas nurses and teachers who contribute more to society are paid much less. On the other hand, professional athletes have short careers, face injury risks and generate huge revenue for their clubs, so I understand why they earn high salaries. I would simply like to see public workers valued more.</p>`,
+      `<p>They bring in tourism and investment, and they often lead to improved stadiums, roads and public transport that residents can use for years. They can also create national pride and a feeling of unity. The downside is the cost, because if the facilities are not used afterwards, they can become a financial burden.</p>`,
+      `<p>They could build more parks, cycling lanes and affordable sports centres so that exercise is easy and cheap. Campaigns and school programmes can also raise awareness of its health benefits. Another idea is to give workplaces tax benefits for providing gyms or active breaks to employees.</p>`
+    ]
+  }
+});
+
+IELTS_DATA.speaking.push({
+  id: 6, title: "Practice Test 6",
+  p1: { topic: "Reading", qs: ["Do you enjoy reading?", "What kinds of things do you read?", "Did you read a lot when you were a child?", "Do you prefer reading paper books or on a screen?"] },
+  p1b: { topic: "Transport", qs: ["How do you usually travel to school or work?", "Is public transport good in your area?", "Would you like to have your own car in the future?"] },
+  p2: {
+    card: "Describe a book that you have read and enjoyed.",
+    points: ["what the book was", "what it was about", "why you decided to read it", "and explain why you enjoyed it."],
+    model: `<p>I would like to talk about a novel called The Alchemist, written by Paulo Coelho, which I read about a year ago. It is a fairly short book, so I finished it in a couple of days, though I have thought about it many times since.</p><p>It tells the story of a young shepherd named Santiago, who lives in Spain and has a recurring dream about treasure hidden near the Egyptian pyramids. He decides to leave his safe life and travel across the desert to find it. On the way, he meets many people, including a merchant, an Englishman who studies alchemy and a wise man who teaches him to listen to his heart.</p><p>I decided to read it because my older sister recommended it. She said it had changed the way she thought about her future, and since I was about to choose my university course, I was curious to see what she meant.</p><p>I enjoyed the book for several reasons. Firstly, the writing is simple and almost poetic, so it is easy to follow, yet it contains deep ideas. Secondly, the main character is someone I could relate to, because he is uncertain and afraid at times, but he keeps going. Finally, the message is inspiring: it says that following your dreams requires courage and that the journey matters as much as the destination.</p><p>Of course, some critics say that the story is too simple, and I can understand that. However, for me, it came at exactly the right moment, and it encouraged me to choose a course based on my interests, not on other people's expectations. I would happily recommend it to anyone who feels unsure about their path.</p>`
+  },
+  p3: {
+    qs: ["Why do some people prefer films to books?", "Do you think people read less now than in the past?", "What is the role of libraries in modern society?", "Should children be encouraged to read from an early age?", "Will printed books disappear in the future?"],
+    model: [
+      `<p>Films are more immediate and require less effort. You can sit back and enjoy the story in two hours, while a book needs concentration and time. Films also combine images, music and acting, which can be very emotional. That said, books allow readers to imagine characters and places for themselves, which many people find more rewarding.</p>`,
+      `<p>I am not sure that people read less, but they read differently. Many people now read short texts, news and posts on their phones all day, so they actually read a lot. However, long-form reading, such as novels, seems to be less common, because there are so many other forms of entertainment competing for our time.</p>`,
+      `<p>Libraries are still important because they provide free access to knowledge for everyone, including those who cannot afford books or the internet. They also act as community centres, offering study spaces, workshops and activities for children and older people. For that reason, I think they deserve continued public funding.</p>`,
+      `<p>Definitely. Early reading builds vocabulary, imagination and concentration, which helps children in all their school subjects. Parents can make it enjoyable by reading bedtime stories together and letting children choose books about topics they like. If reading becomes a habit when young, it usually lasts for life.</p>`,
+      `<p>I do not think they will disappear completely. E-books are convenient, especially for travel, but many people love the feel and smell of paper and find it less tiring for the eyes. I expect both formats to continue side by side, much as cinema and streaming exist together.</p>`
+    ]
+  }
+});
+
+IELTS_DATA.speaking.push({
+  id: 7, title: "Practice Test 7",
+  p1: { topic: "Shopping", qs: ["Do you like shopping?", "Do you prefer shopping online or in shops?", "What was the last thing you bought?", "Do you ever go shopping with friends or family?"] },
+  p1b: { topic: "Clothes", qs: ["What kind of clothes do you usually wear?", "Do you like to follow fashion?", "Do you think people judge others by their clothes?"] },
+  p2: {
+    card: "Describe a gift that you gave to someone.",
+    points: ["what the gift was", "who you gave it to", "why you chose it", "and explain how the person reacted."],
+    model: `<p>I would like to talk about a gift that I gave to my grandmother for her seventieth birthday last spring. It was a photo album that I made myself, containing pictures from different stages of her life.</p><p>I chose it because she is the kind of person who already has everything she needs and who does not care much about expensive presents. What she values most is family, and she often sits with old photographs and tells us stories about the past. So I thought that a personal gift would mean more than something I bought in a shop.</p><p>To make it, I spent several weekends collecting photographs from my parents, uncles and aunts. Some were quite old and faded, so my cousin, who is good with computers, helped me to scan and improve them. I arranged them in order, from her childhood in the village to her wedding day and the birth of her grandchildren, and I wrote a short caption under each one, with a funny memory or a date. I also left a few blank pages at the end for new photos.</p><p>The day of the party, I gave it to her in front of everyone. At first, she was quiet while she turned the pages, and then I noticed tears in her eyes. She laughed at some of the captions and told everyone the stories behind several pictures. Afterwards, she hugged me for a long time and said it was the best gift she had ever received.</p><p>I was very moved, and it taught me that thoughtfulness is much more important than the price of a gift.</p>`
+  },
+  p3: {
+    qs: ["Why do people enjoy giving and receiving gifts?", "Do you think people spend too much money on special occasions?", "Is it better to give money or a present?", "How has online shopping changed the way people buy things?", "Do advertisements have too much influence on what people buy?"],
+    model: [
+      `<p>Gifts are a way of showing love and appreciation, and giving them can be as pleasurable as receiving them. They strengthen relationships, because the effort shows that you care. For many people, they are also part of cultural traditions such as weddings, birthdays and religious festivals, which makes the exchange feel meaningful.</p>`,
+      `<p>In many cases, yes. Companies promote celebrations such as Valentine's Day or sales events, and people feel social pressure to buy expensive things to impress others. Some even go into debt. I believe that the value of an occasion lies in spending time together, so a modest budget is perfectly acceptable.</p>`,
+      `<p>It depends on the situation. Money is practical, and the receiver can choose what they really need, which is why it is common at weddings. However, a thoughtful present shows more effort and personal attention. For close friends and family, I would choose a present, and for distant relatives, money is simpler.</p>`,
+      `<p>It has made shopping far more convenient. Customers can compare prices, read reviews and have goods delivered to their door at any hour. On the negative side, small local shops struggle to compete, and it is easy to buy things impulsively, as one click is all it takes.</p>`,
+      `<p>I think they have a significant influence, especially on young people. Advertisers use celebrities and social media to make products look essential, and many people buy things they do not really need. Being aware of these techniques and thinking carefully before purchasing is the best protection.</p>`
+    ]
+  }
+});
+
+IELTS_DATA.speaking.push({
+  id: 8, title: "Practice Test 8",
+  p1: { topic: "Home", qs: ["Do you live in a house or an apartment?", "What is your favourite room in your home?", "Is there anything you would like to change about your home?", "Would you prefer to live in the city or the countryside?"] },
+  p1b: { topic: "Neighbours", qs: ["Do you know your neighbours well?", "How often do you talk to them?", "Do you think it is important to have good neighbours?"] },
+  p2: {
+    card: "Describe a building that you like.",
+    points: ["where it is", "what it looks like", "what you can do there", "and explain why you like it."],
+    model: `<p>The building I would like to describe is the main public library in my city, which opened about five years ago. It is located near the city centre, close to a park and a metro station, so it is very easy to reach.</p><p>Architecturally, it is quite striking. The outside is made of glass and white concrete, with a curved roof that looks a little like an open book. Inside, there are four floors connected by a wide staircase, and large windows let in plenty of natural light. On the top floor, there is a terrace with plants and tables where you can sit and look at the skyline.</p><p>There are many things to do there. Obviously, you can borrow books and magazines, but there are also quiet study rooms, a computer area, a children's section with storytelling sessions, and a small cafe on the ground floor. They also hold exhibitions, language classes and talks by local authors. I go there about twice a week to study, particularly during exam season, because it is more peaceful than my home.</p><p>I like it for several reasons. Firstly, the design is beautiful and modern without feeling cold. Secondly, the atmosphere is calm and welcoming: people of all ages use it, from students to retired people who come to read the newspapers. Thirdly, it is free to enter, so everyone has equal access to knowledge and a comfortable place to work.</p><p>For me, it is more than a library. It is a space that brings the community together, and I think it shows how well-designed public buildings can improve people's lives.</p>`
+  },
+  p3: {
+    qs: ["How important is architecture in a city?", "Should old buildings be preserved or replaced by modern ones?", "What are the advantages and disadvantages of living in a high-rise building?", "How can cities provide enough housing for everyone?", "How might homes be different in the future?"],
+    model: [
+      `<p>I think it is very important, because buildings shape how a city looks and feels. Attractive architecture creates a sense of identity and pride, and it attracts tourists. More than that, good design affects daily life: well-planned buildings provide light, ventilation and public spaces where people can meet.</p>`,
+      `<p>I think a balance is necessary. Historic buildings connect us to our past and are often irreplaceable, so they should be preserved where possible. But if a building is unsafe or cannot be adapted, replacing it may be sensible. A good compromise is to renovate old buildings for modern uses.</p>`,
+      `<p>The main advantage is efficient use of land, which matters in crowded cities, and residents often enjoy great views and good facilities. The disadvantages are that people may feel disconnected from neighbours and from nature, and there can be long waits for lifts. In emergencies, evacuation is also more difficult.</p>`,
+      `<p>Governments can encourage the building of affordable housing, offer subsidies to first-time buyers and regulate rents so that they do not rise too quickly. Developing new towns with good transport links is another option, because it reduces pressure on city centres.</p>`,
+      `<p>I think homes will be smarter and more sustainable. Many will have solar panels, energy-saving systems and devices that control lighting and temperature automatically. Because land is expensive, I also expect homes to be smaller and more flexible, with rooms that serve several purposes, such as an office by day and a bedroom at night.</p>`
+    ]
+  }
+});
+
+IELTS_DATA.speaking.push({
+  id: 9, title: "Practice Test 9",
+  p1: { topic: "Photographs", qs: ["Do you like taking photographs?", "What do you usually take photos of?", "Do you keep your photos on your phone or print them?", "Do you think photos are a good way to remember events?"] },
+  p1b: { topic: "Free time", qs: ["What do you like to do in your free time?", "Do you prefer spending free time alone or with others?", "Is there a hobby you would like to start?"] },
+  p2: {
+    card: "Describe an important decision that you made.",
+    points: ["what the decision was", "when you made it", "how you made it", "and explain why it was important."],
+    model: `<p>One of the most important decisions I have made so far was choosing to study engineering instead of medicine. I made this decision about eight months ago, during my last year of school.</p><p>For many years, I had assumed that I would become a doctor. My parents were hoping for it, and several relatives work in hospitals, so it seemed like the natural path. However, as the time to apply approached, I realised I was not truly excited about it. I enjoyed biology, but what I really loved was maths and physics, and the part of my science classes that fascinated me most was building and testing things.</p><p>To make the decision, I followed a few steps. First, I wrote a list of the pros and cons of each career, which made my feelings clearer. Then I spoke to a cousin who studies medicine and a neighbour who is a civil engineer, and I asked them about their daily work. I also attended an open day at a university, where I joined a workshop on designing a small bridge, and I enjoyed it enormously. Finally, I sat down with my parents and explained my reasons calmly. They were surprised at first, but when they saw how serious I was, they supported me.</p><p>This was important because it was the first big choice that I made for myself, rather than following expectations. I feel much more motivated now, and I am looking forward to my course. It also taught me that it is better to be honest with yourself and with others than to spend years in a career that does not suit you.</p>`
+  },
+  p3: {
+    qs: ["Who should have the most influence on young people's career choices?", "Is it better to make quick decisions or to take time to think?", "Why do some people find it difficult to make decisions?", "Do you think people make better decisions in groups or alone?", "How can schools help students to make good decisions?"],
+    model: [
+      `<p>I think young people should make the final decision, but parents, teachers and professionals can offer guidance. Parents know their children's strengths, while teachers see their academic abilities. If others have too much influence, students may end up in careers they dislike, which could affect their happiness and performance.</p>`,
+      `<p>It depends on the importance of the decision. For small matters, such as choosing what to eat, a quick decision is fine. For important matters such as career, finances or moving abroad, it is wiser to gather information and consider the consequences, though waiting too long can mean missing opportunities.</p>`,
+      `<p>Some people fear making the wrong choice and being criticised or regretting it. When there are too many options, it can also be overwhelming. In addition, people who lack confidence tend to rely on others and avoid responsibility. Practice in making smaller decisions can help them become more comfortable.</p>`,
+      `<p>Both have advantages. Groups bring different perspectives and can notice risks that one person might miss. However, they can be slow and sometimes suffer from social pressure, where people agree just to avoid conflict. So for complex issues, I would discuss in a group but let one person take final responsibility.</p>`,
+      `<p>Schools can teach critical thinking, giving students practice in weighing evidence and considering consequences. Career guidance sessions, work experience and talks from professionals would also help. Group projects and class debates are useful, too, because they teach students to listen to different opinions before reaching a conclusion.</p>`
+    ]
+  }
+});
+
+IELTS_DATA.speaking.push({
+  id: 10, title: "Practice Test 10",
+  p1: { topic: "Languages", qs: ["What languages do you speak?", "When did you start learning English?", "Do you find any part of English difficult?", "Would you like to learn another language?"] },
+  p1b: { topic: "Weather and seasons", qs: ["What is your favourite season?", "What do you usually do in hot weather?", "Do you think weather affects the way people behave?"] },
+  p2: {
+    card: "Describe a skill that you learned and would like to improve.",
+    points: ["what the skill is", "how you learned it", "why you want to improve it", "and explain how you plan to improve it."],
+    model: `<p>The skill I would like to talk about is cooking, which I started learning about two years ago. Before that, I could hardly make anything more complicated than an omelette, and my family often joked about it.</p><p>I learned mainly by watching and practising. First, my mother showed me the basics of our traditional dishes, such as how to prepare rice properly and how to balance spices. Then I started watching videos online, where chefs explain each step clearly, and I tried to copy their recipes on weekends. At first, many of my dishes were failures: I burned several pots and once forgot to add salt to a whole meal. But with time, I gained confidence, and now I can cook about ten dishes quite well.</p><p>I want to improve for a few reasons. Firstly, I will probably live away from home when I go to university, and I want to eat healthily rather than depend on fast food. Secondly, cooking is relaxing, and it allows me to be creative. Thirdly, I enjoy the feeling when family and friends praise a meal I have prepared.</p><p>To improve, I have a clear plan. I intend to try one new recipe every week, especially from different cuisines such as Italian and Japanese, so that I broaden my range. I would also like to take a short course at a cooking school, where a professional could correct my technique, for example, how to chop vegetables safely and quickly. Finally, I plan to keep a small notebook in which I record what worked and what did not.</p><p>I believe that with regular practice, I can become much more skilful, and I am looking forward to cooking for my family one day.</p>`
+  },
+  p3: {
+    qs: ["What is the best way to learn a new skill?", "Do you think practical skills should be taught at school?", "Are skills or qualifications more important when looking for a job?", "Why do some people give up when learning something new?", "Will the skills employers want change in the future?"],
+    model: [
+      `<p>I think the most effective way is regular practice combined with feedback. Reading or watching a tutorial gives you the basic idea, but you only improve by doing it yourself and correcting mistakes. Having a teacher or a friend to give advice speeds up progress, and setting small goals keeps you motivated.</p>`,
+      `<p>Yes, I do. Skills such as cooking, managing money and basic first aid are useful throughout life, but many students leave school without them. Learning them at school would make young people more independent and confident. They would not have to replace academic subjects, but could be added as short courses.</p>`,
+      `<p>Both matter, but I think skills are becoming more important. Qualifications show that you have studied a subject, which is useful for getting an interview, yet employers ultimately want someone who can do the job well. Ideally, people should have a combination of formal knowledge and practical experience.</p>`,
+      `<p>Often it is because progress feels slow, and they become discouraged, especially if they compare themselves with others. Some also expect quick results and lose patience. Others simply do not have enough time or support. Setting realistic targets and celebrating small improvements can help people continue.</p>`,
+      `<p>Yes, I expect so. As automation and artificial intelligence take over routine tasks, employers will value skills that machines find difficult, such as creativity, communication, problem solving and adaptability. Digital literacy will also be essential, and workers will need to keep learning throughout their careers.</p>`
+    ]
+  }
+});
+}catch(e){console.error('ielts data_speaking.js',e)}
 /* ---- ielts data_writing.js ---- */
 try{
 IELTS_DATA.writing.push({
