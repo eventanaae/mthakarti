@@ -12667,7 +12667,7 @@ function vHome(){
   <h2>${L('موادك','Your subjects')} · ${GR[STU.grade].name} ${GR[STU.grade].icon}</h2>
   ${termBar()}
   ${Object.values(SUBJ).every(s=>s.noTerm)?NOTERM():`<div class="grid">
-   ${Object.entries(SUBJ).filter(([k,s])=>!s.noTerm).map(([k,s])=>`<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small>${L(`${s.T.length} دروس · ${s.Q.length} سؤال`,`${s.T.length} lessons · ${s.Q.length} questions`)}</small></div>`).join('')}
+   ${Object.entries(SUBJ).filter(([k,s])=>!s.noTerm).map(([k,s])=>`<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small>${L(`${s.T.length} دروس`,`${s.T.length} lessons`)}</small></div>`).join('')}
   </div>`}
   <p class="mut" style="text-align:center;margin-top:14px">${L('مب صفك؟','Not your grade?')} <a href="#welcome">${L('غيّر الاسم أو الصف','Change name or grade')}</a></p>
   <p class="foot">${L('مذاكرتي · mthakarti.com · محتوى تعليمي مساعد، ارجع دائمًا لكتابك ومعلمك 🌸','Mthakarti · mthakarti.com · Supporting study material — always check your textbook and teacher 🌸')}</p>`;
@@ -12681,7 +12681,7 @@ function vGrade(){
   ${termBar()}
   ${Object.values(SUBJ).every(s=>s.noTerm)?NOTERM():''}
   <div class="grid">
-   ${Object.entries(SUBJ).filter(([k,s])=>!s.noTerm).map(([k,s])=>{const pr=subjProgress(k);return `<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small dir="${CD(s)}">${s.desc}</small><span class="pill ${s.tone}">${L(`${s.T.length} دروس · ${s.Q.length} سؤال`,`${s.T.length} lessons · ${s.Q.length} questions`)}</span><div class="bar" title="${L('تقدمك','Your progress')}"><i style="width:${pr}%"></i></div><small>${L('تقدمك','Progress')} ${pr}%</small></div>`}).join('')}
+   ${Object.entries(SUBJ).filter(([k,s])=>!s.noTerm).map(([k,s])=>{const pr=subjProgress(k);return `<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small dir="${CD(s)}">${s.desc}</small><span class="pill ${s.tone}">${L(`${s.T.length} دروس`,`${s.T.length} lessons`)}</span><div class="bar" title="${L('تقدمك','Your progress')}"><i style="width:${pr}%"></i></div><small>${L('تقدمك','Progress')} ${pr}%</small></div>`}).join('')}
    <div class="tile" role="button" tabindex="0" onclick="go('ielts')"><span class="ic">🎓</span><b>${L('تجهيز IELTS','IELTS prep')}</b><small>Reading · Listening · Writing · Speaking</small><span class="pill p-pink">${L('تدريب بنفس الشكل والتوقيت','Same format and timing as the real test')}</span></div>
    ${SOON.map(([n,i])=>`<div class="tile off"><span class="ic">${i}</span><b>${LANG==='en'&&SOON_EN[n]?SOON_EN[n]:n}</b><small>${L('قريبًا','Coming soon')}</small></div>`).join('')}
   </div>`;
@@ -12714,7 +12714,7 @@ function vSubject(k,tab){
     $('#sub').innerHTML=`<div class="grid">
      <div class="tile" role="button" tabindex="0" onclick="startQuiz('${k}','mix')"><span class="ic">🎲</span><b>${L('تدريب سريع','Quick practice')}</b><small>${L('10 أسئلة عشوائية من كل الدروس، مع شرح فوري بعد كل جواب.','10 random questions from all lessons, with an instant explanation after each answer.')}</small></div>
      <div class="tile" role="button" tabindex="0" onclick="startQuiz('${k}','rush')"><span class="ic">⚡</span><b>${L('تحدي السرعة','Speed challenge')}</b><small>${L('3 قلوب و20 ثانية لكل سؤال. كم تقدر تكمّل؟','3 hearts and 20 seconds per question. How far can you go?')}</small></div>
-    </div><h2>${L('أو اختر درس','Or pick a lesson')}</h2><div class="grid">${s.T.map(t=>`<div class="tile" role="button" tabindex="0" onclick="startQuiz('${k}','practice',${t.id})"><b style="font-size:16px" dir="${cd}">${t.id}. ${t.t}</b><small>${L(`${s.Q.filter(q=>q[0]===t.id).length} أسئلة`,`${s.Q.filter(q=>q[0]===t.id).length} questions`)}</small></div>`).join('')}</div>`;
+    </div><h2>${L('أو اختر درس','Or pick a lesson')}</h2><div class="grid">${s.T.map(t=>`<div class="tile" role="button" tabindex="0" onclick="startQuiz('${k}','practice',${t.id})"><b style="font-size:16px" dir="${cd}">${t.id}. ${t.t}</b><small>${L('🎯 تدرّب على هذا الدرس','🎯 Practise this lesson')}</small></div>`).join('')}</div>`;
   } else {
     const ex=s.exam;
     $('#sub').innerHTML=`<div class="card"><h3>${L('🏆 امتحان نهائي تجريبي · '+TERM_NAME(TERM),'🏆 Practice final exam · '+TERM_NAME(TERM))}</h3>
