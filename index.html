@@ -11173,8 +11173,17 @@ const GR={
   src.forEach(([g,D,n,m])=>{if(!D)return;Object.keys(D).forEach(k=>{const s=D[k];if(!s||!s.T||!s.Q)return;s.exam=s.exam||{n:Math.min(n,s.Q.length),mins:m};s.exam.n=Math.min(s.exam.n,s.Q.length);GR[g].E[k]=s})});
 })();
 let CUR='g10g';
+let TERM=null;
+const TERM_NAME=n=>L(['','الفصل الأول','الفصل الثاني','الفصل الثالث'][n],'Term '+n);
+function setTerm(n){TERM=n;store.set('term',n);setGrade(CUR);render()}
+function termBar(){return `<div class="tabs" role="tablist" aria-label="${L('الفصل الدراسي','Term')}" style="margin:14px 0 6px">${[1,2,3].map(n=>`<button class="${TERM===n?'on':''}" onclick="setTerm(${n})">📘 ${TERM_NAME(n)}</button>`).join('')}</div>`}
+const NOTERM=()=>`<div class="card" style="text-align:center;background:var(--lav-soft)"><b style="font-size:18px">${L('بعدنا نشتغل على دروس '+TERM_NAME(TERM)+' 🛠️','We’re still working on '+TERM_NAME(TERM)+' lessons 🛠️')}</b><p class="mut">${L('بننزلها أول ما تنشرها المدرسة. حاليًا ذاكر دروس الفصل الأول 📚','We’ll add them as soon as school publishes them. For now, study Term 1 📚')}</p><button class="sec" onclick="setTerm(1)">${TERM_NAME(1)}</button></div>`;
 function setGrade(g){if(!GR[g])return;CUR=g;Object.keys(SUBJ).forEach(k=>delete SUBJ[k]);Object.assign(SUBJ,GR[g].S);
   if(LANG==='en')Object.keys(SUBJ).forEach(k=>{if(!AR_ONLY.includes(k)&&GR[g].E[k])SUBJ[k]=GR[g].E[k]});
+  /* term filter: each lesson has term (default 1); questions follow their lesson */
+  if(TERM===null)TERM=+store.get('term',1)||1;
+  Object.keys(SUBJ).forEach(k=>{const s=SUBJ[k];const T=s.T.filter(t=>(t.term||s.term||1)===TERM);const ids=T.map(t=>t.id);const Q=s.Q.filter(q=>ids.includes(q[0]));
+    SUBJ[k]=Object.assign({},s,{T,Q,exam:{n:Math.min((s.exam&&s.exam.n)||20,Q.length),mins:(s.exam&&s.exam.mins)||30},noTerm:!T.length})});
   SOON.length=0;GR[g].soon.forEach(x=>SOON.push(x))}
 
 /* ================= IELTS (original practice in official format) ================= */
@@ -11371,20 +11380,23 @@ function vHome(){
     <button class="pri" onclick="go('compete')">${COMP.me?L('شوف الترتيب','See the leaderboard'):L('اشترك بالإيميل','Join with email')}</button>
   </div>
   <h2>${L('موادك','Your subjects')} · ${GR[STU.grade].name} ${GR[STU.grade].icon}</h2>
-  <div class="grid">
-   ${Object.entries(SUBJ).map(([k,s])=>`<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small>${L(`${s.T.length} دروس · ${s.Q.length} سؤال`,`${s.T.length} lessons · ${s.Q.length} questions`)}</small></div>`).join('')}
-  </div>
+  ${termBar()}
+  ${Object.values(SUBJ).every(s=>s.noTerm)?NOTERM():`<div class="grid">
+   ${Object.entries(SUBJ).filter(([k,s])=>!s.noTerm).map(([k,s])=>`<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small>${L(`${s.T.length} دروس · ${s.Q.length} سؤال`,`${s.T.length} lessons · ${s.Q.length} questions`)}</small></div>`).join('')}
+  </div>`}
   <p class="mut" style="text-align:center;margin-top:14px">${L('مب صفك؟','Not your grade?')} <a href="#welcome">${L('غيّر الاسم أو الصف','Change name or grade')}</a></p>
   <p class="foot">${L('مذاكرتي · mthakarti.com · محتوى تعليمي مساعد، ارجع دائمًا لكتابك ومعلمك 🌸','Mthakarti · mthakarti.com · Supporting study material — always check your textbook and teacher 🌸')}</p>`;
 }
-function subjProgress(k){const s=SUBJ[k],p=P(k);const seen=p.seen.length/s.T.length;const ex=p.exam?p.exam/100:0;return Math.round((seen*.5+ex*.5)*100)}
+function subjProgress(k){const s=SUBJ[k],p=P(k);if(!s.T.length)return 0;const seen=p.seen.filter(id=>s.T.some(t=>t.id===id)).length/s.T.length;const ex=p.exam?p.exam/100:0;return Math.round((seen*.5+ex*.5)*100)}
 function vGrade(){
   crumbs([[L('الرئيسية','Home'),'home'],[GR[CUR].short]]);
   $('#view').innerHTML=`
   <h1>${GR[CUR].name} ${GR[CUR].icon}</h1>
-  <p class="mut">${L('اختر المادة. كل مادة فيها: الدروس (مع الصوت) · التدريب · الامتحان النهائي.','Pick a subject. Each one has: lessons (with audio) · practice · final exam.')}</p>
+  <p class="mut">${L('اختر الفصل والمادة. كل مادة فيها: الدروس (مع الصوت) · التدريب · الامتحان النهائي للفصل.','Pick the term and subject. Each one has: lessons (with audio) · practice · the term’s final exam.')}</p>
+  ${termBar()}
+  ${Object.values(SUBJ).every(s=>s.noTerm)?NOTERM():''}
   <div class="grid">
-   ${Object.entries(SUBJ).map(([k,s])=>{const pr=subjProgress(k);return `<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small dir="${CD(s)}">${s.desc}</small><span class="pill ${s.tone}">${L(`${s.T.length} دروس · ${s.Q.length} سؤال`,`${s.T.length} lessons · ${s.Q.length} questions`)}</span><div class="bar" title="${L('تقدمك','Your progress')}"><i style="width:${pr}%"></i></div><small>${L('تقدمك','Progress')} ${pr}%</small></div>`}).join('')}
+   ${Object.entries(SUBJ).filter(([k,s])=>!s.noTerm).map(([k,s])=>{const pr=subjProgress(k);return `<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small dir="${CD(s)}">${s.desc}</small><span class="pill ${s.tone}">${L(`${s.T.length} دروس · ${s.Q.length} سؤال`,`${s.T.length} lessons · ${s.Q.length} questions`)}</span><div class="bar" title="${L('تقدمك','Your progress')}"><i style="width:${pr}%"></i></div><small>${L('تقدمك','Progress')} ${pr}%</small></div>`}).join('')}
    <div class="tile" role="button" tabindex="0" onclick="go('ielts')"><span class="ic">🎓</span><b>${L('تجهيز IELTS','IELTS prep')}</b><small>Reading · Listening · Writing · Speaking</small><span class="pill p-pink">${L('تدريب بنفس الشكل والتوقيت','Same format and timing as the real test')}</span></div>
    ${SOON.map(([n,i])=>`<div class="tile off"><span class="ic">${i}</span><b>${LANG==='en'&&SOON_EN[n]?SOON_EN[n]:n}</b><small>${L('قريبًا','Coming soon')}</small></div>`).join('')}
   </div>`;
@@ -11394,9 +11406,11 @@ function vSubject(k,tab){
   ctx.g=CUR;
   crumbs([[L('الرئيسية','Home'),'home'],[GR[CUR].short,CUR],[nm(k)]]);
   const p=P(k), cd=CD(s);
+  if(s.noTerm){$('#view').innerHTML=`<h1>${s.icon} ${nmH(k)}</h1>${termBar()}${NOTERM()}`;return}
   $('#view').innerHTML=`
   <h1>${s.icon} ${nmH(k)}</h1>
-  ${s.note?`<p class="note" dir="${cd}">📌 ${s.note}</p>`:''}
+  ${termBar()}
+  ${s.note?`<p class="note" dir="${cd}">📌 ${TERM_NAME(TERM)} · ${s.note}</p>`:''}
   <div class="tabs" role="tablist">
    <button class="${tab==='lessons'?'on':''}" onclick="vSubject('${k}','lessons')">${L('📚 الدروس','📚 Lessons')}</button>
    <button class="${tab==='practice'?'on':''}" onclick="vSubject('${k}','practice')">${L('🎯 تدريب','🎯 Practice')}</button>
@@ -11418,8 +11432,8 @@ function vSubject(k,tab){
     </div><h2>${L('أو اختر درس','Or pick a lesson')}</h2><div class="grid">${s.T.map(t=>`<div class="tile" role="button" tabindex="0" onclick="startQuiz('${k}','practice',${t.id})"><b style="font-size:16px" dir="${cd}">${t.id}. ${t.t}</b><small>${L(`${s.Q.filter(q=>q[0]===t.id).length} أسئلة`,`${s.Q.filter(q=>q[0]===t.id).length} questions`)}</small></div>`).join('')}</div>`;
   } else {
     const ex=s.exam;
-    $('#sub').innerHTML=`<div class="card"><h3>${L('🏆 امتحان نهائي تجريبي','🏆 Practice final exam')}</h3>
-     <p>${L(`${ex.n} سؤال من كل الدروس · ${ex.mins} دقيقة · بدون إجابات أثناء الامتحان، والنتيجة مع التحليل في النهاية (مثل الامتحان الحقيقي).`,`${ex.n} questions from all lessons · ${ex.mins} minutes · no answers shown during the exam; your score and analysis come at the end (just like the real exam).`)}</p>
+    $('#sub').innerHTML=`<div class="card"><h3>${L('🏆 امتحان نهائي تجريبي · '+TERM_NAME(TERM),'🏆 Practice final exam · '+TERM_NAME(TERM))}</h3>
+     <p>${L(`${ex.n} سؤال من كل دروس ${TERM_NAME(TERM)} · ${ex.mins} دقيقة · بدون إجابات أثناء الامتحان، والنتيجة مع التحليل في النهاية (مثل الامتحان الحقيقي).`,`${ex.n} questions from all lessons · ${ex.mins} minutes · no answers shown during the exam; your score and analysis come at the end (just like the real exam).`)}</p>
      ${p.exam!=null?`<p>${L('آخر نتيجة لك:','Your best score:')} <b>${p.exam}%</b></p>`:''}
      <button class="pri" onclick="startQuiz('${k}','exam')">${L('ابدأ الامتحان','Start the exam')}</button></div>`;
   }
