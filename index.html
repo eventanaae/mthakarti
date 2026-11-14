@@ -36525,9 +36525,9 @@ function ieItemsOf(sec){var o=[];(sec.groups||[]).forEach(function(g){(g.items||
 function ieAllItems(sk,t){var o=[];ieSecs(sk,t).forEach(function(s){o=o.concat(ieItemsOf(s))});return o}
 function ieRange(sec){var its=ieItemsOf(sec);if(!its.length)return '';return its[0].n+'–'+its[its.length-1].n}
 function ieTop(){var t=document.querySelector('.top');document.documentElement.style.setProperty('--ieTop',(t?t.offsetHeight:56)+'px')}
-function ieDisc(){return `<div class="note ie-disc">${LANG==='en'?'<div class="en">📝 Original practice tests in the official IELTS Academic format — not official Cambridge/IDP/British Council material.</div>':'<div>📝 اختبارات تدريبية أصلية بنفس شكل وتوقيت اختبار IELTS الأكاديمي الرسمي، وليست مواد رسمية من جامعة كامبريدج (Cambridge) أو IDP أو المجلس الثقافي البريطاني (British Council).</div>'}</div>`}
+function ieDisc(){return `<div class="note ie-disc">${LANG==='en'?'<div class="en">📝 Original practice tests in the official IELTS Academic format — not official Cambridge/IDP/British Council material.</div>':'<div>📝 اختبارات تدريبية أصلية بنفس شكل وتوقيت اختبار IELTS الأكاديمي الرسمي، وليست مواد رسمية من جامعة كامبريدج أو IDP أو المجلس الثقافي البريطاني.</div>'}</div>`}
 var IE_NMA={reading:'القراءة',listening:'الاستماع',writing:'الكتابة',speaking:'التحدث'};
-function ieNm(sk){return LANG==='en'?IE_NM[sk]:IE_NMA[sk]+' ('+IE_NM[sk]+')'}
+function ieNm(sk){return LANG==='en'?IE_NM[sk]:IE_NMA[sk]}
 
 /* ---------- styles (mobile-first, no horizontal scroll) ---------- */
 function ieCss(){
@@ -36665,7 +36665,7 @@ function ieHome(){
     <div class="row" style="margin-top:8px"><button class="pri" onclick="ieResume()">${L('▶ كمّل','▶ Resume')}</button><button class="ghost" onclick="ieDiscard()">${L('احذفه','Discard')}</button></div>
     <p class="mut" style="font-size:13.5px;margin:6px 0 0">${L('المؤقت استمر يعدّ وأنت برّا — مثل الامتحان الحقيقي.','The timer kept running while you were away — just like the real test.')}</p></div>`:'';
   ieEl('view').innerHTML=`<div class="ie-wrap">
-   <h1>${L('🎓 التحضير لاختبار IELTS الأكاديمي (Academic)','🎓 IELTS Academic prep')}</h1>
+   <h1>${L('🎓 التحضير لاختبار IELTS الأكاديمي','🎓 IELTS Academic prep')}</h1>
    ${ieDisc()}${resume}
    <div class="ie-tabs" role="tablist">${tabs.map(function(t){return `<button role="tab" aria-selected="${IE.tab===t[0]}" class="${IE.tab===t[0]?'on':''}" onclick="ieTabGo('${t[0]}')">${t[1]}</button>`}).join('')}</div>
    <div id="ieBody"></div></div>`;
@@ -36673,7 +36673,7 @@ function ieHome(){
   if(IE.tab==='basics')b.innerHTML=ieBasics();
   else if(IE_IC[IE.tab])b.innerHTML=ieList(IE.tab);
   else b.innerHTML=ieWordsTab();
-  if(IE.tab==='basics')ieCalcUpd();
+  if(IE.tab==='basics'){ieCalcUpd();var rg=document.querySelector('.ieb input[type=range]');if(rg)iebBand(rg)}
   try{var on=document.querySelector('.ie-tabs button.on'),bx=on&&on.parentNode;if(bx)bx.scrollLeft+=(on.getBoundingClientRect().left+on.offsetWidth/2)-(bx.getBoundingClientRect().left+bx.clientWidth/2)}catch(e){}
 }
 function ieResume(){var r=IE.saved;IE.saved=null;if(!r)return;IE.run=r;ieScreen();ieStartTick();window.scrollTo(0,0)}
@@ -36684,8 +36684,8 @@ function ieSkillFacts(sk){
   var F={
     reading:[['60:00',L('دقيقة · بدون وقت إضافي','minutes · no extra time')],['40',L('سؤال','questions')],['3',L('نصوص (من الأسهل للأصعب)','passages (easier → harder)')]],
     listening:[['≈30:00',L('دقيقة صوت تقريبًا · تسمعه مرة وحدة','minutes of audio · heard ONCE')],['40',L('سؤال في 4 أجزاء','questions in 4 parts')],['10:00',L('دقائق لنقل الإجابات','minutes transfer time')]],
-    writing:[['60:00',L('دقيقة للمهمتين','minutes for both tasks')],['150+',L('كلمة · المهمة الأولى (Task 1) · ≈20 د','words · Task 1 (≈20 min)')],['250+',L('كلمة · المهمة الثانية (Task 2) · ≈40 د، ضعف الوزن','words · Task 2 (≈40 min, double weight)')]],
-    speaking:[['11–14',L('دقيقة مع الممتحن','minutes with the examiner')],['3',L('أجزاء','parts')],['1:00 + 2:00',L('تحضير + كلام في الجزء الثاني (Part 2)','prep + talk in Part 2')]]
+    writing:[['60:00',L('دقيقة للمهمتين','minutes for both tasks')],['150+',L('كلمة · المهمة الأولى · ≈20 د','words · Task 1 (≈20 min)')],['250+',L('كلمة · المهمة الثانية · ≈40 د، ضعف الوزن','words · Task 2 (≈40 min, double weight)')]],
+    speaking:[['11–14',L('دقيقة مع الممتحن','minutes with the examiner')],['3',L('أجزاء','parts')],['1:00 + 2:00',L('تحضير + كلام في الجزء الثاني','prep + talk in Part 2')]]
   }[sk];
   return `<div class="ie-facts">${F.map(function(f){return `<div class="ie-fact"><b>${f[0]}</b><small>${f[1]}</small></div>`}).join('')}</div>`;
 }
@@ -36751,23 +36751,23 @@ function ieIntro(r,t){
   off.listening=['You will hear four recordings. The recording is played ONCE only.','Answer all the questions while you listen. You have time to read the questions before each part.','There are '+n+' questions in this test. Each question carries one mark.','At the end of the test you will have 10 minutes to transfer and check your answers.','Follow the word limit in each instruction. Spelling must be correct.'];
   off.writing=['Answer BOTH tasks.','Task 1: write at least 150 words (spend about 20 minutes).','Task 2: write at least 250 words (spend about 40 minutes).','Task 2 contributes twice as much as Task 1 to the Writing score.','Write in full sentences — do not use notes or bullet points.'];
   off.speaking=['The test is a conversation with an examiner in three parts.','Part 1: questions about familiar topics (4–5 minutes).','Part 2: you get a task card, 1 minute to prepare and make notes, then speak for 1–2 minutes.','Part 3: a discussion of more abstract questions linked to Part 2 (4–5 minutes).'];
-  rules.reading=L(ul(['⏱ الوقت <b>60 دقيقة</b> بالضبط. المؤقت يبدأ لما تضغط «ابدأ الاختبار»، ولما يخلص الوقت تنسلّم إجاباتك <b>تلقائيًا</b>.','❗ ما في وقت إضافي لنقل الإجابات في القراءة (Reading) — الـ60 دقيقة تشمل كل شي.','📄 3 نصوص و'+n+' سؤال. خلّ تقريبًا 20 دقيقة لكل نص، والنص الثالث أصعب فلا تتأخر في الأول.','✍️ التزم بعدد الكلمات المطلوب (مثل NO MORE THAN TWO WORDS). لو زدت كلمة تنحسب الإجابة غلط.','🔤 التهجئة لازم صحيحة. الحروف الكبيرة والصغيرة ما تفرق.','✅ ما في خصم على الغلط — لا تترك أي سؤال فاضي.','📱 على التلفون: استخدم زر «📄 النص / ❓ الأسئلة» للتنقل.']),
+  rules.reading=L(ul(['⏱ الوقت <b>60 دقيقة</b> بالضبط. المؤقت يبدأ لما تضغط «ابدأ الاختبار»، ولما يخلص الوقت تنسلّم إجاباتك <b>تلقائيًا</b>.','❗ ما في وقت إضافي لنقل الإجابات في القراءة — الـ60 دقيقة تشمل كل شي.','📄 3 نصوص و'+n+' سؤال. خلّ تقريبًا 20 دقيقة لكل نص، والنص الثالث أصعب فلا تتأخر في الأول.','✍️ التزم بعدد الكلمات المطلوب (مثل NO MORE THAN TWO WORDS). لو زدت كلمة تنحسب الإجابة غلط.','🔤 التهجئة لازم صحيحة. الحروف الكبيرة والصغيرة ما تفرق.','✅ ما في خصم على الغلط — لا تترك أي سؤال فاضي.','📱 على التلفون: استخدم زر «📄 النص / ❓ الأسئلة» للتنقل.']),
                     ul(['⏱ Exactly <b>60 minutes</b>. The timer starts when you press “Start test”; when time runs out your answers are submitted <b>automatically</b>.','❗ There is NO extra time to transfer answers in Reading — the 60 minutes include everything.','📄 3 passages, '+n+' questions. Spend about 20 minutes per passage; passage 3 is the hardest, so don’t overspend on passage 1.','✍️ Respect the word limit (e.g. NO MORE THAN TWO WORDS). One extra word makes the answer wrong.','🔤 Spelling must be correct. Capital letters do not matter.','✅ No marks are lost for wrong answers — never leave a question blank.','📱 On a phone: use the “📄 Passage / ❓ Questions” switch.']));
   rules.listening=L(ul(['🎧 4 أجزاء و'+n+' سؤال، حوالي 30 دقيقة صوت. <b>تسمع مرة وحدة بس</b> — ما تقدر توقف أو ترجع، مثل الامتحان الحقيقي.','👀 قبل كل جزء عندك 30 ثانية تقرأ الأسئلة، وبعد كل جزء 30 ثانية تراجع.','✍️ جاوب وأنت تسمع. الإجابات تجي بنفس ترتيب الأسئلة.','📝 بعد آخر جزء عندك <b>10 دقائق</b> لنقل ومراجعة الإجابات (في الامتحان على الكمبيوتر دقيقتين بس). لما تخلص الـ10 دقائق تنسلّم تلقائيًا.','🔤 التهجئة لازم صحيحة — الأسماء اللي تنتهجّى حرف حرف لازم تكتبها بالضبط. الأرقام تقدر تكتبها أرقام.','🔊 الصوت هنا مولّد من المتصفح (أصوات مختلفة لكل متكلم). شغّل الصوت، والأفضل تلبس سماعات، وجرّب الصوت تحت قبل ما تبدأ.']),
                       ul(['🎧 4 parts, '+n+' questions, about 30 minutes of audio. <b>You hear it ONCE only</b> — no pausing or rewinding, just like the real test.','👀 Before each part you get 30 seconds to read the questions, and 30 seconds after each part to check.','✍️ Answer while you listen. Answers come in the same order as the questions.','📝 After Part 4 you get <b>10 minutes</b> to transfer and check your answers (computer-delivered IELTS gives 2 minutes). When the 10 minutes end, the test is submitted automatically.','🔤 Spelling must be correct — names spelled letter by letter must be copied exactly. Numbers may be written as digits.','🔊 Audio here is generated by your browser (different voices per speaker). Turn the sound on, use headphones if you can, and test the sound below first.']));
-  rules.writing=L(ul(['⏱ <b>60 دقيقة</b> للمهمتين مع بعض، والمؤقت يسلّم تلقائيًا لما يخلص الوقت.','📊 المهمة الأولى (Task 1): صف الرسم/الجدول في <b>150 كلمة على الأقل</b> (حوالي 20 دقيقة).','📝 المهمة الثانية (Task 2): مقال في <b>250 كلمة على الأقل</b> (حوالي 40 دقيقة) — تساوي <b>ثلثين</b> درجة الكتابة.','⚠️ أقل من الحد الأدنى = خصم في معيار إنجاز المهمة (Task Achievement/Response). لا تنسخ السؤال (الكلمات المنسوخة ما تنحسب). اكتب جمل كاملة بدون نقاط.','🔤 ما في مصحح إملائي في الامتحان، وهنا بعد مقفّل.']),
+  rules.writing=L(ul(['⏱ <b>60 دقيقة</b> للمهمتين مع بعض، والمؤقت يسلّم تلقائيًا لما يخلص الوقت.','📊 المهمة الأولى: صف الرسم/الجدول في <b>150 كلمة على الأقل</b> (حوالي 20 دقيقة).','📝 المهمة الثانية: مقال في <b>250 كلمة على الأقل</b> (حوالي 40 دقيقة) — تساوي <b>ثلثين</b> درجة الكتابة.','⚠️ أقل من الحد الأدنى = خصم في معيار إنجاز المهمة. لا تنسخ السؤال (الكلمات المنسوخة ما تنحسب). اكتب جمل كاملة بدون نقاط.','🔤 ما في مصحح إملائي في الامتحان، وهنا بعد مقفّل.']),
                     ul(['⏱ <b>60 minutes</b> for both tasks together; the test is submitted automatically when time runs out.','📊 Task 1: describe the chart/table in <b>at least 150 words</b> (about 20 minutes).','📝 Task 2: an essay of <b>at least 250 words</b> (about 40 minutes) — worth <b>two thirds</b> of the Writing score.','⚠️ Under the minimum = penalty in Task Achievement/Response. Don’t copy the question (copied words are not counted). Write full sentences, no bullet points.','🔤 There is no spell-checker in the exam, and it is turned off here too.']));
-  rules.speaking=L(ul(['🗣️ 3 أجزاء، 11–14 دقيقة. الممتحن (صوت المتصفح) يقرأ عليك الأسئلة.','1️⃣ الجزء الأول (Part 1) – 4–5 دقائق: أسئلة عن نفسك ومواضيع مألوفة. جاوب بجملتين أو ثلاث.','2️⃣ الجزء الثاني (Part 2): بطاقة موضوع — <b>دقيقة تحضير</b> (اكتب ملاحظات) ثم <b>دقيقتين كلام</b>. المؤقت يوقفك مثل الممتحن.','3️⃣ الجزء الثالث (Part 3) – 4–5 دقائق: نقاش أعمق مرتبط بموضوع الجزء الثاني.','🎙️ تكلّم بصوت عالي. تقدر تكتب إجابتك أو تستخدم زر الميكروفون للإملاء الصوتي (لو متصفحك يدعمه)، وتقدر تسجّل صوتك عشان تسمعه بعدين.']),
+  rules.speaking=L(ul(['🗣️ 3 أجزاء، 11–14 دقيقة. الممتحن (صوت المتصفح) يقرأ عليك الأسئلة.','1️⃣ الجزء الأول – 4–5 دقائق: أسئلة عن نفسك ومواضيع مألوفة. جاوب بجملتين أو ثلاث.','2️⃣ الجزء الثاني: بطاقة موضوع — <b>دقيقة تحضير</b> (اكتب ملاحظات) ثم <b>دقيقتين كلام</b>. المؤقت يوقفك مثل الممتحن.','3️⃣ الجزء الثالث – 4–5 دقائق: نقاش أعمق مرتبط بموضوع الجزء الثاني.','🎙️ تكلّم بصوت عالي. تقدر تكتب إجابتك أو تستخدم زر الميكروفون للإملاء الصوتي (لو متصفحك يدعمه)، وتقدر تسجّل صوتك عشان تسمعه بعدين.']),
                      ul(['🗣️ 3 parts, 11–14 minutes. The examiner (a browser voice) reads the questions to you.','1️⃣ Part 1 (4–5 min): questions about yourself and familiar topics. Answer in 2–3 sentences.','2️⃣ Part 2: a task card — <b>1 minute to prepare</b> (make notes), then <b>speak for 2 minutes</b>. The timer stops you like the examiner does.','3️⃣ Part 3 (4–5 min): a deeper discussion linked to the Part 2 topic.','🎙️ Speak out loud. You can type your answer or use the microphone button for dictation (if your browser supports it), and you can record yourself to listen back later.']));
   mark.reading=L('كل سؤال بدرجة واحدة. مجموعك من 40 يتحوّل إلى <b>درجة (Band) من 0 إلى 9</b> حسب جدول التحويل المعتمد للاختبار الأكاديمي (مثلًا 30/40 ≈ 7.0 و23/40 ≈ 6.0). بعد التسليم تشوف الإجابة الصحيحة وسببها لكل سؤال.','Each question = 1 mark. Your raw score out of 40 is converted to a <b>band from 0 to 9</b> with the standard Academic conversion table (e.g. 30/40 ≈ 7.0, 23/40 ≈ 6.0). After submitting you see every correct answer and why.');
   mark.listening=L('كل سؤال بدرجة. المجموع من 40 يتحوّل إلى درجة (Band) (مثلًا 30/40 ≈ 7.0 و23/40 ≈ 6.0). بعد التسليم تشوف الإجابات وسببها والنص الكامل للتسجيل.','1 mark per question. The raw score /40 is converted to a band (e.g. 30/40 ≈ 7.0, 23/40 ≈ 6.0). After submitting you see the answers, explanations and the full transcript.');
-  mark.writing=L('الممتحن يصحح كل مهمة على <b>4 معايير</b> متساوية: إنجاز/الاستجابة للمهمة (Task Achievement/Response)، الترابط والتماسك (Coherence & Cohesion)، المفردات (Lexical Resource)، القواعد (Grammatical Range & Accuracy). المهمة الثانية (Task 2) وزنها ضعف المهمة الأولى (Task 1). هنا ما في تصحيح آلي: بعد التسليم تشوف <b>إجابة نموذجية</b> وخطة ومفردات، وتقيّم نفسك بقائمة المعايير الرسمية.','Each task is marked on <b>4 equal criteria</b>: Task Achievement/Response, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy. Task 2 counts double. There is no automatic marker here: after submitting you get a <b>model answer</b>, a plan and vocabulary, and you assess yourself with the official criteria checklist.');
-  mark.speaking=L('4 معايير متساوية: الطلاقة والترابط (Fluency & Coherence)، المفردات (Lexical Resource)، القواعد (Grammatical Range & Accuracy)، النطق (Pronunciation). بعد الاختبار تشوف <b>إجابات نموذجية</b> وتقيّم نفسك (واسمع تسجيلك لو سجّلت).','4 equal criteria: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation. Afterwards you get <b>model answers</b> and assess yourself (and listen to your recording if you made one).');
+  mark.writing=L('الممتحن يصحح كل مهمة على <b>4 معايير</b> متساوية: إنجاز/الاستجابة للمهمة، الترابط والتماسك، المفردات، القواعد. المهمة الثانية وزنها ضعف المهمة الأولى. هنا ما في تصحيح آلي: بعد التسليم تشوف <b>إجابة نموذجية</b> وخطة ومفردات، وتقيّم نفسك بقائمة المعايير الرسمية.','Each task is marked on <b>4 equal criteria</b>: Task Achievement/Response, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy. Task 2 counts double. There is no automatic marker here: after submitting you get a <b>model answer</b>, a plan and vocabulary, and you assess yourself with the official criteria checklist.');
+  mark.speaking=L('4 معايير متساوية: الطلاقة والترابط، المفردات، القواعد، النطق. بعد الاختبار تشوف <b>إجابات نموذجية</b> وتقيّم نفسك (واسمع تسجيلك لو سجّلت).','4 equal criteria: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation. Afterwards you get <b>model answers</b> and assess yourself (and listen to your recording if you made one).');
   var extra='';
   if(sk==='listening'){
     var ok=ieAudioOK(),ev=ieVoices().length;
     extra=`<div class="card" style="margin-top:12px"><h3>🔊 ${L('جرّب الصوت','Sound check')}</h3>
-      <p class="mut" style="margin:4px 0">${ok?(ev||(typeof ttsNS!=='undefined'&&ttsNS)?L('بتسمع صوتين مختلفين. لو ما سمعت شي، ارفع الصوت أو جرّب متصفح ثاني (Chrome / Edge / Safari).','You should hear two different voices. If you hear nothing, turn the volume up or try another browser (Chrome / Edge / Safari).'):L('ما لقينا صوت إنجليزي في هذا الجهاز بعد — اضغط «جرّب الصوت»؛ لو ما اشتغل، بيكون الاختبار بالنص المكتوب.','No English voice found yet on this device — press “Test sound”; if it doesn’t work, the test will use the written transcript.')):L('⚠️ متصفحك ما يدعم الصوت. بتتدرب بقراءة النص (مو مثل الامتحان الحقيقي)، والوقت 40 دقيقة.','⚠️ Your browser has no speech support. You will practise by reading the transcript (not like the real test), with 40 minutes.')}</p>
+      <p class="mut" style="margin:4px 0">${ok?(ev||(typeof ttsNS!=='undefined'&&ttsNS)?L('بتسمع صوتين مختلفين. لو ما سمعت شي، ارفع الصوت أو جرّب متصفح ثاني.','You should hear two different voices. If you hear nothing, turn the volume up or try another browser (Chrome / Edge / Safari).'):L('ما لقينا صوت إنجليزي في هذا الجهاز بعد — اضغط «جرّب الصوت»؛ لو ما اشتغل، بيكون الاختبار بالنص المكتوب.','No English voice found yet on this device — press “Test sound”; if it doesn’t work, the test will use the written transcript.')):L('⚠️ متصفحك ما يدعم الصوت. بتتدرب بقراءة النص (مو مثل الامتحان الحقيقي)، والوقت 40 دقيقة.','⚠️ Your browser has no speech support. You will practise by reading the transcript (not like the real test), with 40 minutes.')}</p>
       ${ok?`<button class="sec" onclick="ieSoundTest(this)">${L('🔊 جرّب الصوت','🔊 Test sound')}</button>`:''}</div>`;
   }
   if(sk==='speaking'){
@@ -36812,7 +36812,7 @@ function ieTick(){
   }
   var rem=r.end-now,warnAt=r.skill==='speaking'?15000:300000;
   if(el){el.textContent=ieFmt(rem);el.classList.toggle('warn',rem<=warnAt)}
-  if(r.skill==='writing'&&!r.nudged&&now-r.t0>20*60000&&(r.cur||0)===0){r.nudged=true;toast(L('مرّت 20 دقيقة — انتقل للمهمة الثانية (Task 2) قريب، لأنها تحتاج 40 دقيقة.','20 minutes have passed — move on to Task 2 soon (it needs 40 minutes).'))}
+  if(r.skill==='writing'&&!r.nudged&&now-r.t0>20*60000&&(r.cur||0)===0){r.nudged=true;toast(L('مرّت 20 دقيقة — انتقل للمهمة الثانية قريب، لأنها تحتاج 40 دقيقة.','20 minutes have passed — move on to Task 2 soon (it needs 40 minutes).'))}
   if(r.skill==='writing'){var el2=ieEl('ieEl');if(el2)el2.textContent=ieFmt(now-r.t0)}
   if(rem<=0)ieTimeUp();
 }
@@ -36955,8 +36955,8 @@ function ieSubmitAsk(){
   var r=IE.run;if(!r)return;var t=ieTest(r.skill,r.id);
   if(r.skill==='writing'){
     var w1=ieWords(r.w1),w2=ieWords(r.w2),msg=[];
-    if(w1<150)msg.push(L('المهمة الأولى (Task 1) فيها '+w1+' كلمة بس (الحد الأدنى 150)','Task 1 has only '+w1+' words (minimum 150)'));
-    if(w2<250)msg.push(L('المهمة الثانية (Task 2) فيها '+w2+' كلمة بس (الحد الأدنى 250)','Task 2 has only '+w2+' words (minimum 250)'));
+    if(w1<150)msg.push(L('المهمة الأولى فيها '+w1+' كلمة بس (الحد الأدنى 150)','Task 1 has only '+w1+' words (minimum 150)'));
+    if(w2<250)msg.push(L('المهمة الثانية فيها '+w2+' كلمة بس (الحد الأدنى 250)','Task 2 has only '+w2+' words (minimum 250)'));
     if(!confirm((msg.length?msg.join('\n')+'\n\n':'')+L('تسلّم الحين؟','Submit now?')))return;
     return ieSubmit(false);
   }
@@ -37022,7 +37022,7 @@ function ieReview(r,t){
       <p class="mut" style="margin:0">${L('درجتك','Your score')}</p><div class="ie-big" style="direction:ltr">${res.raw}/${res.total}</div>
       <p style="font-size:22px;font-weight:800;margin:4px 0">${L('الدرجة (Band)','Band')} ${ieB(res.band)}</p>
       <p style="margin:4px 0">${ieBandMsg(res.band)}</p>
-      <p class="mut" style="font-size:13.5px;margin:4px 0">${L('الوقت المستخدم','Time used')}: <bdi>${used}</bdi> · ${L('التحويل تقريبي حسب جدول التحويل المنشور للاختبار الأكاديمي (Academic)','Conversion is approximate, using the published Academic table')}${res.total!==40?L(' (الدرجة محوّلة لـ40)',' (scaled to 40)'):''}</p>
+      <p class="mut" style="font-size:13.5px;margin:4px 0">${L('الوقت المستخدم','Time used')}: <bdi>${used}</bdi> · ${L('التحويل تقريبي حسب جدول التحويل المنشور للاختبار الأكاديمي','Conversion is approximate, using the published Academic table')}${res.total!==40?L(' (الدرجة محوّلة لـ40)',' (scaled to 40)'):''}</p>
       <div class="ie-facts">${res.secs.map(function(x,i){return `<div class="ie-fact"><b>${x[0]}/${x[1]}</b><small>${sk==='reading'?L('النص','Passage'):L('الجزء','Part')} ${i+1}</small></div>`}).join('')}</div></div>
       <div class="card" style="margin-top:12px"><h3>📊 ${L('حسب نوع السؤال','By question type')}</h3><div class="ie-x"><table class="tbl en">${typ}</table></div>
       <p class="mut" style="font-size:14px;margin:6px 0 0">${L('أضعف نوع عندك؟ اقرأ استراتيجيته في 📘 الأساسيات.','Weakest type? Read its strategy in 📘 Basics.')}</p></div>
@@ -37030,7 +37030,7 @@ function ieReview(r,t){
        <label style="display:flex;gap:6px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" style="width:auto" onchange="ieEl('ieRvList').classList.toggle('ie-onlybad',this.checked)"> ${L('الأخطاء بس','Mistakes only')}</label></div>
        <div class="ie-nav">${res.rows.map(function(x){return `<button class="${x.ok?'ok':'bad'}" onclick="var e=ieEl('ieRv${x.n}');if(e)e.scrollIntoView({block:'center'})">${x.n}</button>`}).join('')}</div>
        <div id="ieRvList" class="en" style="margin-top:8px">${secs.map(function(s,i){return `<h3 style="margin:14px 0 4px">${sk==='reading'?'Passage':'Part'} ${i+1}: ${s.title||''}</h3>`+res.rows.filter(function(x){return x.si===i}).map(ieRvRow).join('')}).join('')}</div></div>
-      ${sk==='listening'?`<div class="card" style="margin-top:12px"><h3>📄 ${L('نص التسجيل (Transcript)','Transcript')}</h3><p class="mut" style="font-size:14px;margin:0 0 6px">${L('الحين تقدر تعيد السماع وتقرأ — لاحظ وين كانت الإجابات والفخاخ.','Now you may listen again and read along — notice where the answers and distractors were.')}</p>
+      ${sk==='listening'?`<div class="card" style="margin-top:12px"><h3>📄 ${L('نص التسجيل','Transcript')}</h3><p class="mut" style="font-size:14px;margin:0 0 6px">${L('الحين تقدر تعيد السماع وتقرأ — لاحظ وين كانت الإجابات والفخاخ.','Now you may listen again and read along — notice where the answers and distractors were.')}</p>
         ${secs.map(function(s,i){return `<details class="lesson"><summary><span class="n">${i+1}</span><span class="t en">Part ${i+1}: ${s.title||''}</span></summary><div class="body"><button class="sec" onclick="ieReplay(${i},this)">${L('🔊 اسمع الجزء','🔊 Play this part')}</button><div class="passage en" style="margin-top:8px">${ieScriptHtml(s)}</div></div></details>`}).join('')}</div>`
        :`<div class="card" style="margin-top:12px"><h3>📄 ${L('النصوص للمراجعة','Passages for review')}</h3>${secs.map(function(s,i){return `<details class="lesson"><summary><span class="n">${i+1}</span><span class="t en">${s.title||''}</span></summary><div class="body"><div class="passage en">${s.html||''}</div></div></details>`}).join('')}</div>`}`;
   }else if(sk==='writing')html=ieWReview(r,t);
@@ -37188,7 +37188,7 @@ function ieWView(r,t){
   ieEl('view').innerHTML=`<div class="ie-wrap"><div class="ie-bar" id="ieRunBox">${ieClockHtml()}
     <span class="ie-seg"><button id="ieSg0" class="${c===0?'on':''}" onclick="ieWShow(0)">Task 1</button><button id="ieSg1" class="${c===1?'on':''}" onclick="ieWShow(1)">Task 2</button></span>
     <span class="sp"></span><button class="pri" onclick="ieSubmitAsk()">${L('تسليم ✔','Submit ✔')}</button><button class="ghost" onclick="ieQuitAsk()" aria-label="${L('إيقاف','Quit')}">✕</button>
-    <div class="mut" style="flex-basis:100%;font-size:13px">${L('المقترح: المهمة الأولى (Task 1) ≈ 20 دقيقة · المهمة الثانية (Task 2) ≈ 40 دقيقة · مضى','Suggested: Task 1 ≈ 20 min · Task 2 ≈ 40 min · elapsed')} <b id="ieEl" style="direction:ltr;display:inline-block">0:00</b></div></div>
+    <div class="mut" style="flex-basis:100%;font-size:13px">${L('المقترح: المهمة الأولى ≈ 20 دقيقة · المهمة الثانية ≈ 40 دقيقة · مضى','Suggested: Task 1 ≈ 20 min · Task 2 ≈ 40 min · elapsed')} <b id="ieEl" style="direction:ltr;display:inline-block">0:00</b></div></div>
    <div class="ie-sec${c===0?'':' hidden'}" data-s="0"><div class="card en"><h3>WRITING TASK 1</h3><p class="mut" style="margin:0 0 6px">You should spend about 20 minutes on this task.</p>
      <div class="ie-box" style="font-weight:600">${T1.prompt||''}</div><p style="margin:6px 0"><b>Write at least 150 words.</b></p>
      <div class="ie-x" style="margin:8px 0">${T1.visual||''}</div>
@@ -37209,18 +37209,18 @@ function ieW(k,v){
 }
 var IE_CRIT={
   writing1:[
-    ['ta',['إنجاز المهمة','Task Achievement'],[['كتبت 150 كلمة أو أكثر','I wrote at least 150 words'],['المقدمة تعيد صياغة السؤال (مو نسخ)','My introduction paraphrases the prompt (not copied)'],['كتبت ملخص عام (Overview) واضح لأهم الاتجاهات/الملامح','I wrote a clear overview of the main trends/features'],['اخترت أهم البيانات ودعمتها بأرقام صحيحة وقارنت بينها','I selected key features, supported them with accurate data and compared them'],['ما كتبت رأيي الشخصي','I did not give my personal opinion']]],
+    ['ta',['إنجاز المهمة','Task Achievement'],[['كتبت 150 كلمة أو أكثر','I wrote at least 150 words'],['المقدمة تعيد صياغة السؤال (مو نسخ)','My introduction paraphrases the prompt (not copied)'],['كتبت ملخص عام واضح لأهم الاتجاهات/الملامح','I wrote a clear overview of the main trends/features'],['اخترت أهم البيانات ودعمتها بأرقام صحيحة وقارنت بينها','I selected key features, supported them with accurate data and compared them'],['ما كتبت رأيي الشخصي','I did not give my personal opinion']]],
   ],
   writing2:[
     ['tr',['الاستجابة للمهمة','Task Response'],[['كتبت 250 كلمة أو أكثر','I wrote at least 250 words'],['جاوبت على كل أجزاء السؤال','I answered ALL parts of the question'],['موقفي واضح من المقدمة للخاتمة','My position is clear from introduction to conclusion'],['كل فكرة رئيسية مطوّرة بسبب ومثال','Each main idea is extended with reasons and examples']]],
   ],
   common:[
-    ['cc',['الترابط والتماسك','Coherence & Cohesion'],[['فقرات واضحة، كل فقرة فيها فكرة رئيسية','Clear paragraphs, each with one central idea'],['استخدمت أدوات ربط متنوعة بشكل طبيعي (مو في كل جملة)','I used a range of linking words naturally (not in every sentence)'],['الأفكار مرتبة منطقيًا والإحالة واضحة (this, these, which)','Ideas are logically ordered; referencing (this, these, which) is clear']]],
+    ['cc',['الترابط والتماسك','Coherence & Cohesion'],[['فقرات واضحة، كل فقرة فيها فكرة رئيسية','Clear paragraphs, each with one central idea'],['استخدمت أدوات ربط متنوعة بشكل طبيعي (مو في كل جملة)','I used a range of linking words naturally (not in every sentence)'],['الأفكار مرتبة منطقيًا والإحالة واضحة','Ideas are logically ordered; referencing (this, these, which) is clear']]],
     ['lr',['المفردات','Lexical Resource'],[['استخدمت مفردات أكاديمية ومتلازمات لفظية مناسبة','I used less common vocabulary and collocations accurately'],['أعدت الصياغة بدل تكرار نفس الكلمات','I paraphrased instead of repeating the same words'],['أخطاء التهجئة وصيغ الكلمات قليلة','Few spelling or word-form errors']]],
-    ['gra',['القواعد','Grammatical Range & Accuracy'],[['نوّعت بين جمل بسيطة ومركبة: جمل الوصل (relative clauses) والشرط (conditionals) والمبني للمجهول (passive)','I mixed simple and complex sentences (relative clauses, conditionals, passive)'],['أغلب الجمل بدون أخطاء','Most sentences are error-free'],['علامات الترقيم صحيحة','Punctuation is correct']]]
+    ['gra',['القواعد','Grammatical Range & Accuracy'],[['نوّعت بين جمل بسيطة ومركبة: جمل الوصل والشرط والمبني للمجهول','I mixed simple and complex sentences (relative clauses, conditionals, passive)'],['أغلب الجمل بدون أخطاء','Most sentences are error-free'],['علامات الترقيم صحيحة','Punctuation is correct']]]
   ],
   speaking:[
-    ['fc',['الطلاقة والترابط','Fluency & Coherence'],[['تكلمت بدون توقفات طويلة','I spoke at length without long pauses'],['وسّعت إجاباتي (رأي + سبب + مثال)','I extended my answers (opinion + reason + example)'],['استخدمت روابط الكلام مثل: Well, Actually, On the other hand','I used discourse markers (Well, Actually, On the other hand)'],['تكلمت تقريبًا دقيقتين كاملة في الجزء الثاني (Part 2)','I spoke for nearly the full 2 minutes in Part 2']]],
+    ['fc',['الطلاقة والترابط','Fluency & Coherence'],[['تكلمت بدون توقفات طويلة','I spoke at length without long pauses'],['وسّعت إجاباتي (رأي + سبب + مثال)','I extended my answers (opinion + reason + example)'],['استخدمت روابط الكلام مثل: Well, Actually, On the other hand','I used discourse markers (Well, Actually, On the other hand)'],['تكلمت تقريبًا دقيقتين كاملة في الجزء الثاني','I spoke for nearly the full 2 minutes in Part 2']]],
     ['lr',['المفردات','Lexical Resource'],[['استخدمت مفردات متنوعة وتعابير طبيعية','I used varied vocabulary and natural expressions'],['لما ما عرفت كلمة، شرحتها بطريقة ثانية','When I didn’t know a word, I paraphrased']]],
     ['gra',['القواعد','Grammatical Range & Accuracy'],[['استخدمت أزمنة متنوعة وجمل مركبة','I used a range of tenses and complex structures'],['أغلب الجمل بدون أخطاء','Most sentences were error-free']]],
     ['p',['النطق','Pronunciation'],[['كلامي سهل الفهم','I was easy to understand'],['نبرة الصوت والتشديد على الكلمات طبيعي','My word stress and intonation sounded natural'],['سمعت تسجيلي: أصوات واضحة ومو سريع زيادة','I listened to my recording: clear sounds, not too fast']]]
@@ -37242,13 +37242,13 @@ function ieGrpBand(pref){var s=document.querySelectorAll('select[data-g="'+pref+
 function ieSelfUpd(){
   var r=IE.run;if(!r)return;var out=ieEl('ieSelfOut');if(!out)return;
   if(r.skill==='writing'){var a=ieGrpBand('w1'),b=ieGrpBand('w2'),w=ieRound((a+2*b)/3);r.self=w;
-    out.innerHTML=LANG==='en'?`Task 1 ≈ <b>${ieB(a)}</b> · Task 2 ≈ <b>${ieB(b)}</b> → Writing ≈ <b style="font-size:22px;color:var(--pink)">${ieB(w)}</b> <span class="mut" style="font-size:13px">(Task 1 × 1/3 + Task 2 × 2/3)</span>`:`المهمة الأولى ≈ <b>${ieB(a)}</b> · المهمة الثانية ≈ <b>${ieB(b)}</b> ← الكتابة (Writing) ≈ <b style="font-size:22px;color:var(--pink)">${ieB(w)}</b> <span class="mut" style="font-size:13px">(المهمة الأولى × ⅓ + المهمة الثانية × ⅔)</span>`}
-  else{var s=ieGrpBand('sp');r.self=s;out.innerHTML=`${L('التحدث (Speaking)','Speaking')} ≈ <b style="font-size:22px;color:var(--pink)">${ieB(s)}</b> <span class="mut" style="font-size:13px">(${L('متوسط المعايير الأربعة','average of the 4 criteria')})</span>`}
+    out.innerHTML=LANG==='en'?`Task 1 ≈ <b>${ieB(a)}</b> · Task 2 ≈ <b>${ieB(b)}</b> → Writing ≈ <b style="font-size:22px;color:var(--pink)">${ieB(w)}</b> <span class="mut" style="font-size:13px">(Task 1 × 1/3 + Task 2 × 2/3)</span>`:`المهمة الأولى ≈ <b>${ieB(a)}</b> · المهمة الثانية ≈ <b>${ieB(b)}</b> ← الكتابة ≈ <b style="font-size:22px;color:var(--pink)">${ieB(w)}</b> <span class="mut" style="font-size:13px">(المهمة الأولى × ⅓ + المهمة الثانية × ⅔)</span>`}
+  else{var s=ieGrpBand('sp');r.self=s;out.innerHTML=`${L('التحدث','Speaking')} ≈ <b style="font-size:22px;color:var(--pink)">${ieB(s)}</b> <span class="mut" style="font-size:13px">(${L('متوسط المعايير الأربعة','average of the 4 criteria')})</span>`}
 }
 function ieSelfSave(){var r=IE.run;if(!r||r.self==null)return;ieSetBest(r.skill,r.id,{band:r.self});toast(L('✅ انحفظ تقديرك: الدرجة (Band) ','✅ Estimate saved: Band ')+ieB(r.self))}
 function ieWReview(r,t){
   var T1=t.task1||{},T2=t.task2||{},w1=ieWords(r.w1),w2=ieWords(r.w2);
-  var warn=function(n,min){return n<min?`<p class="trap" style="margin:6px 0">⚠️ ${L('كتبت '+n+' كلمة — أقل من '+min+'. في الامتحان هذا ينقص درجتك في معيار إنجاز المهمة (Task Achievement/Response).','You wrote '+n+' words — under '+min+'. In the exam this lowers your Task Achievement/Response score.')}</p>`:`<p class="mut" style="margin:6px 0">✅ ${n} ${L('كلمة','words')}</p>`};
+  var warn=function(n,min){return n<min?`<p class="trap" style="margin:6px 0">⚠️ ${L('كتبت '+n+' كلمة — أقل من '+min+'. في الامتحان هذا ينقص درجتك في معيار إنجاز المهمة.','You wrote '+n+' words — under '+min+'. In the exam this lowers your Task Achievement/Response score.')}</p>`:`<p class="mut" style="margin:6px 0">✅ ${n} ${L('كلمة','words')}</p>`};
   var ai=(typeof sampleReady!=='undefined')?`<button class="ghost" onclick="ieAiWrite(this)">🤖 ${L('تصحيح ذكي (إذا متاح)','AI feedback (if available)')}</button><div id="ieAiOut" class="msg a" style="max-width:100%;margin-top:10px;display:none"></div>`:'';
   return `<div class="card">${r.auto?`<p class="pill p-sun">${L('⏰ تسليم تلقائي — انتهى الوقت','⏰ Auto-submitted — time ran out')}</p>`:''}
      <p style="margin:0">${L('ما في مصحح آلي هنا: قارن إجابتك بالنموذج، بعدين قيّم نفسك على المعايير الرسمية الأربعة تحت.','There is no automatic marker here: compare your answer with the model, then assess yourself on the four official criteria below.')}</p></div>
@@ -37261,8 +37261,8 @@ function ieWReview(r,t){
      ${T2.plan?`<h3 style="margin-top:12px">🗺️ Plan</h3>${T2.plan}`:''}
      <h3 style="margin-top:12px">⭐ Model answer <span class="mut" style="font-size:13px">(${ieWords(String(T2.model||'').replace(/<[^>]+>/g,' '))} words)</span></h3><div class="ie-model">${T2.model||''}</div>
      ${(T2.vocab||[]).length?`<h3 style="margin-top:12px">💎 Useful vocabulary</h3><div class="row">${T2.vocab.map(function(x){return '<span class="pill p-sky" style="font-weight:600">'+x+'</span>'}).join('')}</div>`:''}</div>
-   <div class="card" style="margin-top:12px"><h3>🧾 ${L('قيّم نفسك — المهمة الأولى (Task 1)','Self-assessment — Task 1')}</h3>${ieCritHtml('w1',IE_CRIT.writing1.concat(IE_CRIT.common))}
-     <h3 style="margin-top:14px">🧾 ${L('قيّم نفسك — المهمة الثانية (Task 2)','Self-assessment — Task 2')}</h3>${ieCritHtml('w2',IE_CRIT.writing2.concat(IE_CRIT.common))}
+   <div class="card" style="margin-top:12px"><h3>🧾 ${L('قيّم نفسك — المهمة الأولى','Self-assessment — Task 1')}</h3>${ieCritHtml('w1',IE_CRIT.writing1.concat(IE_CRIT.common))}
+     <h3 style="margin-top:14px">🧾 ${L('قيّم نفسك — المهمة الثانية','Self-assessment — Task 2')}</h3>${ieCritHtml('w2',IE_CRIT.writing2.concat(IE_CRIT.common))}
      <div class="key" id="ieSelfOut"></div><div class="row"><button class="pri" onclick="ieSelfSave()">💾 ${L('احفظ تقديري','Save my estimate')}</button>${ai}</div>
      <p class="mut" style="font-size:13.5px;margin:6px 0 0">${L('التقدير الذاتي تقريبي. للتقييم الدقيق اعرض كتابتك على مدرسك.','Self-assessment is only an estimate. For an accurate band, show your writing to your teacher.')}</p></div>`;
 }
@@ -37292,7 +37292,7 @@ function ieSpView(r,t){
     lbl=(st==='p1'?L('الجزء الأول','Part 1'):L('الجزء الثالث','Part 3'))+L(' · سؤال ',' · Q ')+(sp.qi+1)+'/'+qs.length;
     body=`<div class="card en">${q.topic?`<p class="pill p-lav">Topic: ${ieEsc(q.topic)}</p>`:''}<p class="mut" style="margin:0 0 6px">👩‍🏫 Examiner:</p><div class="ie-exam">${q.q}</div>
       <div class="row" style="margin:8px 0"><button class="ghost" onclick="ieSpSayQ()">🔁 ${L('أعد السؤال','Repeat question')}</button></div>
-      <p class="mut" style="margin:6px 0">${L('جاوب بصوت عالي: 2–3 جمل في الجزء الأول (Part 1)، وأطول في الجزء الثالث (Part 3): رأي + سبب + مثال. اكتب إجابتك أو استخدم الإملاء الصوتي:','Answer out loud (2–3 sentences in Part 1; longer in Part 3: opinion + reason + example). Type your answer or use dictation:')}</p>
+      <p class="mut" style="margin:6px 0">${L('جاوب بصوت عالي: 2–3 جمل في الجزء الأول، وأطول في الجزء الثالث: رأي + سبب + مثال. اكتب إجابتك أو استخدم الإملاء الصوتي:','Answer out loud (2–3 sentences in Part 1; longer in Part 3: opinion + reason + example). Type your answer or use dictation:')}</p>
       <textarea class="ie-ta" style="min-height:22vh" id="ieSpA" spellcheck="false" oninput="ieSpIn('${key}',this.value)" placeholder="Your answer…">${ieEsc(sp.a[key]||'')}</textarea>${mic('ieSpA')}
       <div class="row" style="justify-content:flex-end;margin-top:8px"><button class="pri" onclick="ieSpNext(false)">${sp.qi<qs.length-1?L('السؤال التالي ▶','Next question ▶'):(st==='p1'?L('إلى الجزء الثاني ▶','Go to Part 2 ▶'):L('إنهاء الاختبار ✔','Finish test ✔'))}</button></div></div>`;
   }else if(st==='p2prep'){
@@ -37338,7 +37338,7 @@ function ieSpReview(r,t){
   return `<div class="card">${IE.recUrl?`<div><b>🎧 ${L('تسجيلك','Your recording')}</b><br><audio id="ieRecAu" controls style="width:100%;margin-top:6px"></audio></div>`:''}
     <p style="margin:6px 0 0">${L('قارن إجاباتك بالنماذج، بعدين قيّم نفسك على المعايير الأربعة.','Compare your answers with the models, then assess yourself on the four criteria.')}</p></div>
    <div class="card en" style="margin-top:12px"><h3>Part 1</h3>${p1.map(function(q,i){return `${q.topic?`<p class="pill p-lav">Topic: ${ieEsc(q.topic)}</p>`:''}<p style="margin:8px 0 2px"><b>Q${i+1}. ${q.q}</b></p>${mine(a['p1_'+i])}`}).join('')}
-     <p class="key" style="margin-top:10px">💡 ${L('في الجزء الأول (Part 1): جواب مباشر + سبب + مثال صغير. لا تجاوب بكلمة وحدة ولا تلقي خطبة.','Part 1: direct answer + reason + small example. Not one word, not a speech.')}</p></div>
+     <p class="key" style="margin-top:10px">💡 ${L('في الجزء الأول: جواب مباشر + سبب + مثال صغير. لا تجاوب بكلمة وحدة ولا تلقي خطبة.','Part 1: direct answer + reason + small example. Not one word, not a speech.')}</p></div>
    <div class="card en" style="margin-top:12px"><h3>Part 2</h3><div class="ie-cue"><b>${(t.p2&&t.p2.card)||''}</b><ul>${((t.p2&&t.p2.points)||[]).map(function(x){return '<li>'+x+'</li>'}).join('')}</ul></div>
      ${a.notes?`<p style="margin:8px 0 2px"><b>Your notes</b></p><div class="ie-mine">${ieEsc(a.notes)}</div>`:''}
      <p style="margin:8px 0 2px"><b>${L('إجابتك','Your answer')}</b> <span class="mut">(${p2w} words${p2w?L(' — دقيقتين كلام ≈ 250–300 كلمة',' — 2 minutes of speech ≈ 250–300 words'):''})</span></p>${mine(a.p2)}
@@ -37417,7 +37417,7 @@ function ieCalcUpd(){
   ids.forEach(function(id){var e=ieEl(id);if(!e){ok=false;return}v.push(+e.value)});
   var o=ieEl('ieCOut');if(!ok||!o)return;
   var avg=(v[0]+v[1]+v[2]+v[3])/4;
-  o.innerHTML=`<span style="direction:ltr;display:inline-block">(${v.map(function(x){return x.toFixed(1)}).join(' + ')}) ÷ 4 = ${avg.toFixed(3).replace(/0+$/,'').replace(/\.$/,'')}</span> → ${L('الدرجة الكلية (Overall)','Overall band')} <b style="font-size:24px;color:var(--pink)">${ieRound(avg).toFixed(1)}</b>`;
+  o.innerHTML=`<span style="direction:ltr;display:inline-block">(${v.map(function(x){return x.toFixed(1)}).join(' + ')}) ÷ 4 = ${avg.toFixed(3).replace(/0+$/,'').replace(/\.$/,'')}</span> → ${L('الدرجة الكلية','Overall band')} <b style="font-size:24px;color:var(--pink)">${ieRound(avg).toFixed(1)}</b>`;
 }
 function ieCalcHtml(){
   var pre={ieCL:ieTopBand('listening'),ieCR:ieTopBand('reading'),ieCW:ieTopBand('writing'),ieCS:ieTopBand('speaking')};
@@ -37428,152 +37428,97 @@ function ieCalcHtml(){
 }
 function ieSec(i,title,body,open){return `<details class="lesson"${open?' open':''}><summary><span class="n">${i}</span><span class="t">${title}</span></summary><div class="body">${body}</div></details>`}
 function ieBasics(){
-  var A=LANG!=='en',s=[];
-  s.push([L('ما هو اختبار IELTS الأكاديمي؟','What is IELTS Academic?'),A?`
-   <p><b>IELTS</b> (International English Language Testing System) امتحان عالمي يقيس مستواك في الإنجليزي. النسخة <b>الأكاديمية (Academic)</b> هي اللي تطلبها الجامعات (داخل الإمارات وبرّا)، ونسخة التدريب العام (General Training) للهجرة والعمل.</p>
-   <ul><li>فيه <b>4 أجزاء</b>: الاستماع (Listening) والقراءة (Reading) والكتابة (Writing) والتحدث (Speaking).</li><li>الاستماع والقراءة والكتابة في نفس اليوم ورا بعض <b>بدون استراحة</b>. التحدث ممكن نفس اليوم أو قبله/بعده بأسبوع.</li><li>المدة الكلية حوالي <b>ساعتين و45 دقيقة</b>.</li><li>تقدر تختبره على الورق أو على الكمبيوتر — نفس الأسئلة ونفس الصعوبة.</li><li>النتيجة <b>درجة (Band) من 0 إلى 9</b> لكل مهارة + درجة كلية (Overall). أغلب الجامعات تطلب تقريبًا 6.0–6.5 (تأكد من شروط جامعتك). الشهادة عادة مقبولة لمدة سنتين.</li></ul>
-   <div class="key">🧭 <b>كيف تستخدم هذا القسم:</b> اقرأ الأساسيات ← سوّ الاختبار التدريبي 1 في كل مهارة بالتوقيت ← راجع كل غلطة وسببها ← ارجع لاستراتيجية نوع السؤال اللي تغلط فيه ← الاختبار اللي بعده.</div>`:`
-   <p><b>IELTS</b> (International English Language Testing System) is a worldwide test of English. The <b>Academic</b> version is the one universities ask for (in the UAE and abroad); General Training is for migration and work.</p>
-   <ul><li>It has <b>4 parts</b>: Listening, Reading, Writing and Speaking.</li><li>Listening, Reading and Writing are taken on the same day, one after another, <b>with no breaks</b>. Speaking is the same day or up to a week before/after.</li><li>Total time: about <b>2 hours 45 minutes</b>.</li><li>You can take it on paper or on computer — same questions, same difficulty.</li><li>You get a <b>band from 0 to 9</b> for each skill plus an Overall band. Many universities ask for about 6.0–6.5 (check your university). Results are usually accepted for two years.</li></ul>
-   <div class="key">🧭 <b>How to use this section:</b> read the basics → do Practice Test 1 in each skill, timed → review every mistake and its reason → reread the strategy for the question types you miss → next test.</div>`]);
-  s.push([L('الأجزاء الأربعة: الوقت وعدد الأسئلة','The 4 parts: timing and questions'),`<div class="ie-x"><table class="tbl">
-   <tr><th>${L('المهارة','Skill')}</th><th>${L('الوقت','Time')}</th><th>${L('الأقسام','Sections')}</th><th>${L('الأسئلة','Questions')}</th></tr>
-   <tr><td>🎧 ${ieNm('listening')}</td><td>${L('~30 دقيقة + 10 دقائق نقل (ورقي) / دقيقتين (كمبيوتر)','~30 min + 10 min transfer (paper) / 2 min (computer)')}</td><td>${L('4 أجزاء','4 parts')}</td><td>40</td></tr>
-   <tr><td>📖 ${ieNm('reading')}</td><td>${L('60 دقيقة (بدون وقت إضافي)','60 min (no extra time)')}</td><td>${L('3 نصوص طويلة (2150–2750 كلمة مجموعًا)','3 long passages (2,150–2,750 words in total)')}</td><td>40</td></tr>
-   <tr><td>✍️ ${ieNm('writing')}</td><td>${L('60 دقيقة','60 min')}</td><td>${L('المهمة الأولى (150+) · المهمة الثانية (250+)','Task 1 (150+) · Task 2 (250+)')}</td><td>2</td></tr>
-   <tr><td>🗣️ ${ieNm('speaking')}</td><td>${L('11–14 دقيقة','11–14 min')}</td><td>${L('3 أجزاء مع ممتحن','3 parts with an examiner')}</td><td>—</td></tr></table></div>
-   ${A?`<ul><li><b>الاستماع:</b> الجزء الأول محادثة يومية (تعبئة نموذج) · الجزء الثاني شخص يتكلم عن موضوع يومي (خريطة/اختيار من متعدد) · الجزء الثالث نقاش أكاديمي بين 2–4 أشخاص · الجزء الرابع محاضرة أكاديمية (إكمال ملاحظات). الصعوبة تزيد.</li><li><b>القراءة:</b> نصوص من كتب ومجلات وصحف أكاديمية، الصعوبة تزيد من النص الأول للثالث.</li><li><b>الكتابة:</b> المهمة الأولى (Task 1) وصف رسم بياني/جدول/عملية/خريطة · المهمة الثانية (Task 2) مقال رأي أو نقاش.</li><li><b>التحدث:</b> الجزء الأول (Part 1) أسئلة عنك (4–5 د) · الجزء الثاني (Part 2) بطاقة: دقيقة تحضير + دقيقتين كلام · الجزء الثالث (Part 3) نقاش أعمق (4–5 د).</li></ul>`
-   :`<ul><li><b>Listening:</b> Part 1 everyday conversation (form completion) · Part 2 a monologue on an everyday topic (map/multiple choice) · Part 3 an academic discussion, 2–4 speakers · Part 4 an academic lecture (note completion). Difficulty increases.</li><li><b>Reading:</b> texts from books, magazines and journals; difficulty increases from passage 1 to 3.</li><li><b>Writing:</b> Task 1 describe a graph/table/process/map · Task 2 an opinion or discussion essay.</li><li><b>Speaking:</b> Part 1 questions about you (4–5 min) · Part 2 task card: 1 min preparation + 2 min talk · Part 3 deeper discussion (4–5 min).</li></ul>`}`]);
-  var bands=[[9,'Expert user','مستخدم خبير'],[8,'Very good user','جيد جدًا'],[7,'Good user','جيد'],[6,'Competent user','كفء'],[5,'Modest user','متواضع'],[4,'Limited user','محدود'],[3,'Extremely limited user','محدود جدًا'],[2,'Intermittent user','متقطع'],[1,'Non-user','غير مستخدم'],[0,'Did not attempt the test','لم يجب']];
-  s.push([L('الدرجات (Band) من 0 إلى 9 وحساب الدرجة الكلية','Band scores 0–9 and the overall band'),`
-   <div class="ie-x"><table class="tbl">${bands.map(function(b){return `<tr><td><b>${b[0]}</b></td><td class="en">${b[1]}</td>${A?`<td>${b[2]}</td>`:''}</tr>`}).join('')}</table></div>
-   ${A?`<p><b>الدرجة الكلية (Overall)</b> = متوسط المهارات الأربع، وتتقرّب لأقرب نصف درجة:</p><ul><li>لو المتوسط ينتهي بـ <b>.25</b> يطلع لـ <b>.5</b> (6.25 ← 6.5)</li><li>لو ينتهي بـ <b>.75</b> يطلع للرقم الصحيح اللي بعده (6.75 ← 7.0)</li><li>أقل من .25 ينزل (6.125 ← 6.0)</li></ul><div class="ex">مثال: الاستماع 6.5 + القراءة 6.5 + الكتابة 5.0 + التحدث 7.0 = 25 ÷ 4 = 6.25 ← <b>الدرجة الكلية 6.5</b></div>
-   <p><b>الاستماع (Listening) والقراءة (Reading):</b> كل سؤال بدرجة، والمجموع من 40 يتحوّل لدرجة (Band) بجدول (تقريبي، يتغير شوي من امتحان لامتحان):</p>`
-   :`<p>The <b>Overall band</b> is the average of the four skills, rounded to the nearest half band:</p><ul><li>an average ending in <b>.25</b> rounds up to <b>.5</b> (6.25 → 6.5)</li><li>an average ending in <b>.75</b> rounds up to the next whole band (6.75 → 7.0)</li><li>below .25 rounds down (6.125 → 6.0)</li></ul><div class="ex">Example: L 6.5 + R 6.5 + W 5.0 + S 7.0 = 25 ÷ 4 = 6.25 → <b>Overall 6.5</b></div>
-   <p><b>Listening and Reading:</b> 1 mark per question; the raw score /40 is converted with a table (approximate — it varies slightly between versions):</p>`}
-   <div class="ie-grid"><div><b>${L('📖 القراءة الأكاديمية (Academic Reading)','📖 Academic Reading')}</b>${ieConvTable('reading')}</div><div><b>🎧 ${ieNm('listening')}</b>${ieConvTable('listening')}</div></div>
-   ${A?`<p><b>الكتابة (Writing) والتحدث (Speaking):</b> 4 معايير متساوية لكل واحد (تحت). في الكتابة، المهمة الثانية (Task 2) وزنها <b>ضعف</b> المهمة الأولى (Task 1)، يعني ثلثين الدرجة.</p>`:`<p><b>Writing and Speaking:</b> 4 equally weighted criteria each (below). In Writing, Task 2 counts <b>twice</b> as much as Task 1 (two thirds of the score).</p>`}
-   <h3 style="margin-top:12px">🧮 ${L('احسب الدرجة الكلية (Overall)','Overall band calculator')}</h3>${ieCalcHtml()}`]);
-  s.push([L('القواعد الرسمية اللي لازم تعرفها','The official rules you must know'),A?`
-   <h3>🎧📖 الاستماع (Listening) والقراءة (Reading)</h3><ul>
-   <li><b>حدود الكلمات:</b> «NO MORE THAN TWO WORDS» = كلمة أو كلمتين بس. «ONE WORD ONLY» = كلمة وحدة. «NO MORE THAN THREE WORDS AND/OR A NUMBER» = حتى 3 كلمات و/أو رقم. لو زدت ← الإجابة <b>غلط</b> حتى لو فيها الجواب الصحيح.</li>
-   <li>الرقم يتكتب أرقام (25) أو حروف، والكلمة اللي فيها شرطة (well-known) تنحسب <b>كلمة وحدة</b>.</li>
-   <li><b>التهجئة تنحسب:</b> كلمة غلط إملائيًا = إجابة غلط. التهجئة البريطانية والأمريكية مقبولة (colour/color).</li>
-   <li>الحروف الكبيرة والصغيرة ما تفرق، وتقدر تكتب كل شي بالحروف الكبيرة (CAPITALS) في الامتحان الورقي.</li>
-   <li>الإجابة لازم تناسب القواعد (مفرد/جمع): لو الجملة تقول «two ____» فالجواب جمع.</li>
-   <li>لا تكتب إجابتين في نفس الخانة — تنحسب غلط.</li>
-   <li><b>ما في خصم على الغلط</b> ← لا تترك أي سؤال فاضي.</li>
-   <li><b>تسجيل الاستماع يُسمع مرة وحدة بس.</b> فيه وقت تقرأ الأسئلة قبل كل جزء، و10 دقائق نقل في الآخر (الورقي).</li>
-   <li><b>القراءة ما فيها وقت إضافي</b> لنقل الإجابات — 60 دقيقة لكل شي.</li></ul>
-   <h3>✍️ الكتابة (Writing)</h3><ul>
-   <li>المهمة الأولى (Task 1) <b>150 كلمة على الأقل</b>، والمهمة الثانية (Task 2) <b>250 كلمة على الأقل</b>. أقل ← خصم. ما في حد أعلى، بس الأطول مو دايمًا أحسن.</li>
-   <li>المهمة الثانية وزنها ضعف المهمة الأولى ← لا تعطي المهمة الأولى أكثر من 20 دقيقة.</li>
-   <li>الكلمات المنسوخة من السؤال ما تنحسب. اكتب جمل وفقرات كاملة — بدون نقاط أو عناوين.</li>
-   <li>الإجابات المحفوظة أو اللي برّا الموضوع تاخذ درجة قليلة جدًا.</li></ul>
-   <h3>🗣️ التحدث (Speaking)</h3><ul>
-   <li>مقابلة وجهًا لوجه مع ممتحن، ويتسجّل الكلام.</li><li>في الجزء الأول (Part 1) تقدر تطلب إعادة السؤال. في الجزء الثاني (Part 2) عندك ورقة وقلم للملاحظات، والممتحن يوقفك بعد دقيقتين.</li><li>ما تقدر تختار الموضوع، ولا تحفظ إجابات جاهزة — الممتحن يلاحظ.</li></ul>`:`
-   <h3>🎧📖 Listening and Reading</h3><ul>
-   <li><b>Word limits:</b> “NO MORE THAN TWO WORDS” = one or two words only. “ONE WORD ONLY” = one word. “NO MORE THAN THREE WORDS AND/OR A NUMBER” = up to 3 words and/or a number. Go over the limit → the answer is <b>wrong</b>, even if it contains the right words.</li>
-   <li>Numbers may be written as digits (25) or words; a hyphenated word (well-known) counts as <b>one word</b>.</li>
-   <li><b>Spelling counts:</b> a misspelt word = a wrong answer. British and American spellings are both accepted (colour/color).</li>
-   <li>Capital letters do not matter; on paper you may write everything in CAPITALS.</li>
-   <li>Your answer must fit the grammar (singular/plural): if the sentence says “two ____”, the answer is plural.</li>
-   <li>Never write two answers in one box — it is marked wrong.</li>
-   <li><b>No marks are lost for wrong answers</b> → never leave a blank.</li>
-   <li><b>Listening is heard ONCE only.</b> You get time to read the questions before each part, and 10 minutes transfer time at the end (paper).</li>
-   <li><b>Reading has NO extra time</b> to transfer answers — 60 minutes for everything.</li></ul>
-   <h3>✍️ Writing</h3><ul>
-   <li>Task 1 <b>at least 150 words</b>, Task 2 <b>at least 250 words</b>. Fewer → penalty. No upper limit, but longer isn’t automatically better.</li>
-   <li>Task 2 is worth twice Task 1 → don’t give Task 1 more than 20 minutes.</li>
-   <li>Words copied from the question are not counted. Write full sentences and paragraphs — no bullet points or headings.</li>
-   <li>Memorised or off-topic answers receive very low marks.</li></ul>
-   <h3>🗣️ Speaking</h3><ul>
-   <li>A face-to-face interview with an examiner; it is recorded.</li><li>In Part 1 you may ask the examiner to repeat a question. In Part 2 you get paper and a pencil for notes, and the examiner stops you after 2 minutes.</li><li>You cannot choose the topic, and memorised answers are noticed.</li></ul>`]);
-  s.push([L('معايير تصحيح الكتابة (Writing) والتحدث (Speaking)','Writing & Speaking marking criteria'),`<div class="ie-grid">
-   <div class="card"><b>✍️ ${ieNm('writing')} (25% ${L('لكل معيار','each')})</b><ul><li><b>${L('إنجاز/الاستجابة للمهمة (Task Achievement / Response)','Task Achievement / Response')}</b> — ${L('جاوبت على المطلوب كامل؟ فيه ملخص عام (Overview) في المهمة الأولى؟ موقف واضح في المهمة الثانية؟','did you answer everything? Overview in Task 1? Clear position in Task 2?')}</li><li><b>${L('الترابط والتماسك (Coherence & Cohesion)','Coherence & Cohesion')}</b> — ${L('فقرات، ترتيب، روابط','paragraphs, order, linking')}</li><li><b>${L('المفردات (Lexical Resource)','Lexical Resource')}</b> — ${L('تنوع ودقة المفردات','range and accuracy of vocabulary')}</li><li><b>${L('القواعد (Grammatical Range & Accuracy)','Grammatical Range & Accuracy')}</b> — ${L('تنوع الجمل وصحتها','sentence variety and accuracy')}</li></ul></div>
-   <div class="card"><b>🗣️ ${ieNm('speaking')} (25% ${L('لكل معيار','each')})</b><ul><li><b>${L('الطلاقة والترابط (Fluency & Coherence)','Fluency & Coherence')}</b> — ${L('تتكلم بسلاسة وترتيب','speaking smoothly and logically')}</li><li><b>${L('المفردات','Lexical Resource')}</b> — ${L('مفردات متنوعة','varied vocabulary')}</li><li><b>${L('القواعد','Grammatical Range & Accuracy')}</b></li><li><b>${L('النطق (Pronunciation)','Pronunciation')}</b> — ${L('وضوح، تشديد، نبرة','clarity, stress, intonation')}</li></ul></div></div>`]);
-  s.push([L('استراتيجيات كل مهارة','Strategies for each skill'),A?`
-   <h3>🎧 الاستماع (Listening)</h3><ul><li>استغل وقت القراءة: ظلّل الكلمات المفتاحية وتوقّع نوع الجواب (رقم؟ اسم؟ مكان؟ جمع؟).</li><li>انتبه للتصحيحات والفخاخ: «It was Tuesday… sorry, I mean <b>Thursday</b>» ← الجواب Thursday.</li><li>الأسماء تنتهجّى حرف حرف — اكتب كل حرف. تعلّم نطق الحروف (A/E/I، G/J، double L).</li><li>الأرقام: 15 (fifteen) و 50 (fifty) — التشديد يفرق. «double three» = 33.</li><li>لو فاتك سؤال، خلّه وركّز على اللي بعده — لا تضيع الباقي.</li><li>علامات الانتقال (signposts): «Moving on to…»، «Finally…» تقول لك إن السؤال اللي بعده قرّب.</li></ul>
-   <h3>📖 القراءة (Reading)</h3><ul><li>20 دقيقة لكل نص. اقرأ النص قراءة سريعة (skimming) 2–3 دقائق عشان تعرف فكرة كل فقرة.</li><li>ابحث بسرعة (scanning) عن الأسماء والأرقام والتواريخ والكلمات المميزة.</li><li>الأسئلة تجي <b>بالترتيب</b> في أغلب الأنواع (ما عدا مطابقة العناوين والمعلومات: Matching headings/information).</li><li>الأسئلة تستخدم إعادة صياغة ومرادفات (paraphrase) — لا تدوّر على نفس الكلمة.</li><li>لا تعلق في سؤال أكثر من دقيقة ونص — خمّن وكمل وارجع له.</li></ul>
-   <h3>✍️ الكتابة (Writing)</h3><ul><li>تبدأ بالمهمة الثانية (Task 2)؟ مسموح! كثير طلاب يبدأون بها لأن وزنها الضعف.</li><li>خطط 3–5 دقائق قبل ما تكتب، وخلّ 3 دقائق للمراجعة (أخطاء الفعل، الجمع، أدوات التعريف).</li><li>اعرف كم كلمة تكتب في السطر عشان تقدّر الطول بسرعة.</li></ul>
-   <h3>🗣️ التحدث (Speaking)</h3><ul><li>الجزء الأول (Part 1): جواب + سبب + مثال (2–3 جمل).</li><li>الجزء الثاني (Part 2): استغل الدقيقة في كلمات مفتاحية لكل نقطة، وتكلّم بالترتيب، واستخدم الماضي لو القصة في الماضي. كمل لين الممتحن يوقفك.</li><li>الجزء الثالث (Part 3): رأي ← سبب ← مثال ← رأي مخالف أو مقارنة ← خلاصة.</li><li>لو احتجت وقت تفكر، قول مثلًا: «That’s an interesting question…» أو «Let me think…». الأخطاء الصغيرة عادي، المهم تكمل.</li></ul>`:`
-   <h3>🎧 Listening</h3><ul><li>Use the reading time: underline key words and predict the type of answer (number? name? place? plural?).</li><li>Watch out for corrections and distractors: “It was Tuesday… sorry, I mean <b>Thursday</b>” → the answer is Thursday.</li><li>Names are spelled letter by letter — write every letter. Practise letter names (A/E/I, G/J, double L).</li><li>Numbers: 15 (fifteen) vs 50 (fifty) — the stress differs. “Double three” = 33.</li><li>If you miss an answer, let it go and focus on the next one.</li><li>Signposts (“Moving on to…”, “Finally…”) tell you the next question is coming.</li></ul>
-   <h3>📖 Reading</h3><ul><li>20 minutes per passage. Skim the passage for 2–3 minutes to get the idea of each paragraph.</li><li>Scan for names, numbers, dates and unusual words.</li><li>Questions follow the <b>text order</b> in most types (not matching headings/information).</li><li>Questions use paraphrase — don’t hunt for identical words.</li><li>Don’t spend more than about 1.5 minutes on one question — guess, move on, come back.</li></ul>
-   <h3>✍️ Writing</h3><ul><li>Starting with Task 2 is allowed — many candidates do, because it carries double weight.</li><li>Plan for 3–5 minutes before writing and keep 3 minutes to check (verb forms, plurals, articles).</li><li>Know how many words you write per line so you can estimate length quickly.</li></ul>
-   <h3>🗣️ Speaking</h3><ul><li>Part 1: answer + reason + example (2–3 sentences).</li><li>Part 2: use the minute for key words per bullet point, follow the order, use past tenses for past events, and keep talking until the examiner stops you.</li><li>Part 3: opinion → reason → example → contrast/comparison → conclusion.</li><li>Buying time is fine: “That’s an interesting question…”, “Let me think…”. Small mistakes are OK — keep going.</li></ul>`]);
-  s.push([L('استراتيجيات أنواع الأسئلة','Strategies by question type'),A?`
-   <h3>صح / خطأ / غير مذكور: TRUE / FALSE / NOT GIVEN (للمعلومات) و YES / NO / NOT GIVEN (لرأي الكاتب)</h3>
-   <ul><li><b>TRUE/YES</b> = النص يقول نفس المعنى. <b>FALSE/NO</b> = النص يقول <b>العكس</b>. <b>NOT GIVEN</b> = النص ما يقول شي عن هذي النقطة (لا تأكيد ولا نفي).</li><li>أسئلة TRUE/FALSE للحقائق، وأسئلة YES/NO لآراء الكاتب ومواقفه.</li><li>انتبه لكلمات التقييد: all / some / always / usually / only / the first / more than — كلمة وحدة تقلب الجواب.</li><li>لا تستخدم معلوماتك العامة — بس النص.</li></ul>
-   <div class="ex">النص: «Only certain types of cloud are suitable.» · الجملة: «All clouds can be seeded.» ← <b>FALSE</b>. · الجملة: «Seeding is cheaper than desalination.» (التكلفة ما انذكرت) ← <b>NOT GIVEN</b>.</div>
-   <h3>مطابقة العناوين (Matching headings)</h3><ul><li>اقرأ الفقرة كاملة وحدد <b>الفكرة الرئيسية</b> (غالبًا في أول أو آخر جملة)، بعدين اختار العنوان.</li><li>العناوين أكثر من الفقرات — فيه عناوين زيادة للتمويه.</li><li>لا تختار عنوان لأن فيه كلمة موجودة في الفقرة — هذا فخ.</li><li>ابدأ بالفقرات القصيرة/الواضحة، واشطب العناوين اللي استخدمتها.</li></ul>
-   <h3>مطابقة المعلومات والخصائص ونهايات الجمل (Matching information / features / sentence endings)</h3><ul><li>مطابقة المعلومات (Matching information): «أي فقرة فيها…» — الترتيب مو مضمون، وممكن نفس الحرف يتكرر (NB).</li><li>مطابقة الخصائص (Matching features): دوّر على أسماء الأشخاص في النص وظلّلها، بعدين اقرأ حولها.</li><li>نهايات الجمل (Sentence endings): النهاية لازم تكمل المعنى <b>والقواعد</b>.</li></ul>
-   <h3>إكمال الفراغات (Gap fill): الملخص / الجمل / الملاحظات / الجدول / النموذج (summary / sentence / note / table / form completion)</h3><ul><li>اقرأ حد الكلمات أول شي واكتبه جنب الأسئلة.</li><li>توقّع نوع الكلمة (اسم، فعل، صفة، رقم) من الكلمات حول الفراغ.</li><li>في القراءة انسخ الكلمة <b>من النص بالضبط</b> — لا تغيّر صيغتها.</li><li>لو فيه صندوق كلمات، الكلمات غالبًا مرادفات لكلمات النص.</li><li>الإجابات بالترتيب غالبًا.</li></ul>
-   <h3>الاختيار من متعدد (Multiple choice)</h3><ul><li>اقرأ السؤال وحدد الكلمات المفتاحية قبل الخيارات.</li><li>استبعد الخيارات: الخطأ غالبًا «صحيح لكن مو جواب السؤال» أو «مذكور لكن بعكس المعنى».</li><li>في الاستماع، كل الخيارات تنذكر غالبًا — الجواب هو اللي يتأكد في الآخر.</li></ul>
-   <h3>تسمية الخريطة أو المخطط (Map / plan labelling) — في الاستماع</h3><ul><li>حدد نقطة البداية (You are here / entrance) والاتجاهات (north, south) قبل التسجيل.</li><li>احفظ كلمات الاتجاه: opposite (مقابل)، next to (جنب)، behind (ورا)، in front of، at the end of (في نهاية)، on the corner، turn left/right، go past (تعدّي)، clockwise.</li><li>تابع بإصبعك مع المتكلم.</li></ul>
-   <h3>تعبئة النموذج (Form completion) — الجزء الأول من الاستماع</h3><ul><li>أسماء، أرقام تلفون، تواريخ، عناوين، أسعار — انتبه للتهجئة والتصحيحات.</li><li>التاريخ: 3 March أو March 3 كلاهما صحيح.</li></ul>
-   <h3>✍️ المهمة الأولى (Task 1) — الملخص العام (Overview) والهيكل</h3><ul><li><b>مقدمة:</b> أعد صياغة السؤال (The chart compares… / The table illustrates…).</li><li><b>الملخص العام (أهم جزء):</b> 2 من أبرز الاتجاهات بدون أرقام: «Overall, X rose significantly, while Y remained the lowest throughout.»</li><li><b>فقرتين:</b> قسّم البيانات لمجموعتين منطقيتين، واذكر الأرقام مع المقارنة.</li><li>لا رأي ولا أسباب. للعملية (process): المراحل بالترتيب + المبني للمجهول (passive). للخريطة (map): التغيرات مثل: was replaced by, was extended.</li><li>مفردات مفيدة: rose sharply / fell slightly / peaked at / fluctuated / remained stable / accounted for / twice as many as.</li></ul>
-   <h3>📝 المهمة الثانية (Task 2) — هياكل المقال (4–5 فقرات، 270–300 كلمة)</h3><ul>
-   <li><b>مقال الرأي (Opinion – agree/disagree):</b> مقدمة + رأيك ← سبب 1 ← سبب 2 (أو رأي مخالف ورد عليه) ← خاتمة تعيد الرأي.</li>
-   <li><b>ناقش الرأيين مع رأيك (Discuss both views + opinion):</b> مقدمة ← الرأي الأول ← الرأي الثاني ← رأيك واضح (في المقدمة والخاتمة).</li>
-   <li><b>المميزات والعيوب (Advantages / disadvantages):</b> مقدمة ← المميزات ← العيوب ← خاتمة (وإذا سألك أيهما أكثر، جاوب بوضوح).</li>
-   <li><b>المشكلة والحل (Problem / solution) أو السبب والحل (Cause / solution):</b> مقدمة ← المشاكل/الأسباب مع أمثلة ← الحلول المرتبطة بها ← خاتمة.</li>
-   <li><b>سؤال من جزأين (Two-part question):</b> مقدمة ← جواب السؤال الأول ← جواب السؤال الثاني ← خاتمة.</li>
-   <li>كل فقرة: الجملة الرئيسية (Topic sentence) ← شرح ← مثال ← ربط بالسؤال.</li></ul>
-   <h3>🗣️ الجزء الثاني من التحدث (Part 2) — ملاحظات الدقيقة الوحدة</h3><ul><li>اكتب 2–4 كلمات مفتاحية لكل نقطة في البطاقة + كلمة للنقطة الأخيرة «and explain…» لأنها أطول جزء.</li><li>رتّب: مقدمة جملة ← النقاط بالترتيب ← سبب ومشاعر ← خاتمة.</li><li>أضف تفاصيل حسية (شو شفت، سمعت، حسيت) عشان تكمل دقيقتين.</li></ul>`:`
-   <h3>TRUE / FALSE / NOT GIVEN (facts) vs YES / NO / NOT GIVEN (writer’s views)</h3>
-   <ul><li><b>TRUE/YES</b> = the text says the same thing. <b>FALSE/NO</b> = the text says the <b>opposite</b>. <b>NOT GIVEN</b> = the text says nothing about this point (it neither confirms nor contradicts).</li><li>TFNG tests factual information; YNNG tests the writer’s opinions and claims.</li><li>Watch qualifiers: all / some / always / usually / only / the first / more than — one word can change the answer.</li><li>Do not use your general knowledge — only the text.</li></ul>
-   <div class="ex">Text: “Only certain types of cloud are suitable.” · Statement: “All clouds can be seeded.” → <b>FALSE</b>. · Statement: “Seeding is cheaper than desalination.” (cost is never mentioned) → <b>NOT GIVEN</b>.</div>
-   <h3>Matching headings</h3><ul><li>Read the whole paragraph and identify its <b>main idea</b> (often in the first or last sentence), then choose the heading.</li><li>There are more headings than paragraphs — some are distractors.</li><li>Don’t pick a heading just because it shares a word with the paragraph — that’s a trap.</li><li>Start with short/clear paragraphs and cross out headings you’ve used.</li></ul>
-   <h3>Matching information / features / sentence endings</h3><ul><li>Matching information: “Which paragraph contains…” — not in order, and a letter may be used more than once (NB).</li><li>Matching features: find and underline the people’s names in the text, then read around them.</li><li>Sentence endings: the ending must fit the meaning <b>and the grammar</b>.</li></ul>
-   <h3>Gap fill: summary / sentence / note / table / form completion</h3><ul><li>Read the word limit first and note it next to the questions.</li><li>Predict the word type (noun, verb, adjective, number) from the words around the gap.</li><li>Copy the word <b>exactly from the text</b> (Reading) — don’t change its form.</li><li>With a word box, the options are usually synonyms of words in the text.</li><li>Answers are usually in order.</li></ul>
-   <h3>Multiple choice</h3><ul><li>Read the question stem and underline key words before the options.</li><li>Eliminate: wrong options are often “true but not the answer to the question” or “mentioned but with the opposite meaning”.</li><li>In Listening, often every option is mentioned — the answer is the one finally confirmed.</li></ul>
-   <h3>Map / plan labelling (Listening)</h3><ul><li>Find the starting point (You are here / entrance) and the compass directions before the recording starts.</li><li>Know the language: opposite, next to, behind, in front of, at the end of, on the corner, turn left/right, go past, clockwise.</li><li>Follow the route with your finger as the speaker talks.</li></ul>
-   <h3>Form completion (Listening Part 1)</h3><ul><li>Names, phone numbers, dates, addresses, prices — watch spelling and corrections.</li><li>Dates: 3 March or March 3 are both fine.</li></ul>
-   <h3>✍️ Task 1 — the overview and structure</h3><ul><li><b>Introduction:</b> paraphrase the prompt (The chart compares… / The table illustrates…).</li><li><b>Overview (the most important part):</b> the 2 most striking trends, without numbers: “Overall, X rose significantly, while Y remained the lowest throughout.”</li><li><b>Two body paragraphs:</b> group the data logically and give figures with comparisons.</li><li>No opinions or reasons. Process: stages in order + passive voice. Map: changes (was replaced by, was extended).</li><li>Language: rose sharply / fell slightly / peaked at / fluctuated / remained stable / accounted for / twice as many as.</li></ul>
-   <h3>📝 Task 2 — essay structures (4–5 paragraphs, 270–300 words)</h3><ul>
-   <li><b>Opinion (agree/disagree):</b> intro + your position → reason 1 → reason 2 (or the opposing view and your answer to it) → conclusion restating your view.</li>
-   <li><b>Discuss both views + give your opinion:</b> intro → view 1 → view 2 → your clear opinion (in intro and conclusion).</li>
-   <li><b>Advantages / disadvantages:</b> intro → advantages → disadvantages → conclusion (if asked which outweighs, say so clearly).</li>
-   <li><b>Problem / solution (or cause / solution):</b> intro → problems/causes with examples → matching solutions → conclusion.</li>
-   <li><b>Two-part question:</b> intro → answer to question 1 → answer to question 2 → conclusion.</li>
-   <li>Every body paragraph: topic sentence → explanation → example → link back to the question.</li></ul>
-   <h3>🗣️ Part 2 — one-minute notes</h3><ul><li>Write 2–4 key words for each bullet on the card, plus notes for the final “and explain…” point — it is usually the longest part.</li><li>Order: one-sentence intro → points in order → reasons and feelings → short conclusion.</li><li>Add sensory detail (what you saw, heard, felt) to fill the full two minutes.</li></ul>`]);
-  s.push([L('خطة 4 أسابيع','A 4-week plan'),`<div class="ie-grid">${[[L('الأسبوع 1','Week 1'),L('افهم شكل الامتحان والقواعد + الاختبار التدريبي 1 في القراءة (Reading) والاستماع (Listening) + راجع كل غلطة.','Learn the format and rules + Reading Test 1 and Listening Test 1 + review every mistake.')],[L('الأسبوع 2','Week 2'),L('الاختبارات 2–4 في القراءة والاستماع + الاختبار 1 في الكتابة (Writing)، وابدأ بالمهمة الثانية (Task 2).','Tests 2–4 in Reading and Listening + Writing Test 1 (Task 2 first).')],[L('الأسبوع 3','Week 3'),L('اختبارات الكتابة 2–3 + اختبارات التحدث (Speaking) 1–3 مع تسجيل صوتك كل يوم.','Writing Tests 2–3 + Speaking Tests 1–3, recording yourself daily.')],[L('الأسبوع 4','Week 4'),L('اختبارات كاملة بالتوقيت (الاستماع + القراءة + الكتابة ورا بعض) + ركّز على أضعف نوع أسئلة.','Full timed tests (L + R + W in a row) + focus on your weakest question type.')]].map(function(w){return `<div class="card"><b>${w[0]}</b><p style="margin:4px 0 0">${w[1]}</p></div>`}).join('')}</div>`]);
-  return `<div class="card" style="background:var(--lav-soft);border-color:var(--lav)"><b style="font-size:18px">${L('👋 ابدأ من هنا','👋 Start here')}</b><p style="margin:4px 0 0">${L('قبل ما تحل أي اختبار، اعرف شكل الامتحان وقواعده ووقته وطريقة حساب الدرجة. بعدها جرّب الاختبارات التدريبية في كل مهارة.','Before any test, learn the format, the rules, the timing and how the score is calculated. Then try the practice tests in each skill.')}</p>
-    <div class="row" style="margin-top:8px">${IE_SK.map(function(k){return `<button class="sec" onclick="ieTabGo('${k}')">${IE_IC[k]} ${ieNm(k)}</button>`}).join('')}</div></div>`+
-    ieStepsHtml(s);
+  var sk=[
+    ['listening','🎧',L('30 دقيقة','30 min'),[L('40 سؤال','40 questions'),L('تسمع التسجيل مرة وحدة بس','You hear it once only'),L('4 أجزاء تصعب شوي شوي','4 parts, getting harder')]],
+    ['reading','📖',L('60 دقيقة','60 min'),[L('40 سؤال','40 questions'),L('3 نصوص طويلة','3 long passages'),L('ما في وقت إضافي لنقل الإجابات','No extra transfer time')]],
+    ['writing','✍️',L('60 دقيقة','60 min'),[L('مهمتين','2 tasks'),L('الأولى: وصف رسم بياني (150 كلمة)','Task 1: describe a chart (150 words)'),L('الثانية: مقال (250 كلمة) ووزنها ضعف','Task 2: essay (250 words), double weight')]],
+    ['speaking','🗣️',L('11–14 دقيقة','11–14 min'),[L('مقابلة مع ممتحن','Face-to-face interview'),L('3 أجزاء','3 parts'),L('في الجزء الثاني تتكلم دقيقتين','Talk for 2 minutes in Part 2')]]];
+  var rules=[
+    ['✂️',L('حد الكلمات','Word limit'),L('لو السؤال يقول «NO MORE THAN TWO WORDS» وكتبت ثلاث كلمات، تنحسب غلط.','If it says “NO MORE THAN TWO WORDS” and you write three, it is wrong.')],
+    ['🔤',L('الإملاء','Spelling'),L('كلمة فيها غلطة إملائية = إجابة غلط.','A misspelled word = a wrong answer.')],
+    ['🎧',L('مرة وحدة','Once only'),L('التسجيل ما يتعاد. اقرأ الأسئلة قبل ما يبدأ.','The recording is not repeated. Read the questions first.')],
+    ['⏱️',L('وقت القراءة','Reading time'),L('60 دقيقة لكل شي، حتى نقل الإجابات.','60 minutes for everything, including transferring answers.')],
+    ['📏',L('أقل عدد كلمات','Minimum words'),L('150 كلمة للمهمة الأولى و250 للثانية. أقل من كذا = خصم.','150 words for Task 1, 250 for Task 2. Fewer = lower score.')]];
+  var tips={
+    listening:[L('اقرأ الأسئلة قبل التسجيل وتوقّع نوع الجواب (رقم؟ اسم؟)','Read ahead and predict the answer type (number? name?)'),L('انتبه للتصحيح: «لا، قصدي الخميس»','Watch for corrections: “no, I mean Thursday”'),L('الأسئلة بالترتيب، فلا تعلق','Questions follow the order — don’t get stuck')],
+    reading:[L('20 دقيقة لكل نص','20 minutes per passage'),L('دوّر على نفس المعنى مب نفس الكلمة','Look for the same meaning, not the same word'),L('لا تعلق في سؤال أكثر من دقيقة ونص','Never spend more than 90 seconds on one question')],
+    writing:[L('ابدأ بالمهمة الثانية لأنها ضعف الدرجة','Start with Task 2 — it’s worth double'),L('خطّط 5 دقايق قبل ما تكتب','Plan for 5 minutes before writing'),L('خلّ 3 دقايق للمراجعة','Keep 3 minutes to check')],
+    speaking:[L('جاوب: رأي + سبب + مثال','Answer: opinion + reason + example'),L('في الجزء الثاني اكتب كلمات مفتاحية بس','In Part 2 write key words only'),L('الغلطة الصغيرة عادي، المهم تكمل','Small mistakes are fine — keep going')]};
+  var types=[
+    ['✅',L('صح / خطأ / غير مذكور','TRUE / FALSE / NOT GIVEN'),L('خطأ = النص يقول العكس. غير مذكور = النص ما تكلم عنها أبد.','FALSE = the text says the opposite. NOT GIVEN = the text doesn’t say.')],
+    ['🏷️',L('مطابقة العناوين','Matching headings'),L('اقرأ الفقرة كاملة واختار فكرتها الرئيسية، مب كلمة متشابهة.','Read the whole paragraph and pick its main idea, not a matching word.')],
+    ['✏️',L('إكمال الفراغ','Gap fill'),L('توقّع نوع الكلمة وانسخها من النص بالضبط.','Predict the word type and copy it exactly from the text.')],
+    ['🔘',L('اختيار من متعدد','Multiple choice'),L('كل الخيارات تنذكر غالبًا. الجواب هو اللي يتأكد في الآخر.','All options are usually mentioned; the answer is the one confirmed last.')],
+    ['🗺️',L('الخرائط','Maps'),L('حدد نقطة البداية، وتابع بإصبعك مع المتكلم.','Find the starting point and follow with your finger.')]];
+  var plan=[L('الأسبوع 1: افهم الامتحان + أول اختبار قراءة واستماع','Week 1: learn the format + first Reading & Listening test'),L('الأسبوع 2: اختبارات 2–4 قراءة واستماع + أول كتابة','Week 2: Tests 2–4 Reading & Listening + first Writing'),L('الأسبوع 3: كتابة وتحدث، وسجّل صوتك كل يوم','Week 3: Writing & Speaking, record yourself daily'),L('الأسبوع 4: اختبارات كاملة بالوقت + ركّز على أضعف نقطة','Week 4: full timed tests + fix your weakest area')];
+  var done=store.get('iePlan',[])||[];
+  var bandTxt=JSON.stringify([[0,L('ما حضر','Did not attempt')],[4,L('محدود','Limited')],[5,L('متوسط','Modest')],[6,L('كويس — تطلبه جامعات كثيرة','Competent — many universities ask for this')],[7,L('جيد جدًا','Good')],[8,L('ممتاز','Very good')],[9,L('خبير','Expert')]]).replace(/"/g,'&quot;');
+  var tab=IE.btab||'listening';
+  return `<style>
+   .ieb h2{font-size:19px;margin:22px 0 10px}
+   .ieb-sk{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+   .ieb-fl{cursor:pointer;min-height:132px;border-radius:18px;padding:14px;background:var(--surface);border:1.5px solid var(--line);transition:transform .25s}
+   .ieb-fl:active{transform:scale(.97)}.ieb-fl .b{display:none}.ieb-fl.on{background:var(--lav-soft);border-color:var(--lav)}
+   .ieb-fl.on .f{display:none}.ieb-fl.on .b{display:block;animation:iebIn .3s}
+   .ieb-fl .ic{font-size:34px}.ieb-fl big{display:block;font-size:22px;font-weight:800;color:var(--pink)}
+   .ieb-fl ul{margin:0;padding-inline-start:18px;line-height:1.9;font-size:14.5px}
+   @keyframes iebIn{from{opacity:0;transform:rotateY(70deg)}to{opacity:1;transform:none}}
+   .ieb-tl{display:flex;border-radius:14px;overflow:hidden;height:46px;font-weight:700;font-size:13px}
+   .ieb-tl div{display:flex;align-items:center;justify-content:center;color:#fff}
+   .ieb-rules{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px}
+   .ieb-rules .ieb-fl{flex:0 0 72%;max-width:260px;scroll-snap-align:start;min-height:120px}
+   .ieb-tabs{display:flex;gap:6px;flex-wrap:wrap}.ieb-tabs button{padding:6px 12px;border-radius:999px;font-size:14px}
+   .ieb-tabs button.on{background:var(--pink);color:#fff;border-color:var(--pink)}
+   .ieb-tip{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line);margin-top:8px;animation:iebIn .3s}
+   .ieb-tip b{background:var(--lav-soft);border-radius:50%;min-width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+   .ieb-chip{display:flex;flex-wrap:wrap;gap:8px}.ieb-chip button{border-radius:999px;padding:8px 14px}
+   .ieb-chip button.on{background:var(--lav-soft);border-color:var(--lav)}
+   .ieb-plan label{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:14px;border:1px solid var(--line);margin-top:8px;cursor:pointer}
+   .ieb-plan input{width:22px;height:22px;accent-color:var(--pink)}.ieb-plan label.ok{background:var(--mint-soft);text-decoration:line-through;opacity:.8}
+   .ieb-meter{font-size:46px;font-weight:800;color:var(--pink);text-align:center;line-height:1}
+  </style><div class="ieb">
+   <div class="card" style="background:var(--lav-soft);border-color:var(--lav)"><b style="font-size:18px">${L('👋 الآيلتس في دقيقتين','👋 IELTS in two minutes')}</b>
+    <p style="margin:4px 0 0">${L('امتحان إنجليزي تطلبه الجامعات. 4 مهارات، والنتيجة درجة من 0 إلى 9 (Band).','An English test universities ask for. 4 skills, scored 0 to 9 (Band).')}</p></div>
+
+   <h2>🃏 ${L('المهارات الأربع — اضغط على البطاقة','The 4 skills — tap a card')}</h2>
+   <div class="ieb-sk">${sk.map(function(x){return `<div class="ieb-fl" role="button" tabindex="0" onclick="this.classList.toggle('on')"><div class="f"><div class="ic">${x[1]}</div><b>${ieNm(x[0])}</b><big>${x[2]}</big></div><div class="b"><b>${x[1]} ${ieNm(x[0])}</b><ul>${x[3].map(function(t){return '<li>'+t+'</li>'}).join('')}</ul></div></div>`}).join('')}</div>
+
+   <h2>🗓️ ${L('يوم الامتحان','Test day')}</h2>
+   <div class="ieb-tl"><div style="flex:30;background:#b48cf0">🎧 30</div><div style="flex:60;background:#ef5d98">📖 60</div><div style="flex:60;background:#f2a65a">✍️ 60</div></div>
+   <p class="mut" style="margin:6px 0 0;font-size:14px">${L('ساعتين ونص ورا بعض بدون استراحة. التحدث يكون في نفس اليوم أو قريب منه.','2.5 hours back to back with no break. Speaking is the same day or close to it.')}</p>
+
+   <h2>🎯 ${L('درجتك (Band)','Your band')}</h2>
+   <div class="card"><div class="ieb-meter" id="iebV">6.0</div><p id="iebT" style="text-align:center;margin:4px 0 8px;font-weight:700"></p>
+    <input type="range" min="0" max="9" step="0.5" value="6" style="width:100%;accent-color:var(--pink)" data-b="${bandTxt}" oninput="iebBand(this)">
+    <p class="mut" style="font-size:13.5px;margin:6px 0 0">${L('حرّك المؤشر. أغلب الجامعات تطلب 6 أو 6.5.','Move the slider. Most universities ask for 6 or 6.5.')}</p>
+    <h3 style="margin:14px 0 6px">🧮 ${L('احسب درجتك الكلية','Work out your overall band')}</h3>${ieCalcHtml()}</div>
+
+   <h2>⭐ ${L('5 قواعد لا تنساها — اسحب واضغط','5 rules to remember — swipe & tap')}</h2>
+   <div class="ieb-rules">${rules.map(function(r){return `<div class="ieb-fl" role="button" tabindex="0" onclick="this.classList.toggle('on')"><div class="f"><div class="ic">${r[0]}</div><b>${r[1]}</b><p class="mut" style="margin:6px 0 0;font-size:13px">${L('اضغط 👆','Tap 👆')}</p></div><div class="b"><b>${r[0]} ${r[1]}</b><p style="margin:6px 0 0">${r[2]}</p></div></div>`}).join('')}</div>
+
+   <h2>💡 ${L('سرّ كل مهارة','The secret of each skill')}</h2>
+   <div class="ieb-tabs">${IE_SK.map(function(k){return `<button class="${k===tab?'on':''}" onclick="iebTab('${k}',this)">${IE_IC[k]} ${ieNm(k)}</button>`}).join('')}</div>
+   <div id="iebTips">${iebTips(tips[tab])}</div>
+
+   <h2>🧩 ${L('أنواع الأسئلة — اختار نوع','Question types — pick one')}</h2>
+   <div class="ieb-chip">${types.map(function(t,i){return `<button onclick="iebType(${i},this)">${t[0]} ${t[1]}</button>`}).join('')}</div>
+   <div id="iebTy" class="key" style="margin-top:10px">${L('👆 اضغط على أي نوع وبيطلع لك سرّه','👆 Tap a type to see its trick')}</div>
+
+   <h2>✅ ${L('خطتك في 4 أسابيع','Your 4-week plan')}</h2>
+   <div class="ieb-plan">${plan.map(function(p,i){var ok=done.indexOf(i)>=0;return `<label class="${ok?'ok':''}"><input type="checkbox"${ok?' checked':''} onchange="iebPlan(${i},this)"><span>${p}</span></label>`}).join('')}</div>
+
+   <div class="row" style="justify-content:center;margin:18px 0 6px"><button class="pri" onclick="ieTabGo('reading')">${L('🚀 يالله نبدأ أول اختبار','🚀 Start your first test')}</button></div>
+  </div>`;
+  /* data for the small handlers below */
 }
-/* ---- interactive basics: one step per screen + a quick check after each ---- */
-var IE_CHK=[
- [['كم جزء (Part) في اختبار IELTS؟','How many parts does IELTS have?'],[['4 أجزاء','4 parts'],['3 أجزاء','3 parts'],['5 أجزاء','5 parts']],['صح! الاستماع والقراءة والكتابة والتحدث.','Right! Listening, Reading, Writing and Speaking.']],
- [['كم مرة تسمع تسجيل الاستماع (Listening) في الامتحان؟','How many times do you hear the Listening recording?'],[['مرة وحدة بس','Once only'],['مرتين','Twice'],['قد ما تبي','As many as you like']],['بالضبط، مرة وحدة بس، عشان كذا اقرأ الأسئلة قبل التسجيل.','Exactly — once only, so read the questions before it plays.']],
- [['متوسط درجاتك 6.25. كم بتطلع الدرجة الكلية (Overall)؟','Your average is 6.25. What is your overall band?'],[['6.5','6.5'],['6.0','6.0'],['6.25','6.25']],['صح! اللي ينتهي بـ ‎.25 يطلع لـ ‎.5','Right! An average ending in .25 rounds up to .5']],
- [['السؤال يقول NO MORE THAN TWO WORDS، وكتبت «the old bridge». شو يصير؟','The question says NO MORE THAN TWO WORDS and you wrote “the old bridge”. What happens?'],[['الإجابة غلط لأنها 3 كلمات','Wrong — it is 3 words'],['صح لأن فيها الجواب','Correct, the answer is in it'],['تاخذ نص درجة','Half a mark']],['صح! لو زدت عن حد الكلمات تنحسب غلط حتى لو الجواب موجود.','Right! Going over the word limit is marked wrong even if the answer is there.']],
- [['كم معيار لتصحيح الكتابة (Writing)؟','How many criteria are used to mark Writing?'],[['4 معايير متساوية','4 equal criteria'],['معيارين','2 criteria'],['معيار واحد بس: القواعد','Only one: grammar']],['كفو! 4 معايير، وكل واحد ربع الدرجة.','Well done! 4 criteria, each worth a quarter.']],
- [['أي مهمة في الكتابة وزنها أكبر؟','Which Writing task carries more weight?'],[['المهمة الثانية (Task 2)','Task 2'],['المهمة الأولى (Task 1)','Task 1'],['نفس الوزن','Equal weight']],['صح! المهمة الثانية ضعف الأولى، فلا تعطي الأولى أكثر من 20 دقيقة.','Right! Task 2 counts double, so give Task 1 no more than 20 minutes.']],
- [['النص: «Only certain types of cloud are suitable.» والجملة: «All clouds can be seeded.» شو الجواب؟','Text: “Only certain types of cloud are suitable.” Statement: “All clouds can be seeded.” Answer?'],[['FALSE','FALSE'],['TRUE','TRUE'],['NOT GIVEN','NOT GIVEN']],['ممتاز! النص يقول العكس (بعضها بس)، فالجواب FALSE.','Excellent! The text says the opposite (only some), so FALSE.']]
-];
-function ieStepsHtml(s){
-  var cur=Math.min(+store.get('ieBStep',0)||0,s.length-1),n=s.length;
-  return `<div class="card" style="margin-top:12px"><div class="row" style="justify-content:space-between;align-items:center"><b id="ieStN">${L('خطوة','Step')} ${cur+1} / ${n}</b><button class="ghost" style="padding:4px 10px;font-size:13px" onclick="ieStAll(this)">${L('📖 اعرض الشرح كامل','📖 Show everything')}</button></div>
-   <div class="bar" style="margin:8px 0 0"><i id="ieStBar" style="width:${(cur+1)/n*100}%"></i></div></div>`+
-   s.map(function(x,i){var c=IE_CHK[i];
-    var chk=c?`<div class="ie-chk card" style="background:var(--lav-soft);border-color:var(--lav);margin-top:12px"><b>🤔 ${L('جرّب أنت','Your turn')}: ${L(c[0][0],c[0][1])}</b>
-      <div class="opts" style="margin-top:8px">${c[1].map(function(o,j){return {o:o,j:j}}).sort(function(a,b){return ((a.j*7+i*3)%5)-((b.j*7+i*3)%5)}).map(function(x){return `<button onclick="ieChk(this,${i},${x.j})">${L(x.o[0],x.o[1])}</button>`}).join('')}</div><div class="ie-chkfb" style="margin-top:6px"></div></div>`:'';
-    var nav=`<div class="row" style="justify-content:space-between;margin-top:12px">${i>0?`<button class="ghost" onclick="ieStGo(${i-1})">${L('→ السابق','← Back')}</button>`:'<span></span>'}${i<n-1?`<button class="pri" onclick="ieStGo(${i+1})">${L('التالي ←','Next →')}</button>`:`<button class="pri" onclick="store.set('ieBStep',0);ieTabGo('reading')">${L('🎉 خلصت! ابدأ أول اختبار ←','🎉 Done! Start your first test →')}</button>`}</div>`;
-    return `<div class="card ie-step${i===cur?'':' hidden'}" data-st="${i}" style="margin-top:12px"><h2 style="margin:0 0 8px"><span class="pill p-lav">${i+1}</span> ${x[0]}</h2><div class="body">${x[1]}</div>${chk}<div class="ie-stnav">${nav}</div></div>`}).join('');
-}
-function ieStGo(i){var all=document.querySelectorAll('.ie-step');if(!all.length)return;i=Math.max(0,Math.min(i,all.length-1));store.set('ieBStep',i);
-  all.forEach(function(e){e.classList.toggle('hidden',+e.dataset.st!==i)});var nn=ieEl('ieStN');if(nn)nn.textContent=L('خطوة','Step')+' '+(i+1)+' / '+all.length;var b=ieEl('ieStBar');if(b)b.style.width=((i+1)/all.length*100)+'%';
-  all[i].scrollIntoView({block:'start',behavior:'smooth'})}
-function ieChk(btn,i,j){var c=IE_CHK[i],box=btn.parentNode,fb=box.parentNode.querySelector('.ie-chkfb');
-  box.querySelectorAll('button').forEach(function(b){b.disabled=true});
-  if(j===0){btn.classList.add('right');fb.className='ie-chkfb fb ok';fb.innerHTML='✅ '+L(c[2][0],c[2][1])}
-  else{btn.classList.add('wrong');fb.className='ie-chkfb fb no';fb.innerHTML=`❌ ${L('قريب! الجواب الصحيح:','Close! The correct answer:')} <b>${L(c[1][0][0],c[1][0][1])}</b>. ${L(c[2][0],c[2][1])} <button class="ghost" style="padding:3px 10px;font-size:13px" onclick="ieChkRe(this)">${L('🔁 جرّب مرة ثانية','🔁 Try again')}</button>`}}
-function ieChkRe(b){var card=b.closest('.ie-chk');card.querySelectorAll('.opts button').forEach(function(x){x.disabled=false;x.classList.remove('right','wrong')});var fb=card.querySelector('.ie-chkfb');fb.className='ie-chkfb';fb.innerHTML=''}
-function ieStAll(btn){var all=document.querySelectorAll('.ie-step'),on=btn.dataset.all!=='1';btn.dataset.all=on?'1':'';
-  all.forEach(function(e,i){e.classList.toggle('hidden',on?false:i!==(+store.get('ieBStep',0)||0));var nv=e.querySelector('.ie-stnav');if(nv)nv.classList.toggle('hidden',on)});
-  btn.textContent=on?L('👣 خطوة خطوة','👣 Step by step'):L('📖 اعرض الشرح كامل','📖 Show everything')}
+function iebTips(arr){return (arr||[]).map(function(t,i){return `<div class="ieb-tip"><b>${i+1}</b><span>${t}</span></div>`}).join('')}
+function iebTab(k,btn){IE.btab=k;document.querySelectorAll('.ieb-tabs button').forEach(function(b){b.classList.toggle('on',b===btn)});
+  var html=ieBasics().match(/<div id="iebTips">([\s\S]*?)<\/div>\s*<h2>/);var box=ieEl('iebTips');if(box&&html)box.innerHTML=html[1]}
+function iebType(i,btn){document.querySelectorAll('.ieb-chip button').forEach(function(b){b.classList.toggle('on',b===btn)});
+  var t=btn.textContent;var box=ieEl('iebTy');var all=IEB_TYPEDESC();if(box){box.innerHTML='<b>'+t+'</b><br>'+all[i];box.style.animation='none';void box.offsetWidth;box.style.animation='iebIn .3s'}}
+function IEB_TYPEDESC(){return [L('خطأ = النص يقول العكس. غير مذكور = النص ما تكلم عنها أبد.','FALSE = the text says the opposite. NOT GIVEN = the text doesn’t say.'),L('اقرأ الفقرة كاملة واختار فكرتها الرئيسية، مب كلمة متشابهة.','Read the whole paragraph and pick its main idea, not a matching word.'),L('توقّع نوع الكلمة وانسخها من النص بالضبط.','Predict the word type and copy it exactly from the text.'),L('كل الخيارات تنذكر غالبًا. الجواب هو اللي يتأكد في الآخر.','All options are usually mentioned; the answer is the one confirmed last.'),L('حدد نقطة البداية، وتابع بإصبعك مع المتكلم.','Find the starting point and follow with your finger.')]}
+function iebBand(r){var v=+r.value,t=JSON.parse(r.dataset.b),lab='';t.forEach(function(x){if(v>=x[0])lab=x[1]});var e=ieEl('iebV');if(e)e.textContent=v.toFixed(1);var l=ieEl('iebT');if(l)l.textContent=lab}
+function iebPlan(i,cb){var d=store.get('iePlan',[])||[];d=d.filter(function(x){return x!==i});if(cb.checked)d.push(i);store.set('iePlan',d);cb.parentNode.classList.toggle('ok',cb.checked);if(cb.checked&&d.length===4&&typeof toast==='function')toast(L('🎉 خلصت الخطة كاملة! أنت جاهز','🎉 Plan complete! You’re ready'))}
 
 
 render();
