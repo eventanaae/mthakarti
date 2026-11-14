@@ -121,6 +121,20 @@ h3{font-size:19px;margin:0 0 6px}
 /* assistant */
 .fab{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:calc(16px + env(safe-area-inset-left,0px));z-index:20;background:var(--lav);color:#fff;border-radius:999px;padding:12px 18px;box-shadow:0 8px 24px rgba(123,98,232,.35);display:flex;gap:8px;align-items:center}
 [dir="ltr"] .fab{left:auto;right:calc(16px + env(safe-area-inset-right,0px))}
+/* private tutor */
+.tutor{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
+.tuhead{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--pink-soft),var(--lav-soft));border:1.5px solid var(--line);border-radius:22px;padding:14px}
+.tuhead h1{margin:0;font-size:22px}
+.tuav{width:56px;height:56px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:32px;box-shadow:var(--shadow);flex-shrink:0}
+.tusubs{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.tusubs::-webkit-scrollbar{display:none}
+.tusubs button{white-space:nowrap;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px}
+.tusubs button.on{background:var(--pink);color:#fff;border-color:var(--pink)}
+.tutor .msgs{min-height:240px}
+.typing{display:inline-flex;gap:4px;padding:4px 0}
+.typing i{width:8px;height:8px;border-radius:50%;background:var(--mut);animation:tyB 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes tyB{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
 /* interactive lesson */
 .lsbar{height:8px;border-radius:99px;background:var(--pink-soft);overflow:hidden;margin:4px 0 12px}
 .lsbar i{display:block;height:100%;background:var(--pink);border-radius:99px;transition:width .4s}
@@ -232,7 +246,7 @@ html,body{overflow-x:hidden;overflow-x:clip}
   </div>
 </div></header>
 <main class="wrap" id="view"></main>
-<button class="fab" id="fab" onclick="go('assistant')">🤖 <span>اسأل مساعد مذاكرتي</span></button>
+<button class="fab" id="fab" onclick="go('assistant')">🤖 <span>اسأل مدرسك الخصوصي</span></button>
 </div>
 
 <script>
@@ -31903,7 +31917,7 @@ try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}
   if(restoredStudent&&typeof STU!=='undefined'&&!STU){STU=store.get('student',null);if(typeof render==='function'){if(location.hash==='#welcome'||!location.hash)location.hash='home';render()}}
 })();
 let prog=store.get('prog',{}); // {subj:{seen:[ids],best:{practice:n,exam:pct}}}
-function P(s){const k=CUR==='g10g'?s:CUR+':'+s;prog[k]=prog[k]||{seen:[],exam:null};return prog[k]}
+function P(s){const k=CUR==='g10g'?s:CUR+':'+s;prog[k]=prog[k]||{seen:[],exam:null};if(!prog[k].done)prog[k].done=[];return prog[k]}
 function save(){store.set('prog',prog)}
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -31933,7 +31947,7 @@ function applyLang(){
   set('#langBtn',L('English','عربي'),L('Switch to English','التبديل إلى العربية'));
   const lb=$('#langBtn');if(lb)lb.textContent=L('EN','ع');
   const sc=$('#stuChip');if(sc)sc.title=L('تغيير الاسم أو الصف','Change name or grade');
-  const f=$('#fab span');if(f)f.textContent=L('اسأل مساعد مذاكرتي','Ask the study helper');
+  const f=$('#fab span');if(f)f.textContent=L('اسأل مدرسك الخصوصي','Ask your private tutor');
 }
 function setLang(l){l=l==='en'?'en':'ar';if(l!==LANG){LANG=l;store.set('lang',l)}applyLang();render();if(store.get('pushOn',false))syncPush()}
 applyLang();
@@ -32110,7 +32124,7 @@ function vHome(){
     <div>
       <span class="pill p-pink">${L('منهج الإمارات · الفصل الأول 2026-2027','UAE curriculum · Term 1 2026-2027')}</span>
       <h1>${L(`هلا ${esc(STU.name)}! ذاكر صح، وافهم قبل الامتحان ✏️`,`Hi ${esc(STU.name)}! Study smart and understand it before the exam ✏️`)}</h1>
-      <p class="big">${L('دروس مختصرة تسمعها بالصوت، تدريب تفاعلي بعد كل درس، امتحانات نهائية على شكل الامتحان الحقيقي، وتجهيز لآيلتس. ومساعد ذكي يشرح لك أي سؤال بالكتابة أو بالتصوير.','Short lessons you can listen to, interactive practice after every lesson, final exams in the real exam format, and IELTS prep. Plus a smart helper that explains any question you type or snap a photo of.')}</p>
+      <p class="big">${L('دروس مختصرة تسمعها بالصوت، تدريب تفاعلي بعد كل درس، امتحانات نهائية على شكل الامتحان الحقيقي، وتجهيز لآيلتس. ومدرس خصوصي يشرح لك أي سؤال بالكتابة أو بالتصوير.','Short lessons you can listen to, interactive practice after every lesson, final exams in the real exam format, and IELTS prep. Plus a private tutor that explains any question you type or snap a photo of.')}</p>
       <div class="row"><button class="pri" onclick="go('${STU.grade}')">${L('ابدأ: ','Start: ')}${GR[STU.grade].name}</button><button class="sec" onclick="go('ielts')">${L('🎓 تجهيز آيلتس','🎓 IELTS prep')}</button></div>
     </div>
     <div class="notebook" aria-hidden="true">
@@ -32134,7 +32148,7 @@ function vHome(){
   <p class="mut" style="text-align:center;margin-top:14px">${L('مب صفك؟','Not your grade?')} <a href="#welcome">${L('غيّر الاسم أو الصف','Change name or grade')}</a></p>
   <p class="foot">${L('مذاكرتي · mthakarti.com · محتوى تعليمي مساعد، ارجع دائمًا لكتابك ومعلمك 🌸','Mthakarti · mthakarti.com · Supporting study material — always check your textbook and teacher 🌸')}</p>`;
 }
-function subjProgress(k){const s=SUBJ[k],p=P(k);if(!s.T.length)return 0;const seen=p.seen.filter(id=>s.T.some(t=>t.id===id)).length/s.T.length;const ex=p.exam?p.exam/100:0;return Math.round((seen*.5+ex*.5)*100)}
+function subjProgress(k){const s=SUBJ[k],p=P(k);if(!s.T.length)return 0;const seen=p.done.filter(id=>s.T.some(t=>t.id===id)).length/s.T.length;const ex=p.exam?p.exam/100:0;return Math.round((seen*.5+ex*.5)*100)}
 function vGrade(){
   crumbs([[L('الرئيسية','Home'),'home'],[GR[CUR].short]]);
   $('#view').innerHTML=`
@@ -32164,9 +32178,9 @@ function vSubject(k,tab){
   </div>
   <div id="sub"></div>`;
   if(tab==='lessons'){
-    $('#sub').innerHTML=`<p class="mut">${L('اضغط على الدرس عشان تفتح صفحته: الشرح، الصوت، الشرح الأعمق، والتدريب. ✓ يعني فتحته قبل.','Tap a lesson to open its page: explanation, audio, deeper explanation and practice. ✓ means you’ve opened it before.')}</p>
+    $('#sub').innerHTML=`<p class="mut">${L('اضغط على الدرس عشان تفتح صفحته: الشرح، الصوت، الشرح الأعمق، والتدريب. ✓ يعني الدرس مكتمل (حليت كويزه).','Tap a lesson to open its page: explanation, audio, deeper explanation and practice. ✓ means you passed its quiz.')}</p>
     <div class="lesslist">`+
-    s.T.map(t=>`<a class="lessrow" href="#${CUR}-${k}-${t.id}" dir="${cd}"><span class="n">${t.id}</span><span class="t">${t.t}<small class="mut">${t.q||''}</small></span>${p.seen.includes(t.id)?'<span class="done">✓</span>':'<span class="go">›</span>'}</a>`).join('')+`</div>`;
+    s.T.map(t=>`<a class="lessrow" href="#${CUR}-${k}-${t.id}" dir="${cd}"><span class="n">${t.id}</span><span class="t">${t.t}<small class="mut">${t.q||''}</small></span>${p.done.includes(t.id)?'<span class="done">✓</span>':p.seen.includes(t.id)?'<span class="go" title="مفتوح">📖</span>':'<span class="go">›</span>'}</a>`).join('')+`</div>`;
   } else if(tab==='practice'){
     $('#sub').innerHTML=`<div class="grid">
      <div class="tile" role="button" tabindex="0" onclick="startQuiz('${k}','mix')"><span class="ic">🎲</span><b>${L('تدريب سريع','Quick practice')}</b><small>${L('10 أسئلة عشوائية من كل الدروس، مع شرح فوري بعد كل جواب.','10 random questions from all lessons, with an instant explanation after each answer.')}</small></div>
@@ -32228,7 +32242,7 @@ function pick(o,btn){
   Z.ans[Z.i]=o;
   const fb=$('#fb');
   if(o===0){Z.combo++;Z.right++;earn(2);const pts=Math.round(100*(1+Math.min(Z.combo-1,4)*.25));Z.score+=pts;fb.className='fb ok';fb.innerHTML=`✅ ${L(['ممتاز!','كفو!','صح عليك!','بطل!'],['Excellent!','Nailed it!','Spot on!','Champion!'])[Math.random()*4|0]} +${pts}<br>${q[6]}`}
-  else{Z.combo=0;if(Z.hearts!==Infinity)Z.hearts--;fb.className='fb no';fb.innerHTML=`${o===-1?L('⏰ خلص الوقت.','⏰ Time’s up.'):L('❌ مب صح.','❌ Not quite.')} ${L('الجواب:','Answer:')} <b>${q[2]}</b><br>💡 ${q[6]} <button class="ghost" style="padding:4px 10px;font-size:14px" onclick="askQ()">${L('🤖 ما فهمت','🤖 I don’t get it')}</button>`;$('.quiz .card').classList.add('shake')}
+  else{Z.combo=0;if(Z.hearts!==Infinity)Z.hearts--;fb.className='fb no';fb.innerHTML=`${o===-1?L('⏰ خلص الوقت.','⏰ Time’s up.'):L('❌ مب صح.','❌ Not quite.')} ${L('الجواب:','Answer:')} <b>${q[2]}</b><br>💡 ${q[6]} <button class="ghost" style="padding:4px 10px;font-size:14px" onclick="askQ()">${L('👩‍🏫 ما فهمت','👩‍🏫 I don’t get it')}</button>`;$('.quiz .card').classList.add('shake')}
   const nb=$('#nextB');nb.classList.remove('hidden');if(Z.hearts<=0)nb.textContent=L('النتيجة 🏁','Results 🏁');
 }
 function nextQ(){if(Z.hearts<=0||Z.i>=Z.qs.length-1)return finishQuiz();Z.i++;showQ()}
@@ -32240,12 +32254,18 @@ function finishQuiz(){
   const right=Z.qs.filter((q,i)=>Z.ans[i]===0).length;
   const pct=Math.round(right/Z.qs.length*100);
   if(Z.mode==='exam'){P(Z.k).exam=Math.max(P(Z.k).exam||0,pct);save();earn(Math.max(1,Math.round(pct/4)),L('خلصت امتحان نهائي','You finished a final exam'))}
+  let lessonMsg='';
+  if(Z.mode==='practice'&&Z.topic!=null){const pp=P(Z.k);
+    if(pct>=60){if(!pp.done.includes(Z.topic)){pp.done.push(Z.topic);save();earn(5,L('اكتمل الدرس','Lesson completed'))}
+      const nt=s.T[s.T.findIndex(x=>x.id===Z.topic)+1];
+      lessonMsg=`<div class="card" style="background:var(--mint-soft);border-color:var(--mint);text-align:center;margin-bottom:10px"><b style="font-size:18px">${L('🎉 الدرس مكتمل ✓','🎉 Lesson complete ✓')}</b>${nt?`<div style="margin-top:8px"><button class="pri" onclick="openLesson('${Z.k}',${nt.id})">${L('الدرس التالي ←','Next lesson →')}</button></div>`:''}</div>`}
+    else lessonMsg=`<div class="card" style="background:var(--sun-soft);border-color:var(--sun);text-align:center;margin-bottom:10px"><b>${L('عشان يكتمل الدرس لازم تجيب 60% أو أكثر 💪','You need 60% or more to complete the lesson 💪')}</b><div class="mut">${L('راجع الدرس وجرّب مرة ثانية','Review the lesson and try again')}</div></div>`}
   const cd=CD(s);
   const byT={};Z.qs.forEach((q,i)=>{if(i>=answered)return;const b=byT[q[0]]=byT[q[0]]||[0,0];b[1]++;if(Z.ans[i]===0)b[0]++});
   const weak=Object.entries(byT).filter(([id,[r,n]])=>r<n).map(([id])=>s.T.find(t=>t.id==id));
   const wrong=Z.qs.map((q,i)=>[q,Z.ans[i]]).filter(([q,a],i)=>i<answered&&a!==0);
   const msg=pct>=90?L('ممتاز! أنت جاهز 💪','Excellent! You’re ready 💪'):pct>=70?L('زين جدًا، راجع الدروس اللي تحت وتصير ممتاز','Very good! Review the lessons below and you’ll be excellent'):L('لا تشيل هم 💪 راجع الدروس اللي تحت وجرّب مرة ثانية','Don’t worry 💪 Review the lessons below and try again');
-  $('#view').innerHTML=`<div class="quiz res"><div class="card">
+  $('#view').innerHTML=`<div class="quiz res">${lessonMsg}<div class="card">
    <p class="big">${right} / ${Z.qs.length}</p><p style="text-align:center;font-size:20px;margin:0">${'⭐'.repeat(pct>=90?3:pct>=70?2:pct>=50?1:0)} ${pct}%</p>
    <p style="text-align:center">${msg}</p>
    ${weak.length?`<h3>${L('📌 دروس تحتاج مراجعة','📌 Lessons to review')}</h3>${weak.map(t=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid var(--line);padding:6px 0"><span dir="${cd}">${t.t}</span><span class="row"><button class="ghost" onclick="openLesson('${Z.k}',${t.id})">${L('📚 الدرس','📚 Lesson')}</button><button class="ghost" onclick="startQuiz('${Z.k}','practice',${t.id})">${L('🎯 تدريب','🎯 Practice')}</button></span></div>`).join('')}`:''}
@@ -32261,12 +32281,12 @@ function vLesson(k,id){
   const t=s.T[i], cd=CD(s), p=P(k), prev=s.T[i-1], next=s.T[i+1];
   ctx={subj:k,tab:'lessons',g:CUR};
   crumbs([[L('الرئيسية','Home'),'home'],[GR[CUR].short,CUR],[nm(k),CUR+'-'+k],[L('درس ','Lesson ')+t.id]]);
-  if(!p.seen.includes(id)){p.seen.push(id);save();earn(5,L('فتحت درس جديد','You opened a new lesson'))}
+  if(!p.seen.includes(id)){p.seen.push(id);save()}
   const nav=`<div class="lnav" dir="${L('rtl','ltr')}">${prev?`<a class="ghost btnlink" href="#${CUR}-${k}-${prev.id}">${L('→ الدرس السابق','← Previous')}</a>`:'<span></span>'}<a class="ghost btnlink" href="#${CUR}-${k}">${L('📚 كل الدروس','📚 All lessons')}</a>${next?`<a class="pri btnlink" href="#${CUR}-${k}-${next.id}">${L('الدرس التالي ←','Next →')}</a>`:'<span></span>'}</div>`;
   $('#view').innerHTML=`<article class="lpage" dir="${cd}" lang="${SL(s)}">
     <div class="mut" style="font-size:14px">${s.icon} ${nm(k)} · ${TERM_NAME(TERM)}</div>
     <h1 style="margin:.2em 0"><span class="n">${t.id}</span> ${t.t}</h1>
-    ${t.q?`<span class="pill ${s.tone}">📌 ${t.q}</span>`:''}
+    <div class="row" style="gap:6px">${p.done.includes(t.id)?`<span class="pill p-mint">${L('✓ الدرس مكتمل','✓ Lesson complete')}</span>`:`<span class="pill p-sun">${L('⏳ يكتمل الدرس لما تحل الكويز','⏳ Finish the quiz to complete this lesson')}</span>`}${t.q?`<span class="pill ${s.tone}">📌 ${t.q}</span>`:''}</div>
     <div class="row" style="margin:12px 0" dir="${L('rtl','ltr')}" lang="${LANG}"><button class="sec" onclick="speak(SUBJ['${k}'].T.find(x=>x.id==${t.id}).say,'${SL(s)}',this)">${LISTEN()}</button>
       <button class="ghost" onclick="startQuiz('${k}','practice',${t.id})">${L('🎯 اختبر نفسك','🎯 Test yourself')}</button></div>
     <div id="lsteps" class="${cd==='ltr'?'en':''}"></div>
@@ -32280,7 +32300,7 @@ function vLesson(k,id){
     if(!d.hidden){d.hidden=true;$('#deepBtn').textContent=L('📖 أبا شرح أعمق','📖 Explain it in more depth');return}
     d.hidden=false;$('#deepBtn').textContent=L('إخفاء الشرح الأعمق','Hide the deeper explanation');
     if(t.deep){d.innerHTML='';lessonSteps(k,t,d,t.deep,{deep:true});d.scrollIntoView({behavior:'smooth',block:'start'});return}
-    d.innerHTML=`<p class="mut">${L('الشرح الأعمق لهذا الدرس بينزل قريب 🛠️ لين ذاك الوقت تقدر تسأل المساعد.','A deeper explanation for this lesson is coming soon 🛠️ Meanwhile, ask the study helper.')}</p><button class="sec" onclick="askAbout('${k}',${t.id})">${L('🤖 اسأل المساعد','🤖 Ask the helper')}</button>`;
+    d.innerHTML=`<p class="mut">${L('الشرح الأعمق لهذا الدرس بينزل قريب 🛠️ لين ذاك الوقت اسأل مدرسك الخصوصي.','A deeper explanation is coming soon 🛠️ Meanwhile, ask your private tutor.')}</p><button class="sec" onclick="askAbout('${k}',${t.id})">${L('👩‍🏫 اسأل مدرسك','👩‍🏫 Ask your tutor')}</button>`;
   };
   lessonSteps(k,t,$('#lsteps'),t.html,{});
   window.scrollTo(0,0);
@@ -32327,7 +32347,7 @@ function lessonSteps(k,t,root,html,opt){
   const done=()=>{btn.parentNode.remove();bar.style.width='100%';
     const end=document.createElement('div');end.className='card lsdone';
     end.innerHTML=opt.deep?`<b>${L('🎉 خلصت الشرح الأعمق! أنت فاهم الدرس عدل 💪','🎉 You finished the deep dive! 💪')}</b>`:
-      `<b style="font-size:18px">${L('🎉 خلصت الدرس!','🎉 Lesson done!')}</b><div class="row" style="gap:8px;margin-top:8px"><button class="sec" onclick="startQuiz('${k}','practice',${t.id})">${L('🎯 تدرّب أكثر','🎯 More practice')}</button><button class="ghost" onclick="document.getElementById('deepBtn').click()">${L('📖 الشرح الأعمق','📖 Deep dive')}</button></div>`;
+      `<b style="font-size:18px">${L('👏 خلصت الشرح! باقي خطوة وحدة','👏 You finished the lesson! One step left')}</b><div class="mut" style="margin-top:4px">${L('حل كويز الدرس وجيب 60% أو أكثر عشان يكتمل ✓','Pass the lesson quiz (60%+) to complete it ✓')}</div><div class="row" style="gap:8px;margin-top:8px;justify-content:center"><button class="pri" onclick="startQuiz('${k}','practice',${t.id})">${L('🎯 كويز الدرس','🎯 Lesson quiz')}</button><button class="ghost" onclick="document.getElementById('deepBtn').click()">${L('📖 الشرح الأعمق','📖 Deep dive')}</button></div>`;
     list.appendChild(end);const key='lsdone_'+CUR+k+t.id+(opt.deep?'d':'');if(!store.get(key,false)){store.set(key,true);earn(3,L('خلصت الدرس خطوة بخطوة','Finished the lesson step by step'))}};
   const step=()=>{
     if(locked)return;if(pos>=plan.length)return done();
@@ -32393,7 +32413,7 @@ function vIelts(tab){
     <div class="card"><b>الأسبوع 1</b><p>افهم شكل الامتحان + 10 كلمات أكاديمية يوميًا + Reading: True/False/Not Given</p></div>
     <div class="card"><b>الأسبوع 2</b><p>Listening يومي 20 دقيقة (بودكاست إنجليزي) + Writing Task 2: تخطيط المقال</p></div>
     <div class="card"><b>الأسبوع 3</b><p>Writing Task 1: وصف الرسوم + Speaking Part 2: سجّل نفسك دقيقتين يوميًا</p></div>
-    <div class="card"><b>الأسبوع 4</b><p>اختبارات كاملة بتوقيت + راجع أخطاءك مع المساعد الذكي</p></div>
+    <div class="card"><b>الأسبوع 4</b><p>اختبارات كاملة بتوقيت + راجع أخطاءك مع مدرسك الخصوصي</p></div>
    </div>
    <h2>💡 أسرار الدرجة العالية</h2>
    <div class="card"><ul>
@@ -32454,9 +32474,9 @@ let sampleNS=null; const sampleReady=window.claude?.use?.('sample').then(s=>{sam
 const AI_ERR={not_granted:['المساعد يحتاج موافقتك على استخدام Claude. اضغط سماح لما يطلع لك الطلب.','The helper needs your permission to use Claude. Tap Allow when the request appears.'],sampling_disabled:['المساعد غير متاح لهذا الحساب.','The helper isn’t available for this account.'],rate_limited:['كثرت الأسئلة 😅 انتظر شوي وجرّب مرة ثانية.','Too many questions 😅 Wait a bit and try again.'],session_expired:['سجّل دخولك في Claude مرة ثانية.','Please sign in to Claude again.'],image_rejected:['الصورة ما انقبلت، جرّب صورة أوضح (JPG أو PNG).','The image wasn’t accepted — try a clearer one (JPG or PNG).'],refused:['ما قدرت أجاوب على هذا. جرّب تكتب السؤال بطريقة ثانية.','I couldn’t answer that. Try asking the question another way.']};
 function aiMsg(e){const m=AI_ERR[e&&e.code];return m?L(m[0],m[1]):L('صار خطأ في الاتصال، جرّب مرة ثانية.','Connection error — please try again.')}
 function syllabus(k){const s=SUBJ[k];if(!s)return '';const head=L(`مادة ${s.name} (${GR[CUR].name}، الإمارات، الفصل الأول 2026-2027). محتوى المادة من موقع مذاكرتي (مبني على ماتيريال المدرسة):\n`,`Subject: ${nm(k)}${nm(k)!==s.name?' ('+s.name+')':''} (${GR[CUR].name}, UAE, Term 1 2026-2027). Subject content from the Mthakarti site (based on the school material)${CD(s)==='rtl'?' — the content is in Arabic':''}:\n`);
-  const lessons=s.T.map(t=>`- ${t.t}: ${strip(t.html).slice(0,600)}`).join('\n');
+  const lessons=s.T.filter(t=>t.term!==0).map(t=>`- ${t.t}: ${strip(t.html).slice(0,700)}${t.deep?' | '+strip(t.deep).slice(0,1400):''}`).join('\n');
   return head+(s.summary?(L('الملخص:\n','Summary:\n')+s.summary+L('\n\nالدروس:\n','\n\nLessons:\n')+lessons):lessons)}
-function rules(k){if(LANG==='en')return `You are "Mthakarti Helper", a friendly private tutor for school students in the UAE. The student is using the site in English.
+function rules(k){if(LANG==='en')return `You are "Mthakarti Private Tutor", a friendly, patient private tutor for school students in the UAE. The student is using the site in English.
 Rules:
 1) Rely first on the subject content below (UAE Ministry of Education curriculum). If the question is outside it, answer from general knowledge and say so.
 2) ALWAYS answer in clear, simple English, even if the content below is in Arabic. For Arabic Language, Islamic Education and Social Studies, keep key Arabic terms, Quran verses and quotes in Arabic and explain them in English. For maths, write the steps in order.
@@ -32464,7 +32484,7 @@ Rules:
 4) Encourage the student, and finish with a short question to check they understood.
 5) Use simple formatting: bullet points, **bold** for key points. No long tables.
 ${k&&k!=='all'?syllabus(k):'Available subjects: '+Object.keys(SUBJ).map(x=>nm(x)).join(', ')}`;
-  return `أنت «مساعد مذاكرتي»، معلم خصوصي ودود لطلاب المدارس في الإمارات.
+  return `أنت «مدرس مذاكرتي الخصوصي»، مدرس خصوصي ودود وصبور لطلاب المدارس في الإمارات.
 القواعد:
 1) اعتمد أولًا على محتوى المادة التالي (منهج وزارة التربية الإماراتية)، وإذا السؤال خارج المحتوى جاوب بمعرفتك العامة وقل ذلك.
 2) اشرح خطوة بخطوة بلغة بسيطة. جاوب بنفس لغة الطالب (عربي خليجي بسيط أو إنجليزي). الرياضيات اكتب الخطوات مرتبة.
@@ -32476,51 +32496,69 @@ let chat={k:'all',turns:[],ctl:null};
 function askAbout(k,id){const t=SUBJ[k].T.find(x=>x.id===id);chat.k=k;chat.prefill=L(`اشرح لي درس «${t.t}» بطريقة أسهل مع مثال جديد.`,`Explain the lesson "${t.t}" in a simpler way with a new example.`);go('assistant')}
 function askQ(){const q=Z.qs[Z.i];const s=SUBJ[Z.k];chat.k=Z.k;chat.prefill=L(`ما فهمت هذا السؤال: ${strip(q[1])}\nالجواب الصحيح: ${strip(q[2])}\nاشرح لي ليش خطوة بخطوة.`,`I didn't understand this question: ${strip(q[1])}\nThe correct answer: ${strip(q[2])}\nExplain why, step by step.`);clearInterval(quizTimer);go('assistant')}
 function md(t){let h=esc(t);h=h.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^#{1,4}\s*(.+)$/gm,'<b>$1</b>').replace(/^\s*[-•]\s+(.+)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/g,m=>'<ul>'+m+'</ul>').replace(/\n/g,'<br>').replace(/<\/li><br>/g,'</li>').replace(/<ul><br>/g,'<ul>');return h}
+/* ===== Private tutor (مدرسك الخصوصي): artifact `sample` if present, else our Supabase `tutor` function ===== */
+async function tutorShrink(file){try{const bmp=await createImageBitmap(file);const m=1280,sc=Math.min(1,m/Math.max(bmp.width,bmp.height));const c=document.createElement('canvas');c.width=Math.round(bmp.width*sc);c.height=Math.round(bmp.height*sc);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);const u=c.toDataURL('image/jpeg',0.82);return {media_type:'image/jpeg',data:u.split(',')[1]}}catch(e){return null}}
+async function tutorAsk(turns,img){
+  const s=await sampleReady;
+  if(s){const r=await s(turns,{cache:false,images:img?[img]:undefined});return r.text}
+  if(!ACC)throw {code:'no_account'};
+  const sys=turns[0].content, msgs=turns.slice(1);
+  const body={acc_id:ACC.id,acc_secret:ACC.secret,system:sys,messages:msgs,image:img?await tutorShrink(img):null};
+  const r=await fetch(SB_URL+'/functions/v1/tutor',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify(body)});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||!j.text)throw {code:j.error||'upstream'};
+  return j.text;
+}
+function tutorErr(e){const c=e&&e.code;
+  if(c==='not_configured')return L('المدرس الخصوصي بيكون جاهز قريب جدًا إن شاء الله 🛠️','Your private tutor will be ready very soon 🛠️');
+  if(c==='rate_limited')return L('سألت وايد هالساعة 😅 ارتاح شوي وارجع بعد شوي.','You’ve asked a lot this hour 😅 take a short break and come back.');
+  if(c==='no_account')return L('سجّل دخول أول عشان تكلم مدرسك.','Sign in first to talk to your tutor.');
+  return L('صار خطأ في الاتصال، جرّب مرة ثانية.','Connection problem — please try again.')}
 async function vAssistant(){
-  crumbs([[L('الرئيسية','Home'),'home'],[L('المساعد الذكي','Smart helper')]]);
-  const opts=[['all',L('كل المواد','All subjects')],...Object.keys(SUBJ).map(k=>[k,nm(k)])];
-  const chips=L(['اشرح لي طريقة FOIL','الفرق بين الاستعارة التصريحية والمكنية','How do I write a topic sentence?','لخص لي مراحل جمع القرآن'],['Explain the FOIL method','How do I write a topic sentence?','Give me 5 quick questions to test myself','Explain the difference between explicit and implicit metaphor (الاستعارة)']);
-  $('#view').innerHTML=`<div class="chat">
-   <h1 style="margin-bottom:0">${L('🤖 مساعد مذاكرتي','🤖 Mthakarti helper')}</h1>
-   <p class="mut" style="margin-top:0">${L('اسأل أي سؤال، أو صوّر سؤال من الكتاب أو الورقة. يعتمد على محتوى المادة أولًا.','Ask any question, or take a photo of a question from your book or worksheet. It relies on the subject content first.')}</p>
-   <div class="row"><label for="aiSub" class="mut">${L('المادة:','Subject:')}</label><select id="aiSub" style="max-width:220px">${opts.map(([k,n])=>`<option value="${k}" ${chat.k===k?'selected':''}>${n}</option>`).join('')}</select><button class="ghost" onclick="chat.turns=[];vAssistant()">${L('🧹 محادثة جديدة','🧹 New chat')}</button></div>
-   <div id="aiOff" class="hidden"></div>
-   <div class="msgs" id="msgs">${chat.turns.length?'':`<div class="msg a">${L('هلا! 👋 أنا مساعدك للمذاكرة. جرّب:','Hi! 👋 I’m your study helper. Try:')}<div class="chips" style="margin-top:8px">${chips.map(c=>`<button onclick="$('#aiIn').value=this.textContent;$('#aiIn').focus()">${c}</button>`).join('')}</div></div>`}</div>
+  crumbs([[L('الرئيسية','Home'),'home'],[L('مدرسك الخصوصي','Private tutor')]]);
+  const subs=[['all',L('كل المواد','All'),'✨'],...Object.keys(SUBJ).map(k=>[k,nm(k),SUBJ[k].icon])];
+  const starters=chat.k&&chat.k!=='all'&&SUBJ[chat.k]
+    ?[L(`اشرح لي أصعب درس في ${nm(chat.k)} بطريقة سهلة`,`Explain the hardest lesson in ${nm(chat.k)} simply`),L('اختبرني بـ 5 أسئلة سريعة','Quiz me with 5 quick questions'),L('لخّص لي أهم شي للامتحان','Summarise what matters most for the exam'),L('📷 أبا أحل سؤال من الكتاب','📷 Help me with a question from my book')]
+    :[L('شو أذاكر اليوم؟','What should I study today?'),L('اختبرني بأسئلة سريعة','Quiz me quickly'),L('كيف أذاكر للامتحان صح؟','How do I study for exams properly?')];
+  $('#view').innerHTML=`<div class="tutor">
+   <div class="tuhead"><div class="tuav">👩‍🏫</div><div style="min-width:0"><h1>${L('مدرسك الخصوصي','Your private tutor')}</h1>
+     <div class="mut" style="font-size:14px">${L(`هلا ${esc(STU.name)}! أشرح لك من دروس مذاكرتي نفسها، وتقدر تصوّر لي سؤالك 📷`,`Hi ${esc(STU.name)}! I explain from your Mthakarti lessons, and you can send me a photo of a question 📷`)}</div></div>
+     <button class="hbtn" title="${L('محادثة جديدة','New chat')}" onclick="chat.turns=[];vAssistant()">🧹</button></div>
+   <div class="tusubs" role="tablist">${subs.map(([k,n,i])=>`<button class="${(chat.k||'all')===k?'on':''}" onclick="chat.k='${k}';chat.turns=[];vAssistant()">${i} ${n}</button>`).join('')}</div>
+   <div class="msgs" id="msgs">${chat.turns.length?'':`<div class="msg a">${L('شو تبي نذاكر اليوم؟ اختار وحدة من هذي أو اكتب سؤالك 👇','What shall we study today? Pick one or type your question 👇')}<div class="chips" style="margin-top:8px">${starters.map(c=>`<button onclick="$('#aiIn').value=this.textContent.replace('📷 ','');$('#aiIn').focus()">${c}</button>`).join('')}</div></div>`}</div>
    <div id="imgPrev" class="row"></div>
    <div class="composer">
-    <label class="ghost" id="camL" title="${L('صوّر أو ارفع سؤال','Take or upload a photo of a question')}" style="cursor:pointer;padding:10px;border-radius:12px;border:1.5px solid var(--line)">📷<input type="file" id="aiImg" accept="image/*" capture="environment" hidden></label>
-    <textarea id="aiIn" rows="1" placeholder="${L('اكتب سؤالك هنا...','Type your question here...')}"></textarea>
+    <label class="hbtn" id="camL" title="${L('صوّر أو ارفع سؤال','Photo of a question')}" style="cursor:pointer">📷<input type="file" id="aiImg" accept="image/*" capture="environment" hidden></label>
+    <textarea id="aiIn" rows="1" placeholder="${L('اكتب سؤالك لمدرسك…','Ask your tutor…')}"></textarea>
     <button class="pri" id="aiSend">${L('إرسال','Send')}</button>
    </div></div>`;
-  $('#aiSub').onchange=e=>{chat.k=e.target.value;chat.turns=[];vAssistant()};
   chat.turns.forEach(t=>addBubble(t.role==='user'?'u':'a',t.role==='user'?esc(t.show||t.content):md(t.content)));
   let img=null;
   $('#aiImg').onchange=e=>{img=e.target.files[0]||null;$('#imgPrev').innerHTML=img?`<span class="pill p-lav">📎 ${esc(img.name)} <a href="#" onclick="event.preventDefault();document.getElementById('aiImg').value='';this.parentNode.remove();window._clrImg&&window._clrImg()">✕</a></span>`:''};
   window._clrImg=()=>{img=null};
   const inp=$('#aiIn');inp.oninput=()=>{inp.style.height='auto';inp.style.height=Math.min(inp.scrollHeight,160)+'px'};
   inp.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();$('#aiSend').click()}};
-  if(chat.prefill){inp.value=chat.prefill;chat.prefill=null}
-  const s=await sampleReady;
-  if(!s){$('#aiOff').classList.remove('hidden');$('#aiSend').disabled=true;$('#camL').classList.add('hidden');return}
-  const lim=await s.limits().catch(()=>null);if(!lim||!lim.images)$('#camL').classList.add('hidden');
+  if(chat.prefill){inp.value=chat.prefill;chat.prefill=null;inp.oninput()}
   $('#aiSend').onclick=async()=>{
-    const text=inp.value.trim();if(!text&&!img)return;
-    if(chat.ctl){chat.ctl.abort();return}
+    const text=inp.value.trim();if(!text&&!img)return;if(chat.busy)return;
     const content=(text||L('حل السؤال اللي في الصورة واشرحه خطوة بخطوة.','Solve the question in the photo and explain it step by step.'))+(img?L('\n(أرفقت صورة للسؤال)','\n(I attached a photo of the question)'):'');
     const pq=L('📷 سؤال بالصورة','📷 Photo question');
-    addBubble('u',(img?`<img src="${URL.createObjectURL(img)}" alt="${L('صورة السؤال','Question photo')}">`:'')+esc(text||pq));
+    addBubble('u',(img?`<img src="${URL.createObjectURL(img)}" alt="">`:'')+esc(text||pq));
     chat.turns.push({role:'user',content,show:text||pq});
     inp.value='';inp.oninput();
-    const bub=addBubble('a',`<span class="mut">${L('يفكّر... 🤔','Thinking... 🤔')}</span>`);
-    const send=$('#aiSend');send.textContent=L('⏹ إيقاف','⏹ Stop');chat.ctl=new AbortController();
+    const bub=addBubble('a',`<span class="typing"><i></i><i></i><i></i></span>`);
+    chat.busy=true;const send=$('#aiSend');send.disabled=true;
     const turns=[{role:'user',content:rules(chat.k)},...chat.turns.slice(-12).map(t=>({role:t.role,content:t.content}))];
     const pic=img;img=null;$('#imgPrev').innerHTML='';$('#aiImg').value='';
-    try{const {text:ans}=await s(turns,{cache:false,signal:chat.ctl.signal,images:pic?[pic]:undefined,onText:({text})=>{bub.innerHTML=md(text);bub.scrollIntoView({block:'end'})}});
-      chat.turns.push({role:'assistant',content:ans});bub.innerHTML=md(ans)+`<div class="row" style="margin-top:6px"><button class="ghost" style="padding:4px 10px;font-size:13px" onclick="speak(this.closest('.msg').innerText.replace(this.textContent,''),'${(ans.match(/[؀-ۿ]/g)||[]).length>(ans.match(/[A-Za-z]/g)||[]).length?'ar':'en'}',this)">${LISTEN()}</button></div>`;
-    }catch(e){if(e&&e.text){bub.innerHTML=md(e.text)+`<div class="mut">${L('(انقطع الجواب)','(answer was cut off)')}</div>`;chat.turns.push({role:'assistant',content:e.text})}else if(e&&e.code==='cancelled'){bub.innerHTML=`<span class="mut">${L('تم الإيقاف.','Stopped.')}</span>`;chat.turns.pop()}else{bub.innerHTML=`<span class="mut">${aiMsg(e)}</span>`;chat.turns.pop()}}
-    finally{chat.ctl=null;send.textContent=L('إرسال','Send')}
+    try{const ans=await tutorAsk(turns,pic);chat.turns.push({role:'assistant',content:ans});
+      const al=(ans.match(/[؀-ۿ]/g)||[]).length>(ans.match(/[A-Za-z]/g)||[]).length?'ar':'en';
+      bub.innerHTML=md(ans)+`<div class="row" style="margin-top:6px"><button class="ghost" style="padding:4px 10px;font-size:13px" onclick="speak(this.closest('.msg').innerText.replace(this.textContent,''),'${al}',this)">${LISTEN()}</button></div>`;
+      earn(1);
+    }catch(e){bub.innerHTML=`<span class="mut">${tutorErr(e)}</span>`;chat.turns.pop()}
+    finally{chat.busy=false;send.disabled=false;bub.scrollIntoView({block:'end'})}
   };
 }
+
 function addBubble(who,html){const d=document.createElement('div');d.className='msg '+who;d.innerHTML=html;$('#msgs').appendChild(d);d.scrollIntoView({block:'end'});return d}
 async function gradeWriting(){const t=$('#essay').value.trim();store.set('essay',t);const out=$('#wfb');out.style.display='block';
   const n=t.split(/\s+/).filter(Boolean).length;if(n<80){out.innerHTML='Write at least 80 words first so the feedback is useful (the real task needs 250).';return}
