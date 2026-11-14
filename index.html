@@ -121,6 +121,25 @@ h3{font-size:19px;margin:0 0 6px}
 /* assistant */
 .fab{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:calc(16px + env(safe-area-inset-left,0px));z-index:20;background:var(--lav);color:#fff;border-radius:999px;padding:12px 18px;box-shadow:0 8px 24px rgba(123,98,232,.35);display:flex;gap:8px;align-items:center}
 [dir="ltr"] .fab{left:auto;right:calc(16px + env(safe-area-inset-right,0px))}
+/* interactive lesson */
+.lsbar{height:8px;border-radius:99px;background:var(--pink-soft);overflow:hidden;margin:4px 0 12px}
+.lsbar i{display:block;height:100%;background:var(--pink);border-radius:99px;transition:width .4s}
+.lslist{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.lsstep{opacity:0;transform:translateY(12px);transition:opacity .35s,transform .35s;font-size:16.5px;line-height:1.9}
+.lsstep.in{opacity:1;transform:none}
+.lsq{border:2px dashed var(--lav);background:var(--lav-soft)}
+.lsopts{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:10px}
+.lsopt{text-align:start;white-space:normal;line-height:1.6;padding:10px 12px;background:var(--surface)}
+.lsopt.ok{border-color:var(--mint);background:var(--mint-soft)}
+.lsopt.no{border-color:var(--bad);background:var(--bad-soft);opacity:.7}
+.lsfb{margin-top:8px;font-weight:600}
+.exsteps .exstep{border-inline-start:3px solid var(--pink);padding-inline-start:10px;margin:6px 0;animation:instUp .3s ease-out}
+.exbtn{margin-top:8px}
+.trapq{background:var(--surface2)!important}
+.trapbtn{width:100%;white-space:normal;text-align:start}
+.keypop{animation:keyPop .5s ease-out}
+@keyframes keyPop{0%{transform:scale(.96)}60%{transform:scale(1.02)}100%{transform:none}}
+.lsdone{text-align:center;background:var(--mint-soft);border-color:var(--mint)}
 /* install sheet */
 .instsheet{position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:40;max-width:480px;margin:0 auto;background:var(--surface);border:1.5px solid var(--pink);border-radius:20px;padding:14px 16px;box-shadow:0 12px 40px rgba(0,0,0,.18);animation:instUp .3s ease-out}
 .instcard{display:flex;gap:12px;align-items:center}
@@ -32252,7 +32271,7 @@ function vLesson(k,id){
     ${t.q?`<span class="pill ${s.tone}">📌 ${t.q}</span>`:''}
     <div class="row" style="margin:12px 0" dir="${L('rtl','ltr')}" lang="${LANG}"><button class="sec" onclick="speak(SUBJ['${k}'].T.find(x=>x.id==${t.id}).say,'${SL(s)}',this)">${LISTEN()}</button>
       <button class="ghost" onclick="startQuiz('${k}','practice',${t.id})">${L('🎯 اختبر نفسك','🎯 Test yourself')}</button></div>
-    <div class="card body ${cd==='ltr'?'en':''}">${t.html}</div>
+    <div id="lsteps" class="${cd==='ltr'?'en':''}"></div>
     <div class="card deepbox" style="margin-top:14px">
       <button class="pri" id="deepBtn" style="width:100%">${L('📖 أبا شرح أعمق','📖 Explain it in more depth')}</button>
       <div id="deep" class="body ${cd==='ltr'?'en':''}" hidden></div>
@@ -32262,10 +32281,74 @@ function vLesson(k,id){
     const d=$('#deep');
     if(!d.hidden){d.hidden=true;$('#deepBtn').textContent=L('📖 أبا شرح أعمق','📖 Explain it in more depth');return}
     d.hidden=false;$('#deepBtn').textContent=L('إخفاء الشرح الأعمق','Hide the deeper explanation');
-    if(t.deep){d.innerHTML=t.deep;d.scrollIntoView({behavior:'smooth',block:'start'});return}
+    if(t.deep){d.innerHTML='';lessonSteps(k,t,d,t.deep,{deep:true});d.scrollIntoView({behavior:'smooth',block:'start'});return}
     d.innerHTML=`<p class="mut">${L('الشرح الأعمق لهذا الدرس بينزل قريب 🛠️ لين ذاك الوقت تقدر تسأل المساعد.','A deeper explanation for this lesson is coming soon 🛠️ Meanwhile, ask the study helper.')}</p><button class="sec" onclick="askAbout('${k}',${t.id})">${L('🤖 اسأل المساعد','🤖 Ask the helper')}</button>`;
   };
+  lessonSteps(k,t,$('#lsteps'),t.html,{});
   window.scrollTo(0,0);
+}
+/* ===== Interactive lesson: step by step, quick checks, reveal-the-solution, guess-the-trap ===== */
+function lsChunks(html){
+  const box=document.createElement('div');box.innerHTML=html;
+  const nodes=[...box.childNodes].filter(n=>n.nodeType===1||(n.nodeType===3&&n.textContent.trim()));
+  const out=[];let cur=[];const txt=a=>a.map(n=>n.textContent).join('').trim().length;
+  nodes.forEach(n=>{const tag=n.nodeType===1?n.tagName:'#t';
+    if(/^H[2-4]$/.test(tag)){if(cur.length&&txt(cur)>40)out.push(cur),cur=[];cur.push(n);return}
+    const special=n.nodeType===1&&n.classList&&(n.classList.contains('ex')||n.classList.contains('trap')||n.classList.contains('key'));
+    if(special&&cur.length&&!/^H[2-4]$/.test(cur[cur.length-1].tagName||'')){out.push(cur);cur=[]}
+    cur.push(n);
+    if(special||txt(cur)>260){out.push(cur);cur=[]}});
+  if(cur.length){if(out.length&&txt(cur)<60)out[out.length-1]=out[out.length-1].concat(cur);else out.push(cur)}
+  return out.map(a=>{const d=document.createElement('div');a.forEach(n=>d.appendChild(n));return d});
+}
+function lsEnhance(d){
+  d.querySelectorAll('.ex').forEach(ex=>{
+    const parts=ex.innerHTML.split(/<br\s*\/?>/i).filter(x=>x.replace(/<[^>]+>/g,'').trim());
+    if(parts.length<2)return;
+    ex.innerHTML=`<div>${parts[0]}</div><div class="exsteps"></div><button type="button" class="sec exbtn">${L('✏️ حاول بنفسك… بعدين اكشف الخطوة 👀','✏️ Try it yourself… then reveal the next step 👀')}</button>`;
+    let i=1;const st=ex.querySelector('.exsteps'),b=ex.querySelector('.exbtn');
+    b.onclick=()=>{const p=document.createElement('div');p.className='exstep';p.innerHTML=parts[i++];st.appendChild(p);
+      if(i>=parts.length){b.remove()}else b.textContent=L(`👀 الخطوة التالية (${i}/${parts.length-1})`,`👀 Next step (${i}/${parts.length-1})`)};
+  });
+  d.querySelectorAll('.trap').forEach(tr=>{const h=tr.innerHTML;tr.classList.add('trapq');
+    tr.innerHTML=`<button type="button" class="ghost trapbtn">${L('🤔 تتوقع وين الغلطة اللي يطيح فيها الطلاب؟ اضغط وشوف','🤔 Can you guess the common mistake? Tap to see')}</button>`;
+    tr.querySelector('.trapbtn').onclick=()=>{tr.classList.remove('trapq');tr.innerHTML=h}});
+  d.querySelectorAll('.key').forEach(k=>k.classList.add('keypop'));
+}
+function lessonSteps(k,t,root,html,opt){
+  if(!root)return;opt=opt||{};
+  const s=SUBJ[k],cd=CD(s);
+  const chunks=lsChunks(html||'');
+  const pool=shuffle(s.Q.filter(q=>q[0]===t.id)).slice(0,opt.deep?2:3);
+  const plan=[];let qi=0;
+  chunks.forEach((c,i)=>{plan.push({c});if(qi<pool.length&&(i%2===1||i===chunks.length-1))plan.push({q:pool[qi++]})});
+  root.innerHTML=`<div class="lsbar"><i style="width:0%"></i></div><div class="lslist"></div>
+    <div class="row lsctl" style="gap:8px;margin-top:10px" dir="${L('rtl','ltr')}"><button class="pri lsnext" style="flex:1">${L('ابدأ ⬇','Start ⬇')}</button><button class="ghost lsall">${L('📄 اعرض الكل','📄 Show all')}</button></div>`;
+  const list=root.querySelector('.lslist'),bar=root.querySelector('.lsbar i'),btn=root.querySelector('.lsnext');
+  let pos=0,locked=false;
+  const done=()=>{btn.parentNode.remove();bar.style.width='100%';
+    const end=document.createElement('div');end.className='card lsdone';
+    end.innerHTML=opt.deep?`<b>${L('🎉 خلصت الشرح الأعمق! أنت فاهم الدرس عدل 💪','🎉 You finished the deep dive! 💪')}</b>`:
+      `<b style="font-size:18px">${L('🎉 خلصت الدرس!','🎉 Lesson done!')}</b><div class="row" style="gap:8px;margin-top:8px"><button class="sec" onclick="startQuiz('${k}','practice',${t.id})">${L('🎯 تدرّب أكثر','🎯 More practice')}</button><button class="ghost" onclick="document.getElementById('deepBtn').click()">${L('📖 الشرح الأعمق','📖 Deep dive')}</button></div>`;
+    list.appendChild(end);const key='lsdone_'+CUR+k+t.id+(opt.deep?'d':'');if(!store.get(key,false)){store.set(key,true);earn(3,L('خلصت الدرس خطوة بخطوة','Finished the lesson step by step'))}};
+  const step=()=>{
+    if(locked)return;if(pos>=plan.length)return done();
+    const it=plan[pos++];bar.style.width=Math.round(pos/plan.length*100)+'%';
+    const card=document.createElement('div');card.className='card lsstep body';card.setAttribute('dir',cd);
+    if(it.c){card.appendChild(it.c);lsEnhance(card);btn.textContent=pos>=plan.length?L('خلّصت ✓','Finish ✓'):L('التالي ⬇','Next ⬇')}
+    else{const q=it.q,opts=shuffle(q.slice(2,6).filter(x=>x!=null&&x!==''));locked=true;btn.disabled=true;
+      card.classList.add('lsq');card.innerHTML=`<div class="mut" style="font-size:13px;margin-bottom:4px">${L('⚡ سؤال سريع قبل لا تكمل','⚡ Quick check before you continue')}</div><b>${q[1]}</b><div class="lsopts"></div><div class="lsfb"></div>`;
+      const box=card.querySelector('.lsopts');
+      opts.forEach(o=>{const b=document.createElement('button');b.type='button';b.className='ghost lsopt';b.innerHTML=o;b.onclick=()=>{
+        if(!locked)return;const ok=o===q[2];b.classList.add(ok?'ok':'no');
+        if(ok){locked=false;btn.disabled=false;box.querySelectorAll('button').forEach(x=>x.disabled=true);earn(2);card.querySelector('.lsfb').innerHTML=`✅ ${L('صح! ','Correct! ')}${q[6]||''}`;btn.textContent=pos>=plan.length?L('خلّصت ✓','Finish ✓'):L('كمّل ⬇','Continue ⬇')}
+        else{b.disabled=true;card.querySelector('.lsfb').innerHTML=`❌ ${L('مب هذا… فكّر مرة ثانية 💭','Not quite… try again 💭')}`}};box.appendChild(b)})}
+    list.appendChild(card);void card.offsetWidth;card.classList.add('in');
+    if(pos>1)card.scrollIntoView({behavior:'smooth',block:'start'});
+  };
+  btn.onclick=step;
+  root.querySelector('.lsall').onclick=()=>{list.innerHTML='';const all=document.createElement('div');all.className='card body';all.setAttribute('dir',cd);all.innerHTML=html;list.appendChild(all);btn.parentNode.remove();bar.style.width='100%'};
+  step();
 }
 
 /* ================= IELTS ================= */
