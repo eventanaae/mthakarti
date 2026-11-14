@@ -31945,7 +31945,7 @@ const LISTEN=()=>L('🔊 استمع','🔊 Listen');
 const TM=t=>LANG==='en'?String(t).replace(/\s*ص$/,' AM').replace(/\s*م$/,' PM'):t;
 const SOON_EN={'العلوم':'Science'};
 function applyLang(){
-  const d=document.documentElement;d.lang=LANG;d.dir=L('rtl','ltr');document.title=L('مذاكرتي','Mthakarti · مذاكرتي');
+  const d=document.documentElement;d.lang=LANG;d.dir=L('rtl','ltr');document.title=L('مذاكرتي | منصة المذاكرة لطلاب الإمارات','Mthakarti · مذاكرتي | Study platform for UAE students');
   const set=(sel,t,a)=>{const e=$(sel);if(e){e.title=t;e.setAttribute('aria-label',a||t)}};
   set('#cmpLink',L('المسابقة','Competition'));set('#bellBtn',L('التنبيهات','Notifications'));set('#themeBtn',L('الوضع الليلي','Dark mode'),L('تبديل الوضع','Toggle theme'));
   set('#langBtn',L('English','عربي'),L('Switch to English','التبديل إلى العربية'));
