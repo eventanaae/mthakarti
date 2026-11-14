@@ -159,7 +159,7 @@ a.pri.btnlink{background:var(--pink);color:#fff}
 a.ghost.btnlink{border:1.5px solid var(--line);color:var(--ink)}
 .exlist{display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
 .lesslist{grid-template-columns:minmax(0,1fr)}
-html,body{overflow-x:hidden}
+html,body{overflow-x:hidden;overflow-x:clip}
 .excard{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--line);border-radius:18px;padding:10px 12px;box-shadow:var(--shadow)}
 .exdate{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:54px;height:58px;border-radius:14px;background:var(--lav-soft);color:var(--lav);flex-shrink:0}
 .exdate b{font-size:22px;line-height:1}.exdate small{font-size:12px;font-weight:700}
@@ -221,7 +221,7 @@ html,body{overflow-x:hidden}
 
 <div class="app" id="app">
 <header class="top"><div class="in">
-  <a class="logo" href="#home">📚 مذاكر<i>تي</i></a>
+  <a class="logo" href="#home" dir="rtl" lang="ar">📚 مذاكر<i>تي</i></a>
   <div class="crumbs" id="crumbs"></div>
   <div class="hacts">
   <a id="stuChip" class="pill p-lav hidden" href="#welcome" title="تغيير الاسم أو الصف"></a>
@@ -36385,6 +36385,1079 @@ IELTS_DATA.writing.push({
   }
 });
 }catch(e){console.error('ielts data_writing.js',e)}
+/* ================= IELTS ACADEMIC SECTION (ielts_app.js) =================
+   Injected after all other site code, before render(). Replaces the old vIelts().
+   Data: IELTS_DATA.reading / listening / writing / speaking (see data_*.js).
+   All helpers are prefixed ie / IE_ to avoid clashing with site globals. */
+var IE={tab:null,run:null,saved:null,tick:null,gen:0,auT:null,utts:[],vo:null,spk:{},spkN:{},dict:null,rec:null,recUrl:null,saveT:null,auBtn:null};
+var IE_SK=['reading','listening','writing','speaking'];
+var IE_IC={reading:'📖',listening:'🎧',writing:'✍️',speaking:'🗣️'};
+var IE_NM={reading:'Reading',listening:'Listening',writing:'Writing',speaking:'Speaking'};
+var IE_TF={tfng:['TRUE','FALSE','NOT GIVEN'],ynng:['YES','NO','NOT GIVEN']};
+/* Academic raw score (/40) → band. [minimum raw, band] — widely published Cambridge-style conversion (approximate). */
+var IE_CONV={
+  reading:[[39,9],[37,8.5],[35,8],[33,7.5],[30,7],[27,6.5],[23,6],[19,5.5],[15,5],[13,4.5],[10,4],[8,3.5],[6,3],[4,2.5],[2,2],[1,1],[0,0]],
+  listening:[[39,9],[37,8.5],[35,8],[32,7.5],[30,7],[26,6.5],[23,6],[18,5.5],[16,5],[13,4.5],[10,4],[8,3.5],[6,3],[4,2.5],[2,2],[1,1],[0,0]]
+};
+
+/* ---------- small utilities ---------- */
+function ieEsc(s){return typeof esc==='function'?esc(s==null?'':s):String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function ieEl(id){return document.getElementById(id)}
+function ieData(sk){try{return (typeof IELTS_DATA!=='undefined'&&IELTS_DATA&&IELTS_DATA[sk])||[]}catch(e){return []}}
+function ieTest(sk,id){var d=ieData(sk);for(var i=0;i<d.length;i++){if(String(d[i].id)===String(id))return d[i]}return null}
+function ieFmt(ms){ms=Math.max(0,Math.ceil(ms/1000));var m=Math.floor(ms/60),s=ms%60;return m+':'+(s<10?'0':'')+s}
+function ieRound(x){return Math.floor(x*2+0.5)/2} /* official overall rounding: .25→.5, .75→next whole */
+function ieB(x){return (x==null||isNaN(x))?'–':(+x).toFixed(1)}
+function ieWords(t){t=String(t||'').trim();return t?t.split(/\s+/).filter(Boolean).length:0}
+function ieNorm(s){
+  return String(s==null?'':s).toLowerCase()
+    .replace(/[‘’ʼ`]/g,"'").replace(/[“”]/g,'"').replace(/[–—]/g,'-')
+    .replace(/(\d),(?=\d{3}(\D|$))/g,'$1').replace(/\s*-\s*/g,'-').replace(/\s*%/g,'%').replace(/\s+/g,' ')
+    .replace(/^[\s.,;:!?"'()]+|[\s.,;:!?"'()]+$/g,'').trim();
+}
+function ieMatch(given,acc){
+  var g=ieNorm(given);if(!g)return false;
+  for(var i=0;i<acc.length;i++){var a=ieNorm(acc[i]);if(a===g)return true;
+    if(/^[\d\s.:\-]+$/.test(a)&&/^[\d\s.:\-]+$/.test(g)&&a.replace(/\s/g,'')===g.replace(/\s/g,''))return true}
+  return false;
+}
+function ieBand(sk,raw,total){
+  var r=total===40?raw:Math.round(raw*40/Math.max(1,total));var t=IE_CONV[sk]||IE_CONV.reading;
+  for(var i=0;i<t.length;i++){if(r>=t[i][0])return t[i][1]}return 0;
+}
+function ieBest(){var b=store.get('ieBest',{});return b&&typeof b==='object'?b:{}}
+function ieSetBest(sk,id,rec){
+  var b=ieBest();b[sk]=b[sk]||{};var o=b[sk][id]||null;rec.at=Date.now();
+  var n=((o&&o.n)||0)+1;
+  if(!o||(rec.band||0)>=(o.band||0)){b[sk][id]=Object.assign({},rec,{n:n,last:rec.band})}
+  else{o.n=n;o.last=rec.band}
+  store.set('ieBest',b);
+}
+function ieTopBand(sk){var b=ieBest()[sk]||{},m=null;Object.keys(b).forEach(function(k){var v=b[k]&&b[k].band;if(v!=null&&(m==null||v>m))m=v});return m}
+function ieSaveSoon(){clearTimeout(IE.saveT);IE.saveT=setTimeout(ieSaveNow,700)}
+function ieSaveNow(){clearTimeout(IE.saveT);var r=IE.run;try{store.set('ieRun',r&&r.ph==='test'?r:null)}catch(e){}}
+function ieSecs(sk,t){return (sk==='reading'?t.passages:t.parts)||[]}
+function ieItemsOf(sec){var o=[];(sec.groups||[]).forEach(function(g){(g.items||[]).forEach(function(it){o.push(it)})});return o}
+function ieAllItems(sk,t){var o=[];ieSecs(sk,t).forEach(function(s){o=o.concat(ieItemsOf(s))});return o}
+function ieRange(sec){var its=ieItemsOf(sec);if(!its.length)return '';return its[0].n+'–'+its[its.length-1].n}
+function ieTop(){var t=document.querySelector('.top');document.documentElement.style.setProperty('--ieTop',(t?t.offsetHeight:56)+'px')}
+function ieDisc(){return `<div class="note ie-disc">${LANG==='en'?'':'<div>📝 اختبارات تدريبية أصلية بنفس شكل وتوقيت IELTS Academic الرسمي، وليست مواد رسمية من Cambridge أو IDP أو British Council.</div>'}<div class="en">${LANG==='en'?'📝 ':''}Original practice tests in the official IELTS Academic format — not official Cambridge/IDP/British Council material.</div></div>`}
+
+/* ---------- styles (mobile-first, no horizontal scroll) ---------- */
+function ieCss(){
+  if(ieEl('ieCss'))return;
+  var st=document.createElement('style');st.id='ieCss';
+  st.textContent=`
+html.ie-on,html.ie-on body{overflow-x:clip}
+@supports not (overflow-x:clip){html.ie-on,html.ie-on body{overflow-x:visible}}
+.ie-wrap{min-width:0;max-width:100%}
+.ie-wrap *{min-width:0}
+.ie-wrap img,.ie-wrap table{max-width:100%}
+.ie-disc{font-size:14px}
+.ie-tabs{display:flex;gap:6px;overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;margin:10px 0 14px;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+.ie-tabs button{flex:none;background:var(--surface);border:1.5px solid var(--line);white-space:nowrap;padding:8px 13px}
+.ie-tabs button.on{background:var(--pink);color:#fff;border-color:var(--pink)}
+.ie-grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}
+.ie-grid > *{min-width:0}
+.ie-tile small{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.ie-facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,140px),1fr));gap:8px;margin:10px 0}
+.ie-fact{background:var(--surface2);border-radius:14px;padding:10px 12px;text-align:center}
+.ie-fact b{display:block;font-family:var(--f-disp);font-size:22px;color:var(--pink);direction:ltr}
+.ie-fact small{color:var(--mut);font-size:13px}
+.ie-bar{position:sticky;top:calc(var(--ieTop,56px) + env(safe-area-inset-top,0px));z-index:4;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 8px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;box-shadow:var(--shadow);margin:6px 0 10px}
+.ie-bar button{padding:6px 11px;font-size:14px;border-radius:10px}
+.ie-bar .sp{flex:1 1 auto}
+.ie-clock{font:800 21px/1 var(--f-body);font-variant-numeric:tabular-nums;padding:7px 10px;border-radius:10px;background:var(--lav-soft);color:var(--lav);direction:ltr;white-space:nowrap}
+.ie-clock.warn{background:var(--bad);color:#fff;animation:iePulse 1s infinite}
+@keyframes iePulse{50%{opacity:.75}}
+.ie-seg{display:inline-flex;gap:4px;flex-wrap:wrap}
+.ie-seg button{background:var(--surface2)}
+.ie-seg button.on{background:var(--pink);color:#fff}
+.ie-mob{display:none!important}
+.ie-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+.ie-pane{min-width:0}
+@media(min-width:861px){.ie-split .ie-pane{max-height:calc(100vh - var(--ieTop,56px) - 90px);overflow:auto;position:sticky;top:calc(var(--ieTop,56px) + 72px);overscroll-behavior:contain}}
+@media(max-width:860px){.ie-split{grid-template-columns:minmax(0,1fr)}.ie-split[data-pane="p"] .ie-qp{display:none}.ie-split[data-pane="q"] .ie-pp{display:none}.ie-mob{display:inline-flex!important}}
+.ie-wrap .passage{overflow-wrap:anywhere}
+.ie-wrap .passage p{margin:0 0 12px}
+.ie-x{overflow-x:auto;max-width:100%;-webkit-overflow-scrolling:touch}
+.ie-grp{margin:0 0 16px}
+.ie-instr{background:var(--pink-soft);border-radius:12px;padding:8px 12px;font-weight:700;font-size:15px;margin:0 0 6px}
+.ie-box{background:var(--surface2);border-radius:12px;padding:8px 12px;margin:6px 0;font-size:15px}
+.ie-box div{padding:2px 0}
+.qi{padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.qi.flash{background:var(--sun-soft);border-radius:10px}
+.ie-num{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:8px;background:var(--pink-soft);color:var(--pink);font-weight:800;font-size:14px;margin-inline-end:6px;padding:0 4px}
+.ie-opt{display:flex;gap:8px;align-items:flex-start;padding:6px 10px;border:1.5px solid var(--line);border-radius:12px;margin:5px 0;cursor:pointer;font-weight:500;line-height:1.6}
+.ie-opt input{width:auto;margin-top:5px;flex:none}
+.ie-opt.on{border-color:var(--lav);background:var(--lav-soft)}
+.ie-tf{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.ie-tf label{display:inline-flex;gap:6px;align-items:center;border:1.5px solid var(--line);border-radius:999px;padding:3px 12px;cursor:pointer;font-weight:700;font-size:14px}
+.ie-tf label.on{border-color:var(--lav);background:var(--lav-soft);color:var(--lav)}
+.ie-tf input{width:auto;margin:0}
+input.ie-in{display:inline-block;width:11em;max-width:100%;padding:3px 8px;border-radius:8px;margin:2px 3px;font-family:var(--f-body)}
+select.ie-sel{display:inline-block;width:auto;max-width:100%;padding:3px 8px;border-radius:8px;margin:2px 3px}
+.ie-nav{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.ie-nav button{min-width:34px;padding:4px 5px;font-size:13px;border-radius:8px;background:var(--surface);border:1.5px solid var(--line);font-weight:700}
+.ie-nav button.ans{background:var(--lav-soft);border-color:var(--lav);color:var(--lav)}
+.ie-nav button.ok{background:var(--mint-soft);border-color:var(--mint);color:var(--mint)}
+.ie-nav button.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.ie-big{font:800 60px/1 var(--f-disp);color:var(--pink);text-align:center;margin:6px 0}
+.ie-rv{padding:9px 0;border-bottom:1px solid var(--line);overflow-wrap:anywhere}
+.ie-rv .ya{font-weight:700}
+.ie-rv.no .ya{color:var(--bad);text-decoration:line-through}
+.ie-rv .why{color:var(--mut);font-size:14.5px}
+.ie-onlybad .ie-rv.yes{display:none}
+.ie-ta{width:100%;min-height:46vh;font-family:Georgia,"Times New Roman",serif;font-size:16.5px;line-height:1.75;direction:ltr;text-align:left;resize:vertical}
+.ie-wc{font-weight:800;direction:ltr;display:inline-block}
+.ie-wc.low{color:var(--bad)}.ie-wc.ok{color:var(--mint)}
+.ie-cue{border:2px solid var(--pink);border-radius:16px;padding:12px 14px;background:var(--surface)}
+.ie-cue ul{margin:6px 0;padding-left:22px}
+.ie-exam{background:var(--sky-soft);border-radius:16px;padding:12px 14px;font-size:18px;font-weight:600}
+.ie-model{background:var(--mint-soft);border-radius:14px;padding:10px 14px}
+.ie-model p{margin:0 0 10px}
+.ie-mine{white-space:pre-wrap;background:var(--surface2);border-radius:14px;padding:10px 14px;font-family:Georgia,serif;overflow-wrap:anywhere}
+.ie-chk label{display:flex;gap:8px;align-items:flex-start;padding:3px 0;cursor:pointer;font-weight:500}
+.ie-chk input{width:auto;margin-top:6px;flex:none}
+.ie-crit{border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:8px 0}
+.ie-crit select{width:auto}
+.ie-calc{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,120px),1fr));gap:8px}
+.ie-calc label{font-weight:700;font-size:14px}
+.ie-wrap .tbl{font-size:14.5px}
+.ie-wrap details.lesson .body{overflow-wrap:anywhere}
+.ie-wrap .lesson .body ul,.ie-wrap .lesson .body ol{padding-inline-start:22px;margin:6px 0}
+.ie-au{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-weight:700;font-size:14px}
+.ie-au .dot{width:10px;height:10px;border-radius:50%;background:var(--bad);animation:iePulse 1s infinite;flex:none}
+.ie-bar .lbl{font-weight:800;font-size:14px;white-space:nowrap}
+`;
+  document.head.appendChild(st);
+  addEventListener('resize',ieTop);
+}
+
+/* ---------- navigation guard: confirm before leaving a running test ---------- */
+function ieRunning(){return !!(IE.run&&IE.run.ph==='test')}
+addEventListener('hashchange',function(e){
+  var h=(location.hash||'#home').slice(1)||'home';
+  if(h==='ielts')return;
+  if(!ieRunning()){if(IE.run)IE.run=null;document.documentElement.classList.remove('ie-on');return}
+  if(confirm(L('الاختبار شغّال والمؤقت يعدّ. أكيد تبي تطلع؟ إجاباتك في هذا الاختبار بتضيع.','A test is running and the timer is on. Leave now? Your answers in this test will be lost.'))){ieQuit(true);document.documentElement.classList.remove('ie-on');return}
+  if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+  try{history.replaceState(null,'','#ielts')}catch(_){}
+  setTimeout(function(){if(!ieEl('ieRunBox')){if((location.hash||'')!=='#ielts')location.hash='ielts';else render()}},0);
+},true);
+addEventListener('beforeunload',function(e){if(ieRunning()){ieSaveNow();e.preventDefault();e.returnValue=''}});
+document.addEventListener('click',function(e){
+  var a=e.target&&e.target.closest?e.target.closest('a[href="#ielts"]'):null;
+  if(!a||(location.hash||'')!=='#ielts')return;
+  e.preventDefault();
+  if(ieRunning()){if(!confirm(L('تبي توقف الاختبار وترجع لقائمة الاختبارات؟','Stop the test and go back to the test list?')))return;ieQuit(true)}
+  IE.run=null;vIelts();
+},true);
+
+/* restore an unfinished test after a reload (offered as "Resume") */
+(function(){try{var r=store.get('ieRun',null);if(r&&r.ph==='test'&&r.skill&&ieTest(r.skill,r.id))IE.saved=r}catch(e){}})();
+
+/* ================= MAIN VIEW ================= */
+function vIelts(tab){
+  ieCss();
+  /* site sets html,body{overflow-x:hidden}, which turns body into a scroll box and breaks position:sticky (timer bar) */
+  try{document.documentElement.classList.add('ie-on')}catch(e){}
+  if(tab){IE.tab=tab;store.set('ieTab',tab)}
+  if(!IE.tab)IE.tab=store.get('ieTab',null)||'basics';
+  if(IE.run&&(IE.run.ph==='intro'||IE.run.ph==='test'||IE.run.ph==='review'))return ieScreen();
+  ieHome();
+}
+function ieCrumbs(extra){
+  try{var c=[[L('الرئيسية','Home'),'home']];if(typeof GR!=='undefined'&&GR[CUR])c.push([GR[CUR].short,CUR]);c.push(extra?['IELTS','ielts']:['IELTS']);if(extra)c.push([extra]);crumbs(c)}catch(e){}
+}
+function ieTabGo(k){if(ieRunning())return;IE.run=null;vIelts(k);window.scrollTo(0,0)}
+function ieHome(){
+  ieCrumbs();
+  var tabs=[['basics',L('📘 الأساسيات والقواعد','📘 Basics & rules')],['reading','📖 Reading'],['listening','🎧 Listening'],['writing','✍️ Writing'],['speaking','🗣️ Speaking'],['words',L('💎 كلمات أكاديمية','💎 Vocabulary')]];
+  var sv=IE.saved;
+  var resume=sv?`<div class="card" style="background:var(--sun-soft);border-color:var(--sun);margin-bottom:12px"><b>${L('⏸ عندك اختبار ما خلّصته:','⏸ You have an unfinished test:')}</b> <span class="en" style="display:inline">${IE_IC[sv.skill]} ${IE_NM[sv.skill]} · ${ieEsc((ieTest(sv.skill,sv.id)||{}).title||('Test '+sv.id))}</span>
+    <div class="row" style="margin-top:8px"><button class="pri" onclick="ieResume()">${L('▶ كمّل','▶ Resume')}</button><button class="ghost" onclick="ieDiscard()">${L('احذفه','Discard')}</button></div>
+    <p class="mut" style="font-size:13.5px;margin:6px 0 0">${L('المؤقت استمر يعدّ وأنت برّا — مثل الامتحان الحقيقي.','The timer kept running while you were away — just like the real test.')}</p></div>`:'';
+  ieEl('view').innerHTML=`<div class="ie-wrap">
+   <h1>${L('🎓 تجهيز IELTS Academic','🎓 IELTS Academic prep')}</h1>
+   ${ieDisc()}${resume}
+   <div class="ie-tabs" role="tablist">${tabs.map(function(t){return `<button role="tab" aria-selected="${IE.tab===t[0]}" class="${IE.tab===t[0]?'on':''}" onclick="ieTabGo('${t[0]}')">${t[1]}</button>`}).join('')}</div>
+   <div id="ieBody"></div></div>`;
+  var b=ieEl('ieBody');
+  if(IE.tab==='basics')b.innerHTML=ieBasics();
+  else if(IE_IC[IE.tab])b.innerHTML=ieList(IE.tab);
+  else b.innerHTML=ieWordsTab();
+  if(IE.tab==='basics')ieCalcUpd();
+  try{var on=document.querySelector('.ie-tabs button.on'),bx=on&&on.parentNode;if(bx)bx.scrollLeft+=(on.getBoundingClientRect().left+on.offsetWidth/2)-(bx.getBoundingClientRect().left+bx.clientWidth/2)}catch(e){}
+}
+function ieResume(){var r=IE.saved;IE.saved=null;if(!r)return;IE.run=r;ieScreen();ieStartTick();window.scrollTo(0,0)}
+function ieDiscard(){IE.saved=null;store.set('ieRun',null);ieHome()}
+
+/* ---------- test list per skill ---------- */
+function ieSkillFacts(sk){
+  var F={
+    reading:[['60:00',L('دقيقة · بدون وقت إضافي','minutes · no extra time')],['40',L('سؤال','questions')],['3',L('نصوص (من الأسهل للأصعب)','passages (easier → harder)')]],
+    listening:[['≈30:00',L('دقيقة صوت تقريبًا · تسمعه مرة وحدة','minutes of audio · heard ONCE')],['40',L('سؤال في 4 أجزاء','questions in 4 parts')],['10:00',L('دقائق لنقل الإجابات','minutes transfer time')]],
+    writing:[['60:00',L('دقيقة للمهمتين','minutes for both tasks')],['150+',L('كلمة · Task 1 (≈20 د)','words · Task 1 (≈20 min)')],['250+',L('كلمة · Task 2 (≈40 د، ضعف الوزن)','words · Task 2 (≈40 min, double weight)')]],
+    speaking:[['11–14',L('دقيقة مع الممتحن','minutes with the examiner')],['3',L('أجزاء','parts')],['1:00 + 2:00',L('تحضير + كلام في Part 2','prep + talk in Part 2')]]
+  }[sk];
+  return `<div class="ie-facts">${F.map(function(f){return `<div class="ie-fact"><b>${f[0]}</b><small>${f[1]}</small></div>`}).join('')}</div>`;
+}
+function ieSub(sk,t){
+  try{
+    if(sk==='reading')return (t.passages||[]).map(function(p){return p.title}).join(' · ');
+    if(sk==='listening')return (t.parts||[]).map(function(p){return p.title}).join(' · ');
+    if(sk==='writing')return ((t.task2&&t.task2.type)?'Task 2: '+t.task2.type+' · ':'')+String((t.task2&&t.task2.prompt)||'').slice(0,90);
+    if(sk==='speaking')return (t.p2&&t.p2.card)||'';
+  }catch(e){}
+  return '';
+}
+function ieList(sk){
+  var d=ieData(sk).slice().sort(function(a,b){return (+a.id||0)-(+b.id||0)});
+  var best=ieBest()[sk]||{};
+  var max=Math.max(10,d.length);var tiles=[];
+  for(var i=1;i<=max;i++){
+    var t=null;for(var j=0;j<d.length;j++){if(+d[j].id===i){t=d[j];break}}
+    if(!t){tiles.push(`<div class="tile ie-tile off"><span class="ic">⏳</span><b>Practice Test ${i}</b><small>${L('قريبًا','Coming soon')}</small></div>`);continue}
+    var bs=best[t.id],pill='';
+    if(bs){pill=(sk==='reading'||sk==='listening')?`<span class="pill p-mint">${L('أفضل نتيجة','Best')}: ${bs.raw}/${bs.total} · Band ${ieB(bs.band)}</span>`:(bs.band!=null?`<span class="pill p-mint">${L('تقديرك الذاتي','Self-estimate')}: Band ${ieB(bs.band)}</span>`:`<span class="pill p-mint">${L('تم ✓','Done ✓')}</span>`)}
+    else pill=`<span class="pill p-pink">${L('ما جرّبته بعد','Not tried yet')}</span>`;
+    tiles.push(`<div class="tile ie-tile" role="button" tabindex="0" onclick="ieStart('${sk}','${ieEsc(t.id)}')"><span class="ic">${IE_IC[sk]}</span><b class="en">${ieEsc(t.title||('Practice Test '+i))}</b><small class="en">${ieEsc(ieSub(sk,t))}</small>${pill}</div>`);
+  }
+  var tb=ieTopBand(sk);
+  return `<div class="card"><h2 style="margin-top:0">${IE_IC[sk]} ${IE_NM[sk]} — ${L('10 اختبارات تدريبية','10 practice tests')}</h2>
+   ${ieSkillFacts(sk)}
+   <p class="mut" style="margin:4px 0">${L('قبل كل اختبار بتشوف التعليمات والوقت وطريقة التصحيح. لو أول مرة، اقرأ ','Before each test you will see the instructions, time allowed and how it is marked. First time? Read ')}<a href="javascript:void 0" onclick="ieTabGo('basics')">${L('📘 الأساسيات والقواعد','📘 Basics & rules')}</a>.</p>
+   ${tb!=null?`<p style="margin:4px 0"><span class="pill p-lav">${L('أعلى Band لك في هذي المهارة','Your highest band in this skill')}: ${ieB(tb)}</span></p>`:''}</div>
+   <div class="ie-grid" style="margin-top:12px">${tiles.join('')}</div>`;
+}
+
+/* ================= SCREENS: intro → test → review ================= */
+function ieStart(sk,id){
+  if(ieRunning())return;
+  if(!ieTest(sk,id)){toast(L('هذا الاختبار قريبًا','This test is coming soon'));return}
+  IE.run={skill:sk,id:id,ph:'intro'};ieScreen();window.scrollTo(0,0);
+  if(sk==='listening'||sk==='speaking')ieVoices();
+}
+function ieScreen(){
+  var r=IE.run;if(!r)return ieHome();
+  var t=ieTest(r.skill,r.id);if(!t){IE.run=null;return ieHome()}
+  ieCrumbs(IE_NM[r.skill]+' · '+(t.title||r.id));
+  if(r.ph==='intro')return ieIntro(r,t);
+  if(r.ph==='test')return ieTestView(r,t);
+  return ieReview(r,t);
+}
+function ieExit(){if(ieRunning())return;IE.run=null;ieHome();window.scrollTo(0,0)}
+function ieQuit(silent){
+  IE.gen++;clearTimeout(IE.auT);clearInterval(IE.tick);IE.tick=null;
+  try{if(typeof stopSpeak==='function')stopSpeak();else speechSynthesis.cancel()}catch(e){}
+  ieMicStop();ieRecStop();
+  IE.run=null;store.set('ieRun',null);
+}
+function ieQuitAsk(){if(confirm(L('توقف الاختبار؟ إجاباتك ما بتنحفظ.','Stop the test? Your answers will not be saved.'))){ieQuit();ieHome();window.scrollTo(0,0)}}
+
+/* ---------- instructions screen ---------- */
+function ieIntro(r,t){
+  var sk=r.skill,n=ieAllItems(sk,t).length;
+  var ul=function(a){return '<ul>'+a.map(function(x){return '<li>'+x+'</li>'}).join('')+'</ul>'};
+  var off={},mark={},rules={};
+  off.reading=['Answer all the questions.','You can change your answers at any time during the test.','There are '+n+' questions in this test. Each question carries one mark.','There are three passages. Spend about 20 minutes on each passage.','Follow the word limit in each instruction (e.g. NO MORE THAN TWO WORDS). Spelling must be correct.'];
+  off.listening=['You will hear four recordings. The recording is played ONCE only.','Answer all the questions while you listen. You have time to read the questions before each part.','There are '+n+' questions in this test. Each question carries one mark.','At the end of the test you will have 10 minutes to transfer and check your answers.','Follow the word limit in each instruction. Spelling must be correct.'];
+  off.writing=['Answer BOTH tasks.','Task 1: write at least 150 words (spend about 20 minutes).','Task 2: write at least 250 words (spend about 40 minutes).','Task 2 contributes twice as much as Task 1 to the Writing score.','Write in full sentences — do not use notes or bullet points.'];
+  off.speaking=['The test is a conversation with an examiner in three parts.','Part 1: questions about familiar topics (4–5 minutes).','Part 2: you get a task card, 1 minute to prepare and make notes, then speak for 1–2 minutes.','Part 3: a discussion of more abstract questions linked to Part 2 (4–5 minutes).'];
+  rules.reading=L(ul(['⏱ الوقت <b>60 دقيقة</b> بالضبط. المؤقت يبدأ لما تضغط «ابدأ الاختبار»، ولما يخلص الوقت تنسلّم إجاباتك <b>تلقائيًا</b>.','❗ ما في وقت إضافي لنقل الإجابات في Reading — الـ60 دقيقة تشمل كل شي.','📄 3 نصوص و'+n+' سؤال. خلّ تقريبًا 20 دقيقة لكل نص، والنص الثالث أصعب فلا تتأخر في الأول.','✍️ التزم بعدد الكلمات المطلوب (مثل NO MORE THAN TWO WORDS). لو زدت كلمة تنحسب الإجابة غلط.','🔤 التهجئة لازم صحيحة. الحروف الكبيرة والصغيرة ما تفرق.','✅ ما في خصم على الغلط — لا تترك أي سؤال فاضي.','📱 على التلفون: استخدم زر «📄 النص / ❓ الأسئلة» للتنقل.']),
+                    ul(['⏱ Exactly <b>60 minutes</b>. The timer starts when you press “Start test”; when time runs out your answers are submitted <b>automatically</b>.','❗ There is NO extra time to transfer answers in Reading — the 60 minutes include everything.','📄 3 passages, '+n+' questions. Spend about 20 minutes per passage; passage 3 is the hardest, so don’t overspend on passage 1.','✍️ Respect the word limit (e.g. NO MORE THAN TWO WORDS). One extra word makes the answer wrong.','🔤 Spelling must be correct. Capital letters do not matter.','✅ No marks are lost for wrong answers — never leave a question blank.','📱 On a phone: use the “📄 Passage / ❓ Questions” switch.']));
+  rules.listening=L(ul(['🎧 4 أجزاء و'+n+' سؤال، حوالي 30 دقيقة صوت. <b>تسمع مرة وحدة بس</b> — ما تقدر توقف أو ترجع، مثل الامتحان الحقيقي.','👀 قبل كل جزء عندك 30 ثانية تقرأ الأسئلة، وبعد كل جزء 30 ثانية تراجع.','✍️ جاوب وأنت تسمع. الإجابات تجي بنفس ترتيب الأسئلة.','📝 بعد آخر جزء عندك <b>10 دقائق</b> لنقل ومراجعة الإجابات (في الامتحان على الكمبيوتر دقيقتين بس). لما تخلص الـ10 دقائق تنسلّم تلقائيًا.','🔤 التهجئة لازم صحيحة — الأسماء اللي تنتهجّى حرف حرف لازم تكتبها بالضبط. الأرقام تقدر تكتبها أرقام.','🔊 الصوت هنا مولّد من المتصفح (أصوات مختلفة لكل متكلم). شغّل الصوت، والأفضل تلبس سماعات، وجرّب الصوت تحت قبل ما تبدأ.']),
+                      ul(['🎧 4 parts, '+n+' questions, about 30 minutes of audio. <b>You hear it ONCE only</b> — no pausing or rewinding, just like the real test.','👀 Before each part you get 30 seconds to read the questions, and 30 seconds after each part to check.','✍️ Answer while you listen. Answers come in the same order as the questions.','📝 After Part 4 you get <b>10 minutes</b> to transfer and check your answers (computer-delivered IELTS gives 2 minutes). When the 10 minutes end, the test is submitted automatically.','🔤 Spelling must be correct — names spelled letter by letter must be copied exactly. Numbers may be written as digits.','🔊 Audio here is generated by your browser (different voices per speaker). Turn the sound on, use headphones if you can, and test the sound below first.']));
+  rules.writing=L(ul(['⏱ <b>60 دقيقة</b> للمهمتين مع بعض، والمؤقت يسلّم تلقائيًا لما يخلص الوقت.','📊 Task 1: صف الرسم/الجدول في <b>150 كلمة على الأقل</b> (حوالي 20 دقيقة).','📝 Task 2: مقال في <b>250 كلمة على الأقل</b> (حوالي 40 دقيقة) — يساوي <b>ثلثين</b> درجة الكتابة.','⚠️ أقل من الحد الأدنى = خصم في Task Achievement/Response. لا تنسخ السؤال (الكلمات المنسوخة ما تنحسب). اكتب جمل كاملة بدون نقاط.','🔤 ما في مصحح إملائي في الامتحان، وهنا بعد مقفّل.']),
+                    ul(['⏱ <b>60 minutes</b> for both tasks together; the test is submitted automatically when time runs out.','📊 Task 1: describe the chart/table in <b>at least 150 words</b> (about 20 minutes).','📝 Task 2: an essay of <b>at least 250 words</b> (about 40 minutes) — worth <b>two thirds</b> of the Writing score.','⚠️ Under the minimum = penalty in Task Achievement/Response. Don’t copy the question (copied words are not counted). Write full sentences, no bullet points.','🔤 There is no spell-checker in the exam, and it is turned off here too.']));
+  rules.speaking=L(ul(['🗣️ 3 أجزاء، 11–14 دقيقة. الممتحن (صوت المتصفح) يقرأ عليك الأسئلة.','1️⃣ Part 1 (4–5 دقائق): أسئلة عن نفسك ومواضيع مألوفة. جاوب بجملتين أو ثلاث.','2️⃣ Part 2: بطاقة موضوع — <b>دقيقة تحضير</b> (اكتب ملاحظات) ثم <b>دقيقتين كلام</b>. المؤقت يوقفك مثل الممتحن.','3️⃣ Part 3 (4–5 دقائق): نقاش أعمق مرتبط بموضوع Part 2.','🎙️ تكلّم بصوت عالي. تقدر تكتب إجابتك أو تستخدم زر الميكروفون للإملاء الصوتي (لو متصفحك يدعمه)، وتقدر تسجّل صوتك عشان تسمعه بعدين.']),
+                     ul(['🗣️ 3 parts, 11–14 minutes. The examiner (a browser voice) reads the questions to you.','1️⃣ Part 1 (4–5 min): questions about yourself and familiar topics. Answer in 2–3 sentences.','2️⃣ Part 2: a task card — <b>1 minute to prepare</b> (make notes), then <b>speak for 2 minutes</b>. The timer stops you like the examiner does.','3️⃣ Part 3 (4–5 min): a deeper discussion linked to the Part 2 topic.','🎙️ Speak out loud. You can type your answer or use the microphone button for dictation (if your browser supports it), and you can record yourself to listen back later.']));
+  mark.reading=L('كل سؤال بدرجة واحدة. مجموعك من 40 يتحوّل إلى <b>Band من 0 إلى 9</b> حسب جدول التحويل المعتمد للأكاديمي (مثلًا 30/40 ≈ 7.0 و23/40 ≈ 6.0). بعد التسليم تشوف الإجابة الصحيحة وسببها لكل سؤال.','Each question = 1 mark. Your raw score out of 40 is converted to a <b>band from 0 to 9</b> with the standard Academic conversion table (e.g. 30/40 ≈ 7.0, 23/40 ≈ 6.0). After submitting you see every correct answer and why.');
+  mark.listening=L('كل سؤال بدرجة. المجموع من 40 يتحوّل إلى Band (مثلًا 30/40 ≈ 7.0 و23/40 ≈ 6.0). بعد التسليم تشوف الإجابات وسببها والنص الكامل للتسجيل.','1 mark per question. The raw score /40 is converted to a band (e.g. 30/40 ≈ 7.0, 23/40 ≈ 6.0). After submitting you see the answers, explanations and the full transcript.');
+  mark.writing=L('الممتحن يصحح كل مهمة على <b>4 معايير</b> متساوية: إنجاز/الاستجابة للمهمة، الترابط والتماسك، المفردات، القواعد. Task 2 وزنها ضعف Task 1. هنا ما في تصحيح آلي: بعد التسليم تشوف <b>إجابة نموذجية</b> وخطة ومفردات، وتقيّم نفسك بقائمة المعايير الرسمية.','Each task is marked on <b>4 equal criteria</b>: Task Achievement/Response, Coherence & Cohesion, Lexical Resource, Grammatical Range & Accuracy. Task 2 counts double. There is no automatic marker here: after submitting you get a <b>model answer</b>, a plan and vocabulary, and you assess yourself with the official criteria checklist.');
+  mark.speaking=L('4 معايير متساوية: الطلاقة والترابط، المفردات، القواعد، النطق. بعد الاختبار تشوف <b>إجابات نموذجية</b> وتقيّم نفسك (واسمع تسجيلك لو سجّلت).','4 equal criteria: Fluency & Coherence, Lexical Resource, Grammatical Range & Accuracy, Pronunciation. Afterwards you get <b>model answers</b> and assess yourself (and listen to your recording if you made one).');
+  var extra='';
+  if(sk==='listening'){
+    var ok=ieAudioOK(),ev=ieVoices().length;
+    extra=`<div class="card" style="margin-top:12px"><h3>🔊 ${L('جرّب الصوت','Sound check')}</h3>
+      <p class="mut" style="margin:4px 0">${ok?(ev||(typeof ttsNS!=='undefined'&&ttsNS)?L('بتسمع صوتين مختلفين. لو ما سمعت شي، ارفع الصوت أو جرّب متصفح ثاني (Chrome / Edge / Safari).','You should hear two different voices. If you hear nothing, turn the volume up or try another browser (Chrome / Edge / Safari).'):L('ما لقينا صوت إنجليزي في هذا الجهاز بعد — اضغط «جرّب الصوت»؛ لو ما اشتغل، بيكون الاختبار بالنص المكتوب.','No English voice found yet on this device — press “Test sound”; if it doesn’t work, the test will use the written transcript.')):L('⚠️ متصفحك ما يدعم الصوت. بتتدرب بقراءة النص (مو مثل الامتحان الحقيقي)، والوقت 40 دقيقة.','⚠️ Your browser has no speech support. You will practise by reading the transcript (not like the real test), with 40 minutes.')}</p>
+      ${ok?`<button class="sec" onclick="ieSoundTest(this)">${L('🔊 جرّب الصوت','🔊 Test sound')}</button>`:''}</div>`;
+  }
+  if(sk==='speaking'){
+    extra=`<div class="card" style="margin-top:12px"><h3>🎙️ ${L('خيارات','Options')}</h3>
+      <label class="ie-chk" style="display:block"><span style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="ieRecOpt" style="width:auto;margin-top:6px"> <span>${L('سجّل صوتي خلال الاختبار عشان أسمعه بعدين وأقيّم نطقي وطلاقتي (التسجيل يبقى في جهازك بس).','Record my voice during the test so I can listen back and judge my fluency and pronunciation (the recording stays on this device only).')}</span></span></label>
+      <p class="mut" style="font-size:14px;margin:6px 0 0">${L('نصيحة: تكلّم بصوت عالي حتى لو بتكتب إجابتك — الامتحان الحقيقي كلام مو كتابة.','Tip: speak out loud even if you also type — the real test is spoken, not written.')}</p></div>`;
+  }
+  var cnt=sk==='reading'||sk==='listening'?n+' '+L('سؤال','questions'):(sk==='writing'?L('مهمتين','2 tasks'):L('3 أجزاء','3 parts'));
+  var tm={reading:'60:00',listening:'≈30:00 + 10:00',writing:'60:00',speaking:'11–14 min'}[sk];
+  ieEl('view').innerHTML=`<div class="ie-wrap" style="max-width:820px;margin:0 auto">
+   <button class="ghost" onclick="ieExit()" style="margin:4px 0">${L('→ رجوع للاختبارات','← Back to tests')}</button>
+   <h1>${IE_IC[sk]} ${IE_NM[sk]} · <span class="en" style="display:inline">${ieEsc(t.title||'')}</span></h1>
+   <div class="ie-facts"><div class="ie-fact"><b>${tm}</b><small>${L('الوقت','Time allowed')}</small></div><div class="ie-fact"><b>${cnt}</b><small>${L('الأسئلة','Questions')}</small></div><div class="ie-fact"><b>0–9</b><small>${L('Band','Band score')}</small></div></div>
+   <div class="card en"><h3>INSTRUCTIONS TO CANDIDATES</h3>${ul(off[sk])}</div>
+   <div class="card" style="margin-top:12px"><h3>📏 ${L('القواعد','The rules')}</h3>${rules[sk]}</div>
+   <div class="card" style="margin-top:12px"><h3>✅ ${L('طريقة التصحيح','How it is marked')}</h3><p style="margin:0">${mark[sk]}</p></div>
+   ${extra}
+   <div class="row" style="margin-top:16px"><button class="pri" style="font-size:18px;padding:12px 22px" onclick="ieBegin()">▶ ${L('ابدأ الاختبار','Start test')}</button><button class="ghost" onclick="ieExit()">${L('مو الحين','Not now')}</button></div>
+   ${ieDisc()}</div>`;
+}
+
+/* ---------- begin ---------- */
+function ieBegin(){
+  var r=IE.run;if(!r||r.ph!=='intro')return;
+  var now=Date.now();r.ph='test';r.t0=now;r.ans={};r.cur=0;r.pane='p';
+  if(r.skill==='reading'){r.end=now+60*60000}
+  else if(r.skill==='listening'){r.mode=ieAudioOK()?'audio':'text';r.xfer=false;if(r.mode==='audio'){r.au={p:0,st:'ann',li:0,until:0};r.end=0}else{r.end=now+40*60000}}
+  else if(r.skill==='writing'){r.end=now+60*60000;r.w1='';r.w2=''}
+  else if(r.skill==='speaking'){r.sp={st:'p1',qi:0,a:{}};r.end=now+5*60000;var ro=ieEl('ieRecOpt');if(ro&&ro.checked)ieRecStart()}
+  IE.saved=null;ieSaveNow();
+  ieScreen();ieStartTick();window.scrollTo(0,0);
+}
+
+/* ---------- timer ---------- */
+function ieStartTick(){clearInterval(IE.tick);IE.tick=setInterval(ieTick,500);ieTick()}
+function ieTick(){
+  var r=IE.run;if(!r||r.ph!=='test'){clearInterval(IE.tick);IE.tick=null;return}
+  var el=ieEl('ieClock'),now=Date.now();
+  if(r.skill==='listening'&&r.mode==='audio'&&!r.xfer){
+    if(el){el.textContent='🎧 '+(r.au.p+1)+'/4';el.classList.remove('warn')}
+    ieAuUI();return;
+  }
+  var rem=r.end-now,warnAt=r.skill==='speaking'?15000:300000;
+  if(el){el.textContent=ieFmt(rem);el.classList.toggle('warn',rem<=warnAt)}
+  if(r.skill==='writing'&&!r.nudged&&now-r.t0>20*60000&&(r.cur||0)===0){r.nudged=true;toast(L('مرّت 20 دقيقة — انتقل لـ Task 2 قريبًا (40 دقيقة لها).','20 minutes have passed — move on to Task 2 soon (it needs 40 minutes).'))}
+  if(r.skill==='writing'){var el2=ieEl('ieEl');if(el2)el2.textContent=ieFmt(now-r.t0)}
+  if(rem<=0)ieTimeUp();
+}
+function ieTimeUp(){
+  var r=IE.run;if(!r)return;
+  if(r.skill==='speaking'){ieSpNext(true);return}
+  toast(L('⏰ انتهى الوقت! تم تسليم إجاباتك.','⏰ Time is up! Your answers have been submitted.'));
+  ieSubmit(true);
+}
+
+/* ================= TEST VIEW ================= */
+function ieTestView(r,t){
+  ieTop();
+  var f=ieEl('fab');if(f)f.classList.add('hidden');
+  if(r.skill==='reading'||r.skill==='listening')ieRLView(r,t);
+  else if(r.skill==='writing')ieWView(r,t);
+  else ieSpView(r,t);
+  ieTick();
+}
+function ieClockHtml(){return `<span class="ie-clock" id="ieClock" role="timer" aria-live="off">--:--</span>`}
+
+/* ---------- Reading & Listening ---------- */
+function ieRLView(r,t){
+  var sk=r.skill,secs=ieSecs(sk,t),isR=sk==='reading';
+  var segs=secs.map(function(s,i){return `<button id="ieSg${i}" class="${(r.cur||0)===i?'on':''}" onclick="ieShow(${i})" title="${ieEsc(s.title||'')}">${isR?'P':'Part '}${i+1}</button>`}).join('');
+  var bar=`<div class="ie-bar" id="ieRunBox">${ieClockHtml()}<span class="ie-seg">${segs}</span>
+    ${isR?`<button class="sec ie-mob" id="iePaneBtn" onclick="iePane()">${r.pane==='q'?L('📄 النص','📄 Passage'):L('❓ الأسئلة','❓ Questions')}</button>`:''}
+    <span class="sp"></span><button class="pri" onclick="ieSubmitAsk()">${L('تسليم ✔','Submit ✔')}</button><button class="ghost" onclick="ieQuitAsk()" title="${L('إيقاف','Quit')}" aria-label="${L('إيقاف','Quit')}">✕</button>
+    ${!isR?`<div id="ieAuSt" class="ie-au" style="flex-basis:100%"></div>`:''}</div>`;
+  var nav=`<div class="card" style="margin-top:12px"><b>${L('كل الأسئلة','All questions')}</b> <span class="mut" style="font-size:13px">${L('(اضغط رقم للانتقال)','(tap a number to jump)')}</span><div class="ie-nav" id="ieNav">${ieAllItems(sk,t).map(function(it){var a=r.ans[it.n];return `<button id="ieNv${it.n}" class="${a!=null&&String(a).trim()!==''?'ans':''}" onclick="ieGoQ(${it.n})">${it.n}</button>`}).join('')}</div></div>`;
+  var body='';
+  if(isR){
+    body=`<div class="ie-split" id="ieSplit" data-pane="${r.pane==='q'?'q':'p'}">
+      <div class="ie-pane ie-pp">${secs.map(function(s,i){return `<div class="ie-sec${(r.cur||0)===i?'':' hidden'}" data-s="${i}"><div class="card en"><p class="mut" style="margin:0 0 4px;font-size:14px">READING PASSAGE ${i+1} · Questions ${ieRange(s)}</p><h3>${s.title||''}</h3><div class="passage">${s.html||''}</div></div></div>`}).join('')}</div>
+      <div class="ie-pane ie-qp">${secs.map(function(s,i){return `<div class="ie-sec${(r.cur||0)===i?'':' hidden'}" data-s="${i}"><div class="card en">${ieGroupsHtml(s,r.ans)}
+        <div class="row" style="justify-content:space-between;margin-top:8px">${i>0?`<button class="ghost" onclick="ieShow(${i-1})">← Passage ${i}</button>`:'<span></span>'}${i<secs.length-1?`<button class="sec" onclick="ieShow(${i+1});iePaneSet('p')">Passage ${i+2} →</button>`:`<button class="pri" onclick="ieSubmitAsk()">${L('تسليم ✔','Submit ✔')}</button>`}</div></div></div>`}).join('')}${nav}</div></div>`;
+  }else{
+    body=secs.map(function(s,i){
+      var tr=r.mode==='text'?`<details open class="card" style="margin-bottom:10px"><summary style="cursor:pointer;font-weight:800">${L('📄 نص التسجيل (وضع بدون صوت)','📄 Transcript (no-audio mode)')}</summary><div class="passage en">${ieScriptHtml(s)}</div></details>`:'';
+      return `<div class="ie-sec${(r.cur||0)===i?'':' hidden'}" data-s="${i}">${tr}<div class="card en"><p class="mut" style="margin:0 0 4px;font-size:14px">PART ${i+1} · Questions ${ieRange(s)}</p><h3>${s.title||''}</h3>${s.context?`<p class="mut" style="margin:0 0 8px"><i>${s.context}</i></p>`:''}${ieGroupsHtml(s,r.ans)}</div></div>`}).join('')+nav;
+  }
+  ieEl('view').innerHTML=`<div class="ie-wrap">${bar}${body}</div>`;
+  if(sk==='listening'&&r.mode==='audio'){if(r.xfer)ieAuUI();else ieAuStep()}
+}
+function ieShow(i){
+  var r=IE.run;if(!r)return;r.cur=i;
+  document.querySelectorAll('.ie-sec').forEach(function(e){e.classList.toggle('hidden',+e.getAttribute('data-s')!==i)});
+  document.querySelectorAll('.ie-seg button').forEach(function(b,j){b.classList.toggle('on',j===i)});
+  ieSaveSoon();
+}
+function iePaneSet(p){var r=IE.run;if(!r)return;r.pane=p;var s=ieEl('ieSplit');if(s)s.setAttribute('data-pane',p);var b=ieEl('iePaneBtn');if(b)b.textContent=p==='q'?L('📄 النص','📄 Passage'):L('❓ الأسئلة','❓ Questions');if(matchMedia('(max-width:860px)').matches)window.scrollTo(0,0)}
+function iePane(){var r=IE.run;if(!r)return;iePaneSet(r.pane==='q'?'p':'q')}
+function ieGoQ(n){
+  var r=IE.run;if(!r)return;var t=ieTest(r.skill,r.id),secs=ieSecs(r.skill,t);
+  for(var i=0;i<secs.length;i++){if(ieItemsOf(secs[i]).some(function(it){return +it.n===+n})){ieShow(i);break}}
+  if(r.skill==='reading')iePaneSet('q');
+  var q=ieEl('ieQ'+n);if(q){q.scrollIntoView({block:'center'});q.classList.add('flash');setTimeout(function(){q.classList.remove('flash')},1200);var inp=q.querySelector('input,select');if(inp&&inp.type!=='radio')try{inp.focus({preventScroll:true})}catch(e){}}
+}
+function ieA(n,v){
+  var r=IE.run;if(!r||r.ph!=='test')return;r.ans[n]=v;
+  var b=ieEl('ieNv'+n);if(b)b.classList.toggle('ans',v!=null&&String(v).trim()!=='');
+  var q=ieEl('ieQ'+n);if(q)q.querySelectorAll('label').forEach(function(l){var i=l.querySelector('input');if(i)l.classList.toggle('on',i.checked)});
+  ieSaveSoon();
+}
+
+/* option keys: "A text", "iv text", "A" */
+function ieKeys(opts){
+  return (opts||[]).map(function(o,i){
+    var s=String(o),plain=s.replace(/<[^>]+>/g,'');
+    var m=plain.match(/^\s*\(?([A-Za-z]|[ivxIVX]{1,6}|\d{1,2})[\).:]?\s+([\s\S]*)$/);
+    if(m)return {k:m[1],t:m[2]};
+    if(plain.trim().length&&plain.trim().length<=3)return {k:plain.trim(),t:''};
+    return {k:String.fromCharCode(65+i),t:s};
+  });
+}
+function iePassLetters(sec){
+  var m=String(sec.html||'').match(/<b>\s*([A-J])\s*<\/b>/g)||[];var o=[];
+  m.forEach(function(x){var k=x.replace(/<[^>]+>/g,'').trim();if(o.indexOf(k)<0)o.push(k)});
+  return o.length?o:['A','B','C','D','E','F','G'];
+}
+function ieIsKey(it,ks){var set={};ks.forEach(function(k){set[ieNorm(k.k)]=1});return (it.a||[]).length>0&&(it.a||[]).every(function(x){return set[ieNorm(x)]})}
+function ieBlank(q,inp){var re=/_{3,}|…+|\.{5,}/;return re.test(q)?q.replace(re,inp):q+' '+inp}
+function ieGroupsHtml(sec,ans){
+  return (sec.groups||[]).map(function(g){
+    var tp=String(g.type||'').toLowerCase();
+    var gks=ieKeys(g.options||[]);
+    var noOptLetters=(tp==='match_info'&&!gks.length)?iePassLetters(sec).map(function(k){return {k:k,t:''}}):null;
+    var box='';
+    if(gks.length&&tp!=='mcq'&&tp!=='mcq2'&&gks.some(function(k){return k.t})){box=`<div class="ie-box">${gks.map(function(o){return `<div><b>${o.k}</b>&nbsp; ${o.t}</div>`}).join('')}</div>`}
+    var items;
+    if(tp==='mcq2')items=ieClusters(g.items||[]).map(function(cl){return ieMcq2Html(g,cl,ans)}).join('');
+    else items=(g.items||[]).map(function(it){return ieQHtml(g,tp,it,ans,noOptLetters||gks)}).join('');
+    var instr=String(g.instr||'').replace(/\n/g,'<br>');
+    return `<div class="ie-grp">${instr?`<div class="ie-instr">${instr}</div>`:''}${g.title?`<b>${g.title}</b>`:''}${g.html||''}${box}${items}</div>`;
+  }).join('');
+}
+function ieQHtml(g,tp,it,ans,gks){
+  var n=+it.n,v=ans[n]==null?'':String(ans[n]),q=it.q||'';
+  var num=`<span class="ie-num">${n}</span>`;
+  if(IE_TF[tp]){
+    return `<div class="qi" id="ieQ${n}"><div>${num}${q}</div><div class="ie-tf" role="radiogroup" aria-label="Question ${n}">${IE_TF[tp].map(function(o){return `<label class="${v===o?'on':''}"><input type="radio" name="ieR${n}" value="${o}"${v===o?' checked':''} onchange="ieA(${n},this.value)">${o}</label>`}).join('')}</div></div>`;
+  }
+  var own=it.options||it.opts||null;
+  if(tp==='mcq'||(own&&own.length)){
+    var ks=ieKeys(own||g.options||[]);
+    return `<div class="qi" id="ieQ${n}"><div>${num}${q}</div>${ks.map(function(o){return `<label class="ie-opt${v===o.k?' on':''}"><input type="radio" name="ieR${n}" value="${ieEsc(o.k)}"${v===o.k?' checked':''} onchange="ieA(${n},this.value)"><span><b>${o.k}</b>&nbsp; ${o.t}</span></label>`}).join('')}</div>`;
+  }
+  if(gks&&gks.length&&ieIsKey(it,gks)){
+    var sel=`<select class="ie-sel" aria-label="Question ${n}" onchange="ieA(${n},this.value)"><option value="">—</option>${gks.map(function(o){return `<option value="${ieEsc(o.k)}"${v===o.k?' selected':''}>${o.k}</option>`}).join('')}</select>`;
+    return `<div class="qi" id="ieQ${n}">${num}${/_{3,}|…+|\.{5,}/.test(q)?ieBlank(q,sel):q+' '+sel}</div>`;
+  }
+  var inp=`<input class="ie-in" id="ieI${n}" value="${ieEsc(v)}" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="Question ${n}" oninput="ieA(${n},this.value)">`;
+  return `<div class="qi" id="ieQ${n}">${num}${ieBlank(q,inp)}</div>`;
+}
+function ieClusters(items){
+  var out=[],cur=null,key=null;
+  /* mcq2 items that share the same answer set (e.g. n34+n35 both a:["A","C"]) form one "choose TWO" question */
+  items.forEach(function(it){var aa=(it.a||[]).map(ieNorm).sort().join('|');var k=(it.a||[]).length>1?'a:'+aa:('q:'+ieNorm(it.q)+'|'+aa);if(cur&&k===key&&cur.length<(it.a||[]).length)cur.push(it);else{cur=[it];key=k;out.push(cur)}});
+  return out;
+}
+function ieMcq2Html(g,cl,ans){
+  var first=+cl[0].n,ks=ieKeys(cl[0].options||g.options||[]),chosen=cl.map(function(it){return ans[it.n]}).filter(Boolean);
+  var nums=cl.length>1?cl[0].n+'–'+cl[cl.length-1].n:String(first);
+  var stem=g.q||(/choose\s+(two|three|\d)\s+letters/i.test(cl[0].q||'')?'':(cl[0].q||''));
+  return `<div class="qi" id="ieQ${first}">${cl.slice(1).map(function(it){return `<span id="ieQ${it.n}"></span>`}).join('')}<div><span class="ie-num">${nums}</span>${stem} <span class="mut">(${L('اختر','Choose')} ${cl.length})</span></div>
+    ${ks.map(function(o){var on=chosen.indexOf(o.k)>=0;return `<label class="ie-opt${on?' on':''}"><input type="checkbox" value="${ieEsc(o.k)}" data-ns="${cl.map(function(it){return it.n}).join(',')}"${on?' checked':''} onchange="ieA2(this)"><span><b>${o.k}</b>&nbsp; ${o.t}</span></label>`}).join('')}</div>`;
+}
+function ieA2(cb){
+  var ns=cb.getAttribute('data-ns').split(',').map(Number),box=cb.closest('.qi');
+  var ch=[].slice.call(box.querySelectorAll('input[type=checkbox]:checked')).map(function(x){return x.value});
+  if(ch.length>ns.length){cb.checked=false;toast(L('اختر '+ns.length+' بس','Choose only '+ns.length));return}
+  ch.sort();ns.forEach(function(n,i){ieA(n,ch[i]||'')});
+  box.querySelectorAll('label').forEach(function(l){var i=l.querySelector('input');l.classList.toggle('on',i.checked)});
+}
+function ieScriptHtml(s){return (s.script||[]).map(function(l){return `<p><b>${ieEsc(l[0])}:</b> ${ieEsc(l[1])}</p>`}).join('')}
+
+/* ---------- submit & mark ---------- */
+function ieUnanswered(r,t){return ieAllItems(r.skill,t).filter(function(it){var a=r.ans[it.n];return a==null||String(a).trim()===''}).length}
+function ieSubmitAsk(){
+  var r=IE.run;if(!r)return;var t=ieTest(r.skill,r.id);
+  if(r.skill==='writing'){
+    var w1=ieWords(r.w1),w2=ieWords(r.w2),msg=[];
+    if(w1<150)msg.push(L('Task 1 فيها '+w1+' كلمة بس (الحد الأدنى 150)','Task 1 has only '+w1+' words (minimum 150)'));
+    if(w2<250)msg.push(L('Task 2 فيها '+w2+' كلمة بس (الحد الأدنى 250)','Task 2 has only '+w2+' words (minimum 250)'));
+    if(!confirm((msg.length?msg.join('\n')+'\n\n':'')+L('تسلّم الحين؟','Submit now?')))return;
+    return ieSubmit(false);
+  }
+  var u=ieUnanswered(r,t),m='';
+  if(r.skill==='listening'&&r.mode==='audio'&&!r.xfer)m=L('التسجيل ما خلص بعد. ','The recording has not finished yet. ');
+  if(u)m+=L('باقي '+u+' سؤال بدون إجابة (ما في خصم على الغلط، خمّن!). ',u+' question(s) unanswered (wrong answers lose nothing — guess!). ');
+  if(!confirm(m+L('تسلّم الحين؟','Submit now?')))return;
+  ieSubmit(false);
+}
+function ieSubmit(auto){
+  var r=IE.run;if(!r||r.ph!=='test')return;var t=ieTest(r.skill,r.id);
+  IE.gen++;clearTimeout(IE.auT);clearInterval(IE.tick);IE.tick=null;
+  try{if(typeof stopSpeak==='function')stopSpeak();else speechSynthesis.cancel()}catch(e){}
+  ieMicStop();ieRecStop();
+  r.t1=Math.min(Date.now(),r.end&&r.skill!=='speaking'?Math.max(r.end,r.t0):Date.now());r.auto=!!auto;r.ph='review';
+  if(r.skill==='reading'||r.skill==='listening'){r.res=ieMark(r,t);ieSetBest(r.skill,r.id,{raw:r.res.raw,total:r.res.total,band:r.res.band})}
+  else ieSetBest(r.skill,r.id,{band:null});
+  store.set('ieRun',null);
+  ieScreen();window.scrollTo(0,0);
+}
+function ieMark(r,t){
+  var res={raw:0,total:0,rows:[],secs:[],types:{}};
+  ieSecs(r.skill,t).forEach(function(s,si){
+    var sc=0,tot=0;
+    (s.groups||[]).forEach(function(g){
+      var tp=String(g.type||'').toLowerCase(),add=function(it,ok,acc){tot++;if(ok)sc++;var ty=res.types[tp]=res.types[tp]||[0,0];ty[1]++;if(ok)ty[0]++;res.rows.push({n:+it.n,ok:ok,given:r.ans[it.n],acc:acc,why:it.why||'',si:si,tp:tp})};
+      if(tp==='mcq2'){
+        ieClusters(g.items||[]).forEach(function(cl){
+          var union={},accL=[];cl.forEach(function(it){(it.a||[]).forEach(function(x){var k=ieNorm(x);if(!union[k]){union[k]=1;accL.push(String(x))}})});
+          var given=[];cl.forEach(function(it){var v=ieNorm(r.ans[it.n]);if(v&&given.indexOf(v)<0)given.push(v)});
+          var credit=Math.min(cl.length,given.filter(function(x){return union[x]}).length);
+          cl.forEach(function(it,i){add(it,i<credit,[accL.join(' + ')+' (any order)'])});
+        });
+      }else (g.items||[]).forEach(function(it){add(it,ieMatch(r.ans[it.n],it.a||[]),it.a||[])});
+    });
+    res.raw+=sc;res.total+=tot;res.secs.push([sc,tot]);
+  });
+  res.rows.sort(function(a,b){return a.n-b.n});
+  res.band=ieBand(r.skill,res.raw,res.total);
+  return res;
+}
+var IE_TYN={tfng:'True / False / Not Given',ynng:'Yes / No / Not Given',mcq:'Multiple choice',mcq2:'Multiple choice (two answers)',heading:'Matching headings',match_info:'Matching information',match_feature:'Matching features',sentence_end:'Sentence endings',gap:'Completion (gap fill)',short:'Short answer',form:'Form completion',note:'Note completion',table:'Table completion',match:'Matching',map:'Map / plan labelling',sentence:'Sentence completion',summary:'Summary completion'};
+function ieBandMsg(b){
+  if(b>=8)return L('ممتاز! مستوى قريب من مستخدم خبير للغة. 🌟','Excellent — very good user level. 🌟');
+  if(b>=7)return L('رائع! هذا مستوى أغلب الجامعات القوية. 💪','Great — the level many strong universities ask for. 💪');
+  if(b>=6)return L('جيد! راجع أخطاءك بالأسفل وبتطلع فوق 6.5 قريب. 👍','Good! Study your mistakes below and you will pass 6.5 soon. 👍');
+  if(b>=5)return L('بداية طيبة. ركّز على أنواع الأسئلة اللي غلطت فيها وارجع لـ📘 الأساسيات.','A fair start. Focus on the question types you got wrong and revisit 📘 Basics.');
+  return L('لا تشيل هم — كل اختبار يعلّمك. اقرأ الاستراتيجيات في 📘 الأساسيات وجرّب مرة ثانية.','Don’t worry — every test teaches you. Read the strategies in 📘 Basics and try again.');
+}
+
+/* ================= REVIEW ================= */
+function ieReview(r,t){
+  var f=ieEl('fab');if(f)f.classList.remove('hidden');
+  var sk=r.skill,used=ieFmt((r.t1||Date.now())-(r.t0||Date.now()));
+  var head=`<button class="ghost" onclick="ieExit()" style="margin:4px 0">${L('→ رجوع للاختبارات','← Back to tests')}</button>
+   <h1>${IE_IC[sk]} ${IE_NM[sk]} · <span class="en" style="display:inline">${ieEsc(t.title||'')}</span></h1>`;
+  var actions=`<div class="row" style="margin:14px 0"><button class="pri" onclick="ieStart('${sk}','${ieEsc(r.id)}')">🔁 ${L('أعد الاختبار','Retake test')}</button><button class="ghost" onclick="ieExit()">📋 ${L('كل الاختبارات','All tests')}</button><button class="ghost" onclick="ieTabGo('basics')">📘 ${L('الأساسيات','Basics')}</button></div>`;
+  var html='';
+  if(sk==='reading'||sk==='listening'){
+    var res=r.res||ieMark(r,t),secs=ieSecs(sk,t);
+    var typ=Object.keys(res.types).map(function(k){var v=res.types[k];return `<tr><td>${IE_TYN[k]||k}</td><td style="direction:ltr">${v[0]}/${v[1]}</td><td><div class="bar" style="min-width:60px"><i style="width:${Math.round(100*v[0]/Math.max(1,v[1]))}%"></i></div></td></tr>`}).join('');
+    html=`<div class="card res" style="text-align:center">${r.auto?`<p class="pill p-sun">${L('⏰ تسليم تلقائي — انتهى الوقت','⏰ Auto-submitted — time ran out')}</p>`:''}
+      <p class="mut" style="margin:0">${L('درجتك','Your score')}</p><div class="ie-big" style="direction:ltr">${res.raw}/${res.total}</div>
+      <p style="font-size:22px;font-weight:800;margin:4px 0">Band ${ieB(res.band)}</p>
+      <p style="margin:4px 0">${ieBandMsg(res.band)}</p>
+      <p class="mut" style="font-size:13.5px;margin:4px 0">${L('الوقت المستخدم','Time used')}: <bdi>${used}</bdi> · ${L('التحويل تقريبي حسب جدول Academic المنشور','Conversion is approximate, using the published Academic table')}${res.total!==40?L(' (الدرجة محوّلة لـ40)',' (scaled to 40)'):''}</p>
+      <div class="ie-facts">${res.secs.map(function(x,i){return `<div class="ie-fact"><b>${x[0]}/${x[1]}</b><small>${sk==='reading'?'Passage':'Part'} ${i+1}</small></div>`}).join('')}</div></div>
+      <div class="card" style="margin-top:12px"><h3>📊 ${L('حسب نوع السؤال','By question type')}</h3><div class="ie-x"><table class="tbl en">${typ}</table></div>
+      <p class="mut" style="font-size:14px;margin:6px 0 0">${L('أضعف نوع عندك؟ اقرأ استراتيجيته في 📘 الأساسيات.','Weakest type? Read its strategy in 📘 Basics.')}</p></div>
+      <div class="card" style="margin-top:12px"><div class="row" style="justify-content:space-between"><h3 style="margin:0">✅ ${L('الإجابات والشرح','Answers & explanations')}</h3>
+       <label style="display:flex;gap:6px;align-items:center;font-size:14px;cursor:pointer"><input type="checkbox" style="width:auto" onchange="ieEl('ieRvList').classList.toggle('ie-onlybad',this.checked)"> ${L('الأخطاء بس','Mistakes only')}</label></div>
+       <div class="ie-nav">${res.rows.map(function(x){return `<button class="${x.ok?'ok':'bad'}" onclick="var e=ieEl('ieRv${x.n}');if(e)e.scrollIntoView({block:'center'})">${x.n}</button>`}).join('')}</div>
+       <div id="ieRvList" class="en" style="margin-top:8px">${secs.map(function(s,i){return `<h3 style="margin:14px 0 4px">${sk==='reading'?'Passage':'Part'} ${i+1}: ${s.title||''}</h3>`+res.rows.filter(function(x){return x.si===i}).map(ieRvRow).join('')}).join('')}</div></div>
+      ${sk==='listening'?`<div class="card" style="margin-top:12px"><h3>📄 ${L('نص التسجيل (Transcript)','Transcript')}</h3><p class="mut" style="font-size:14px;margin:0 0 6px">${L('الحين تقدر تعيد السماع وتقرأ — لاحظ وين كانت الإجابات والفخاخ.','Now you may listen again and read along — notice where the answers and distractors were.')}</p>
+        ${secs.map(function(s,i){return `<details class="lesson"><summary><span class="n">${i+1}</span><span class="t en">Part ${i+1}: ${s.title||''}</span></summary><div class="body"><button class="sec" onclick="ieReplay(${i},this)">${L('🔊 اسمع الجزء','🔊 Play this part')}</button><div class="passage en" style="margin-top:8px">${ieScriptHtml(s)}</div></div></details>`}).join('')}</div>`
+       :`<div class="card" style="margin-top:12px"><h3>📄 ${L('النصوص للمراجعة','Passages for review')}</h3>${secs.map(function(s,i){return `<details class="lesson"><summary><span class="n">${i+1}</span><span class="t en">${s.title||''}</span></summary><div class="body"><div class="passage en">${s.html||''}</div></div></details>`}).join('')}</div>`}`;
+  }else if(sk==='writing')html=ieWReview(r,t);
+  else html=ieSpReview(r,t);
+  ieEl('view').innerHTML=`<div class="ie-wrap" style="max-width:900px;margin:0 auto">${head}${html}${actions}${ieDisc()}</div>`;
+  if(sk==='writing'||sk==='speaking')ieSelfUpd(sk);
+  if(sk==='speaking'&&IE.recUrl){var a=ieEl('ieRecAu');if(a){a.src=IE.recUrl}}
+}
+function ieRvRow(x){
+  var g=x.given==null||String(x.given).trim()===''?'<i class="mut">(no answer)</i>':ieEsc(x.given);
+  return `<div class="ie-rv ${x.ok?'yes':'no'}" id="ieRv${x.n}"><span class="ie-num">${x.n}</span>${x.ok?'✅':'❌'} <span class="ya">${g}</span>${x.ok?'':` → <b style="color:var(--mint)">${ieEsc(x.acc[0]||'')}</b>`}${x.acc.length>1?` <span class="mut" style="font-size:13.5px">(also accepted: ${x.acc.slice(1).map(ieEsc).join(' / ')})</span>`:''}${x.why?`<div class="why">💡 ${ieEsc(x.why)}</div>`:''}</div>`;
+}
+
+/* ================= AUDIO (TTS) ================= */
+var IE_BADV=/albert|bad news|bahh|bells|boing|bubbles|cellos|deranged|good news|jester|organ|superstar|trinoids|whisper|wobble|zarvox|hysterical|junior|ralph|\bfred\b|kathy/i;
+var IE_FEM=/female|woman|zira|hazel|susan|libby|sonia|maisie|mia\b|aria|jenny|ava|samantha|karen|moira|tessa|serena|kate|fiona|victoria|allison|catherine|natasha|emily|olivia|amy|emma|joanna|salli|kimberly|ivy|ruth|clara|ella|lisa|michelle|nicole|heera|veena|isla|bella|abbi|hollie|sara|libby|martha|shelley|sandy|flo\b|google uk english female|google us english/i;
+var IE_MALE=/\bmale|\bman\b|george|ryan|thomas|guy|david|mark|james|daniel|oliver|arthur|alex\b|rishi|liam|william|brian|matthew|justin|joey|christopher|eric|roger|steffan|ethan|noah|elliot|reed|rocko|eddy|aaron|gordon|lee\b|google uk english male/i;
+function ieAudioOK(){return !!((typeof ttsNS!=='undefined'&&ttsNS)||(typeof window!=='undefined'&&'speechSynthesis' in window&&typeof SpeechSynthesisUtterance!=='undefined'))}
+function ieVoices(){
+  try{
+    if(!('speechSynthesis' in window))return [];
+    if(!IE.vHook){IE.vHook=true;try{speechSynthesis.addEventListener('voiceschanged',function(){IE.vo=null;IE.spk={};IE.spkN={}})}catch(e){}}
+    if(IE.vo&&IE.vo.length)return IE.vo;
+    var vs=speechSynthesis.getVoices().filter(function(v){return /^en([-_]|$)/i.test(v.lang)&&!IE_BADV.test(v.name)});
+    var sc=function(v){var l=v.lang.replace('_','-').toLowerCase(),s=0;
+      if(l==='en-gb')s+=30;else if(l==='en-au'||l==='en-nz'||l==='en-ie')s+=22;else if(l==='en-us')s+=14;else if(l==='en-ca')s+=12;else s+=4;
+      if(/natural|neural|online|premium|enhanced/i.test(v.name))s+=10;if(/google/i.test(v.name))s+=5;if(/eddy|flo|grandma|grandpa|reed|rocko|sandy|shelley/i.test(v.name))s-=12;return s};
+    IE.vo=vs.sort(function(a,b){return sc(b)-sc(a)});return IE.vo;
+  }catch(e){return []}
+}
+function ieVN(){var vs=ieVoices();return {v:vs[0]||null,pitch:1,rate:.95,tts:'rounded'}}
+function ieSpkV(p,key){
+  var id=p+'|'+key;if(IE.spk[id])return IE.spk[id];
+  var n=IE.spkN[p]=(IE.spkN[p]||0);IE.spkN[p]++;
+  var k=String(key||'');
+  var gen=/woman|female|mrs\b|ms\b|miss\b|girl|lady|mother|mum|sister|aunt/i.test(k)?'F':(/\bman\b|male|mr\b|boy|father|dad|brother|uncle|sir\b/i.test(k)?'M':(n%2===0?'F':'M'));
+  var vs=ieVoices(),fem=vs.filter(function(v){return IE_FEM.test(v.name)&&!/male/i.test(v.name.replace(/female/i,''))}),male=vs.filter(function(v){return IE_MALE.test(v.name)&&!/female/i.test(v.name)});
+  var list=gen==='F'?fem:male,used=0;
+  Object.keys(IE.spk).forEach(function(x){if(x.indexOf(p+'|')===0&&IE.spk[x].g===gen)used++});
+  var v=list.length?list[used%list.length]:(vs.length?vs[n%vs.length]:null);
+  var same=0;Object.keys(IE.spk).forEach(function(x){if(x.indexOf(p+'|')===0&&IE.spk[x].v===v)same++});
+  var pitch=1;if(!list.length)pitch=gen==='M'?0.78:1.18;if(same)pitch=pitch*(same%2?0.86:1.14);
+  var o={v:v,pitch:pitch,rate:.95,g:gen,tts:gen==='F'?(used%2?'glassy':'airy'):'rounded'};
+  IE.spk[id]=o;return o;
+}
+function ieChunks(t){
+  var parts=String(t).replace(/\s+/g,' ').trim().split(/([.!?]+["'’”)]*)\s+/),sent=[];
+  for(var i=0;i<parts.length;i+=2){sent.push(parts[i]+(parts[i+1]||''))}
+  var out=[],cur='';
+  sent.forEach(function(s){if(cur&&(cur+' '+s).length>180){out.push(cur);cur=s}else cur=cur?cur+' '+s:s});
+  if(cur)out.push(cur);return out.filter(function(x){return x.trim()});
+}
+function ieSay(text,vk,g,cb){
+  var done=false,fin=function(){if(done)return;done=true;if(g===IE.gen&&cb)cb()};
+  if(typeof ttsNS!=='undefined'&&ttsNS){
+    try{ttsNS.speak(text,{language:'en',voice:vk.tts||'rounded',rate:vk.rate||.95}).then(fin,function(e){if(e&&e.code==='stopped')return;if(g!==IE.gen)return;ieSaySS(text,vk,g,fin)})}catch(e){ieSaySS(text,vk,g,fin)}
+    return;
+  }
+  ieSaySS(text,vk,g,fin);
+}
+function ieSaySS(text,vk,g,fin){
+  if(!('speechSynthesis' in window)){setTimeout(fin,Math.min(8000,ieWords(text)*400));return}
+  var parts=ieChunks(text),i=0;
+  try{if(speechSynthesis.paused)speechSynthesis.resume()}catch(e){}
+  var nx=function(){
+    if(g!==IE.gen)return;if(i>=parts.length){fin();return}
+    var s=parts[i++],moved=false,u=new SpeechSynthesisUtterance(s),wd=null;
+    var next=function(){if(moved)return;moved=true;clearTimeout(wd);nx()};
+    u.lang=vk.v?vk.v.lang:'en-GB';if(vk.v)u.voice=vk.v;u.pitch=vk.pitch||1;u.rate=vk.rate||.95;
+    u.onend=next;
+    u.onerror=function(e){var er=e&&e.error;if(er==='not-allowed'){moved=true;clearTimeout(wd);ieAuBlocked(g);return}next()};
+    wd=setTimeout(next,ieWords(s)*560+4500);
+    IE.utts.push(u);if(IE.utts.length>30)IE.utts.shift();
+    try{speechSynthesis.speak(u)}catch(e){next()}
+  };
+  nx();
+}
+function ieStopAudio(){IE.gen++;clearTimeout(IE.auT);try{if(typeof ttsNS!=='undefined'&&ttsNS)ttsNS.stop().catch(function(){})}catch(e){}try{speechSynthesis.cancel()}catch(e){}}
+function ieAuBlocked(g){
+  if(g!==IE.gen)return;
+  var b=ieEl('ieAuSt');
+  if(b)b.innerHTML=`<button class="pri" onclick="ieAuStep()">${L('▶ اضغط لتشغيل الصوت','▶ Tap to start the audio')}</button>`;
+  else toast(L('اضغط مرة ثانية لتشغيل الصوت','Tap again to start the audio'));
+}
+function ieSoundTest(btn){
+  ieStopAudio();var g=IE.gen;IE.spk={};IE.spkN={};
+  btn.disabled=true;
+  ieSay('This is a sound check for the listening test.',ieSpkV(-1,'A'),g,function(){ieSay('And this is a second speaker. You should hear both of us clearly.',ieSpkV(-1,'B'),g,function(){btn.disabled=false})});
+  setTimeout(function(){btn.disabled=false},12000);
+}
+/* listening sequencer: ann → read (30s) → play lines → endp → check (30s) → next part … → end → 10-min transfer */
+function ieAuStep(){
+  var r=IE.run;if(!r||r.ph!=='test'||r.skill!=='listening'||r.mode!=='audio'||r.xfer)return;
+  var t=ieTest(r.skill,r.id),P=t.parts||[],a=r.au;
+  ieStopAudio();var g=IE.gen;
+  if(a.p>=P.length)a.st='end';
+  var part=P[a.p],N=ieVN();
+  if(a.st!=='end'&&(r.cur||0)!==a.p)ieShow(a.p);
+  ieAuUI();
+  if(a.st==='ann'){
+    var its=ieItemsOf(part),rg=its.length?('questions '+its[0].n+' to '+its[its.length-1].n):'the questions';
+    var txt=(a.p===0?'IELTS Listening practice test. ':'')+'Part '+(a.p+1)+'. '+(part.context?String(part.context).replace(/<[^>]+>/g,'')+' ':'')+'First, you have some time to look at '+rg+'.';
+    ieSay(txt,N,g,function(){a.st='read';a.until=Date.now()+30000;ieSaveSoon();ieAuStep()});
+  }else if(a.st==='read'||a.st==='check'){
+    IE.auT=setTimeout(function(){if(g!==IE.gen)return;if(a.st==='read'){a.st='play';a.li=0}else{a.p++;a.st=a.p>=P.length?'end':'ann'}ieSaveSoon();ieAuStep()},Math.max(0,a.until-Date.now()));
+  }else if(a.st==='play'){
+    var sc=part.script||[];
+    if(a.li>=sc.length){a.st='endp';ieAuStep();return}
+    var ln=sc[a.li];
+    ieSay(String(ln[1]||''),ieSpkV(a.p,ln[0]),g,function(){a.li++;ieSaveSoon();ieAuStep()});
+  }else if(a.st==='endp'){
+    if(a.p>=P.length-1){a.st='end';ieAuStep();return}
+    ieSay('That is the end of Part '+(a.p+1)+'. You now have half a minute to check your answers.',N,g,function(){a.st='check';a.until=Date.now()+30000;ieSaveSoon();ieAuStep()});
+  }else if(a.st==='end'){
+    r.xfer=true;r.end=Date.now()+600000;ieSaveNow();ieAuUI();ieTick();
+    ieSay('That is the end of the listening test. You now have ten minutes to transfer and check your answers.',N,g,function(){});
+    toast(L('📝 خلص التسجيل — عندك 10 دقائق تراجع إجاباتك.','📝 Recording finished — you have 10 minutes to check your answers.'));
+  }
+}
+function ieAuSkip(){var r=IE.run;if(!r||!r.au)return;if(r.au.st==='read'||r.au.st==='check'){r.au.until=Date.now();ieAuStep()}}
+function ieAuUI(){
+  var r=IE.run,el=ieEl('ieAuSt');if(!r||!el||r.skill!=='listening')return;
+  if(r.mode!=='audio'){el.innerHTML=`<span class="mut">${L('وضع النص (بدون صوت)','Transcript mode (no audio)')}</span>`;return}
+  if(r.xfer){el.innerHTML=`<span>📝 ${L('وقت نقل ومراجعة الإجابات — 10 دقائق','Transfer & check time — 10 minutes')}</span>`;return}
+  var a=r.au,t=ieTest(r.skill,r.id),P=t.parts||[],part=P[a.p]||{},key=a.st+a.p+(a.st==='play'?'':'');
+  var txt='';
+  if(a.st==='read'||a.st==='check'){
+    var left=ieFmt(a.until-Date.now());
+    var s=(a.st==='read'?L('وقت قراءة أسئلة الجزء ','Reading time for Part '):L('وقت مراجعة الجزء ','Checking time for Part '))+(a.p+1)+': <bdi>'+left+'</bdi>';
+    if(IE.auKey===key+'w'){var sp=ieEl('ieAuLeft');if(sp){sp.innerHTML=s;return}}
+    IE.auKey=key+'w';
+    el.innerHTML=`<span>⏳</span><span id="ieAuLeft">${s}</span><button class="ghost" style="padding:3px 10px;font-size:13px" onclick="ieAuSkip()">${L('جاهز ▶','Ready ▶')}</button>`;return;
+  }
+  if(a.st==='play'){var tot=(part.script||[]).length||1,pct=Math.round(100*a.li/tot);
+    if(IE.auKey===key+'p'){var bi=ieEl('ieAuBar');if(bi)bi.style.width=pct+'%';return}
+    IE.auKey=key+'p';
+    el.innerHTML=`<span class="dot"></span><span>${L('🔊 يشتغل الجزء ','🔊 Playing Part ')}${a.p+1} ${L('من','of')} ${P.length}</span><span class="bar" style="flex:1;min-width:60px"><i id="ieAuBar" style="width:${pct}%"></i></span>`;return}
+  IE.auKey=key;
+  txt=a.st==='ann'?L('🔊 تعليمات الجزء ','🔊 Instructions for Part ')+(a.p+1):'🔊 …';
+  el.innerHTML=`<span class="dot"></span><span>${txt}</span>`;
+}
+function ieReplay(p,btn){
+  if(btn.getAttribute('data-on')){ieStopAudio();btn.removeAttribute('data-on');btn.textContent=L('🔊 اسمع الجزء','🔊 Play this part');return}
+  document.querySelectorAll('[data-on]').forEach(function(b){b.removeAttribute('data-on');b.textContent=L('🔊 اسمع الجزء','🔊 Play this part')});
+  ieStopAudio();var g=IE.gen,r=IE.run,t=ieTest(r.skill,r.id),sc=(t.parts[p].script)||[],i=0;
+  btn.setAttribute('data-on','1');btn.textContent=L('⏹ إيقاف','⏹ Stop');
+  var nx=function(){if(g!==IE.gen)return;if(i>=sc.length){btn.removeAttribute('data-on');btn.textContent=L('🔊 اسمع الجزء','🔊 Play this part');return}var ln=sc[i++];ieSay(String(ln[1]||''),ieSpkV(p,ln[0]),g,nx)};
+  nx();
+}
+
+/* ================= WRITING ================= */
+function ieWView(r,t){
+  var T1=t.task1||{},T2=t.task2||{},c=r.cur||0;
+  var wc=function(k){var n=ieWords(r['w'+k]),min=k===1?150:250;return `<span class="ie-wc ${n>=min?'ok':'low'}" id="ieWc${k}">${n} words</span> <span class="mut" style="font-size:14px">/ min ${min}</span>`};
+  ieEl('view').innerHTML=`<div class="ie-wrap"><div class="ie-bar" id="ieRunBox">${ieClockHtml()}
+    <span class="ie-seg"><button id="ieSg0" class="${c===0?'on':''}" onclick="ieWShow(0)">Task 1</button><button id="ieSg1" class="${c===1?'on':''}" onclick="ieWShow(1)">Task 2</button></span>
+    <span class="sp"></span><button class="pri" onclick="ieSubmitAsk()">${L('تسليم ✔','Submit ✔')}</button><button class="ghost" onclick="ieQuitAsk()" aria-label="${L('إيقاف','Quit')}">✕</button>
+    <div class="mut" style="flex-basis:100%;font-size:13px">${L('مقترح: Task 1 ≈ 20 دقيقة · Task 2 ≈ 40 دقيقة · مضى','Suggested: Task 1 ≈ 20 min · Task 2 ≈ 40 min · elapsed')} <b id="ieEl" style="direction:ltr;display:inline-block">0:00</b></div></div>
+   <div class="ie-sec${c===0?'':' hidden'}" data-s="0"><div class="card en"><h3>WRITING TASK 1</h3><p class="mut" style="margin:0 0 6px">You should spend about 20 minutes on this task.</p>
+     <div class="ie-box" style="font-weight:600">${T1.prompt||''}</div><p style="margin:6px 0"><b>Write at least 150 words.</b></p>
+     <div class="ie-x" style="margin:8px 0">${T1.visual||''}</div>
+     <textarea class="ie-ta" id="ieW1" spellcheck="false" autocorrect="off" autocapitalize="sentences" placeholder="Write your answer to Task 1 here…" oninput="ieW(1,this.value)">${ieEsc(r.w1||'')}</textarea>
+     <div class="row" style="justify-content:space-between;margin-top:6px"><span>${wc(1)}</span><button class="sec" onclick="ieWShow(1)">Task 2 →</button></div></div></div>
+   <div class="ie-sec${c===1?'':' hidden'}" data-s="1"><div class="card en"><h3>WRITING TASK 2</h3><p class="mut" style="margin:0 0 6px">You should spend about 40 minutes on this task.</p>
+     <p style="margin:4px 0">Write about the following topic:</p><div class="ie-box" style="font-weight:600">${T2.prompt||''}</div>
+     <p style="margin:6px 0">Give reasons for your answer and include any relevant examples from your own knowledge or experience.<br><b>Write at least 250 words.</b></p>
+     <textarea class="ie-ta" id="ieW2" spellcheck="false" autocorrect="off" autocapitalize="sentences" placeholder="Write your essay for Task 2 here…" oninput="ieW(2,this.value)">${ieEsc(r.w2||'')}</textarea>
+     <div class="row" style="justify-content:space-between;margin-top:6px"><span>${wc(2)}</span><button class="ghost" onclick="ieWShow(0)">← Task 1</button></div></div></div></div>`;
+}
+function ieWShow(i){ieShow(i);window.scrollTo(0,0)}
+function ieW(k,v){
+  var r=IE.run;if(!r||r.ph!=='test')return;r['w'+k]=v;
+  var n=ieWords(v),min=k===1?150:250,e=ieEl('ieWc'+k);
+  if(e){e.textContent=n+' words';e.className='ie-wc '+(n>=min?'ok':'low')}
+  ieSaveSoon();
+}
+var IE_CRIT={
+  writing1:[
+    ['ta',['إنجاز المهمة','Task Achievement'],[['كتبت 150 كلمة أو أكثر','I wrote at least 150 words'],['المقدمة تعيد صياغة السؤال (مو نسخ)','My introduction paraphrases the prompt (not copied)'],['كتبت Overview واضح لأهم الاتجاهات/الملامح','I wrote a clear overview of the main trends/features'],['اخترت أهم البيانات ودعمتها بأرقام صحيحة وقارنت بينها','I selected key features, supported them with accurate data and compared them'],['ما كتبت رأيي الشخصي','I did not give my personal opinion']]],
+  ],
+  writing2:[
+    ['tr',['الاستجابة للمهمة','Task Response'],[['كتبت 250 كلمة أو أكثر','I wrote at least 250 words'],['جاوبت على كل أجزاء السؤال','I answered ALL parts of the question'],['موقفي واضح من المقدمة للخاتمة','My position is clear from introduction to conclusion'],['كل فكرة رئيسية مطوّرة بسبب ومثال','Each main idea is extended with reasons and examples']]],
+  ],
+  common:[
+    ['cc',['الترابط والتماسك','Coherence & Cohesion'],[['فقرات واضحة، كل فقرة فيها فكرة رئيسية','Clear paragraphs, each with one central idea'],['استخدمت أدوات ربط متنوعة بشكل طبيعي (مو في كل جملة)','I used a range of linking words naturally (not in every sentence)'],['الأفكار مرتبة منطقيًا والإحالة واضحة (this, these, which)','Ideas are logically ordered; referencing (this, these, which) is clear']]],
+    ['lr',['المفردات','Lexical Resource'],[['استخدمت مفردات أكاديمية ومتلازمات لفظية مناسبة','I used less common vocabulary and collocations accurately'],['أعدت الصياغة بدل تكرار نفس الكلمات','I paraphrased instead of repeating the same words'],['أخطاء التهجئة وصيغ الكلمات قليلة','Few spelling or word-form errors']]],
+    ['gra',['القواعد','Grammatical Range & Accuracy'],[['نوّعت بين جمل بسيطة ومركبة (relative clauses، conditionals، passive)','I mixed simple and complex sentences (relative clauses, conditionals, passive)'],['أغلب الجمل بدون أخطاء','Most sentences are error-free'],['علامات الترقيم صحيحة','Punctuation is correct']]]
+  ],
+  speaking:[
+    ['fc',['الطلاقة والترابط','Fluency & Coherence'],[['تكلمت بدون توقفات طويلة','I spoke at length without long pauses'],['وسّعت إجاباتي (رأي + سبب + مثال)','I extended my answers (opinion + reason + example)'],['استخدمت روابط الكلام (Well, Actually, On the other hand)','I used discourse markers (Well, Actually, On the other hand)'],['تكلمت تقريبًا دقيقتين كاملة في Part 2','I spoke for nearly the full 2 minutes in Part 2']]],
+    ['lr',['المفردات','Lexical Resource'],[['استخدمت مفردات متنوعة وتعابير طبيعية','I used varied vocabulary and natural expressions'],['لما ما عرفت كلمة، شرحتها بطريقة ثانية','When I didn’t know a word, I paraphrased']]],
+    ['gra',['القواعد','Grammatical Range & Accuracy'],[['استخدمت أزمنة متنوعة وجمل مركبة','I used a range of tenses and complex structures'],['أغلب الجمل بدون أخطاء','Most sentences were error-free']]],
+    ['p',['النطق','Pronunciation'],[['كلامي سهل الفهم','I was easy to understand'],['نبرة الصوت والتشديد على الكلمات طبيعي','My word stress and intonation sounded natural'],['سمعت تسجيلي: أصوات واضحة ومو سريع زيادة','I listened to my recording: clear sounds, not too fast']]]
+  ]
+};
+var IE_BANDS=[[9,'9 — Expert: no real errors'],[8,'8 — Very good: rare errors'],[7,'7 — Good: some errors, good control'],[6,'6 — Competent: noticeable errors'],[5,'5 — Modest: frequent errors'],[4,'4 — Limited']];
+function ieCritHtml(pref,list){
+  return list.map(function(c){var id=pref+'_'+c[0];
+    return `<div class="ie-crit"><b>${L(c[1][0],c[1][1])}</b> <span class="mut en" style="display:inline;font-size:13px">${c[1][1]}</span>
+     <div class="ie-chk">${c[2].map(function(x,i){return `<label><input type="checkbox" data-c="${id}" onchange="ieSelfSug('${id}')"><span>${L(x[0],x[1])}</span></label>`}).join('')}</div>
+     <label style="font-size:14px;font-weight:700">${L('الـBand اللي تستاهله','Your band')}: <select id="${id}" data-g="${pref}" onchange="this.setAttribute('data-touched','1');ieSelfUpd()">${IE_BANDS.map(function(b){return `<option value="${b[0]}"${b[0]===5?' selected':''}>${b[1]}</option>`}).join('')}</select></label></div>`}).join('');
+}
+function ieSelfSug(id){
+  var cs=document.querySelectorAll('input[data-c="'+id+'"]'),k=0;cs.forEach(function(c){if(c.checked)k++});
+  var s=ieEl(id);if(s&&!s.getAttribute('data-touched'))s.value=String(Math.min(8,4+Math.round(4*k/Math.max(1,cs.length))));
+  ieSelfUpd();
+}
+function ieGrpBand(pref){var s=document.querySelectorAll('select[data-g="'+pref+'"]'),t=0;if(!s.length)return null;s.forEach(function(x){t+=+x.value});return ieRound(t/s.length)}
+function ieSelfUpd(){
+  var r=IE.run;if(!r)return;var out=ieEl('ieSelfOut');if(!out)return;
+  if(r.skill==='writing'){var a=ieGrpBand('w1'),b=ieGrpBand('w2'),w=ieRound((a+2*b)/3);r.self=w;
+    out.innerHTML=`Task 1 ≈ <b>${ieB(a)}</b> · Task 2 ≈ <b>${ieB(b)}</b> → Writing ≈ <b style="font-size:22px;color:var(--pink)">${ieB(w)}</b> <span class="mut" style="font-size:13px">(Task 1 × 1/3 + Task 2 × 2/3)</span>`}
+  else{var s=ieGrpBand('sp');r.self=s;out.innerHTML=`Speaking ≈ <b style="font-size:22px;color:var(--pink)">${ieB(s)}</b> <span class="mut" style="font-size:13px">(${L('متوسط المعايير الأربعة','average of the 4 criteria')})</span>`}
+}
+function ieSelfSave(){var r=IE.run;if(!r||r.self==null)return;ieSetBest(r.skill,r.id,{band:r.self});toast(L('✅ انحفظ تقديرك: Band ','✅ Estimate saved: Band ')+ieB(r.self))}
+function ieWReview(r,t){
+  var T1=t.task1||{},T2=t.task2||{},w1=ieWords(r.w1),w2=ieWords(r.w2);
+  var warn=function(n,min){return n<min?`<p class="trap" style="margin:6px 0">⚠️ ${L('كتبت '+n+' كلمة — أقل من '+min+'. في الامتحان هذا ينقص درجة Task Achievement/Response.','You wrote '+n+' words — under '+min+'. In the exam this lowers your Task Achievement/Response score.')}</p>`:`<p class="mut" style="margin:6px 0">✅ ${n} ${L('كلمة','words')}</p>`};
+  var ai=(typeof sampleReady!=='undefined')?`<button class="ghost" onclick="ieAiWrite(this)">🤖 ${L('تصحيح ذكي (إذا متاح)','AI feedback (if available)')}</button><div id="ieAiOut" class="msg a" style="max-width:100%;margin-top:10px;display:none"></div>`:'';
+  return `<div class="card">${r.auto?`<p class="pill p-sun">${L('⏰ تسليم تلقائي — انتهى الوقت','⏰ Auto-submitted — time ran out')}</p>`:''}
+     <p style="margin:0">${L('ما في مصحح آلي هنا: قارن إجابتك بالنموذج، بعدين قيّم نفسك على المعايير الرسمية الأربعة تحت.','There is no automatic marker here: compare your answer with the model, then assess yourself on the four official criteria below.')}</p></div>
+   <div class="card en" style="margin-top:12px"><h3>Task 1</h3><div class="ie-box">${T1.prompt||''}</div><div class="ie-x">${T1.visual||''}</div>
+     <h3 style="margin-top:12px">${L('إجابتك','Your answer')}</h3>${warn(w1,150)}<div class="ie-mine">${ieEsc(r.w1||'')||'<i>(empty)</i>'}</div>
+     <h3 style="margin-top:12px">⭐ Model answer <span class="mut" style="font-size:13px">(${ieWords(String(T1.model||'').replace(/<[^>]+>/g,' '))} words)</span></h3><div class="ie-model">${T1.model||''}</div>
+     ${(T1.tips||[]).length?`<h3 style="margin-top:12px">💡 Tips</h3><ul>${T1.tips.map(function(x){return '<li>'+x+'</li>'}).join('')}</ul>`:''}</div>
+   <div class="card en" style="margin-top:12px"><h3>Task 2${T2.type?' · <span class="pill p-lav">'+ieEsc(T2.type)+'</span>':''}</h3><div class="ie-box">${T2.prompt||''}</div>
+     <h3 style="margin-top:12px">${L('إجابتك','Your answer')}</h3>${warn(w2,250)}<div class="ie-mine">${ieEsc(r.w2||'')||'<i>(empty)</i>'}</div>
+     ${T2.plan?`<h3 style="margin-top:12px">🗺️ Plan</h3>${T2.plan}`:''}
+     <h3 style="margin-top:12px">⭐ Model answer <span class="mut" style="font-size:13px">(${ieWords(String(T2.model||'').replace(/<[^>]+>/g,' '))} words)</span></h3><div class="ie-model">${T2.model||''}</div>
+     ${(T2.vocab||[]).length?`<h3 style="margin-top:12px">💎 Useful vocabulary</h3><div class="row">${T2.vocab.map(function(x){return '<span class="pill p-sky" style="font-weight:600">'+x+'</span>'}).join('')}</div>`:''}</div>
+   <div class="card" style="margin-top:12px"><h3>🧾 ${L('قيّم نفسك — Task 1','Self-assessment — Task 1')}</h3>${ieCritHtml('w1',IE_CRIT.writing1.concat(IE_CRIT.common))}
+     <h3 style="margin-top:14px">🧾 ${L('قيّم نفسك — Task 2','Self-assessment — Task 2')}</h3>${ieCritHtml('w2',IE_CRIT.writing2.concat(IE_CRIT.common))}
+     <div class="key" id="ieSelfOut"></div><div class="row"><button class="pri" onclick="ieSelfSave()">💾 ${L('احفظ تقديري','Save my estimate')}</button>${ai}</div>
+     <p class="mut" style="font-size:13.5px;margin:6px 0 0">${L('التقدير الذاتي تقريبي. للتقييم الدقيق اعرض كتابتك على مدرسك.','Self-assessment is only an estimate. For an accurate band, show your writing to your teacher.')}</p></div>`;
+}
+function ieAiWrite(btn){
+  var r=IE.run,out=ieEl('ieAiOut');if(!r||!out)return;var t=ieTest(r.skill,r.id);out.style.display='block';
+  if(ieWords(r.w1)+ieWords(r.w2)<80){out.textContent=L('اكتب أكثر عشان يكون التصحيح مفيد.','Write more first so the feedback is useful.');return}
+  out.innerHTML='<span class="mut">…</span>';btn.disabled=true;
+  Promise.resolve(sampleReady).then(function(s){
+    if(!s){out.innerHTML=L('التصحيح الذكي غير متاح على هذا الموقع — استخدم الإجابة النموذجية والتقييم الذاتي.','AI marking is not available on this site — use the model answer and the self-assessment.');btn.disabled=false;return}
+    var strip=function(h){return String(h||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim()};
+    var p='You are an experienced IELTS examiner. Mark these IELTS Academic Writing answers with the four official criteria for each task, give an estimated band per criterion and per task, and an overall Writing band (Task 2 counts double). Give 3 strengths and the 5 most important corrections (quote the student, give the improved version). The student is a UAE high-school student; '+L('end with a one-line summary in simple Arabic.','end with a one-line summary in simple English.')+'\n\nTASK 1: '+strip(t.task1&&t.task1.prompt)+'\nDATA: '+strip(t.task1&&t.task1.visual)+'\nANSWER 1 ('+ieWords(r.w1)+' words):\n'+(r.w1||'')+'\n\nTASK 2: '+strip(t.task2&&t.task2.prompt)+'\nANSWER 2 ('+ieWords(r.w2)+' words):\n'+(r.w2||'');
+    return s(p,{cache:false,onText:function(x){out.innerHTML=typeof md==='function'?md(x.text):ieEsc(x.text)}}).then(function(x){out.innerHTML=typeof md==='function'?md(x.text):ieEsc(x.text);btn.disabled=false});
+  }).catch(function(e){out.innerHTML=L('ما قدرنا نصحح الحين.','Could not mark right now.');btn.disabled=false});
+}
+
+/* ================= SPEAKING ================= */
+function ieSpQs(t,part){
+  if(part==='p1'){var o=[];[t.p1,t.p1b].forEach(function(b){if(b&&b.qs)b.qs.forEach(function(q,i){o.push({q:q,topic:i===0?b.topic:null})})});return o}
+  return ((t.p3&&t.p3.qs)||[]).map(function(q){return {q:q}});
+}
+function ieSpView(r,t){
+  var sp=r.sp,st=sp.st,body='',lbl='';
+  var mic=function(id){return `<div class="row" style="margin-top:6px"><button class="sec" id="ieMicB" onclick="ieMic('${id}')">🎙️ ${L('إملاء صوتي','Dictate')}</button><span id="ieMicS" class="mut" style="font-size:13.5px"></span></div>`};
+  var card=function(){var p2=t.p2||{};return `<div class="ie-cue en"><b>${p2.card||''}</b><p style="margin:6px 0 0">You should say:</p><ul>${(p2.points||[]).map(function(x){return '<li>'+x+'</li>'}).join('')}</ul></div>`};
+  if(st==='p1'||st==='p3'){
+    var qs=ieSpQs(t,st),q=qs[sp.qi]||{q:''},key=st+'_'+sp.qi;
+    lbl=(st==='p1'?'Part 1':'Part 3')+' · Q '+(sp.qi+1)+'/'+qs.length;
+    body=`<div class="card en">${q.topic?`<p class="pill p-lav">Topic: ${ieEsc(q.topic)}</p>`:''}<p class="mut" style="margin:0 0 6px">👩‍🏫 Examiner:</p><div class="ie-exam">${q.q}</div>
+      <div class="row" style="margin:8px 0"><button class="ghost" onclick="ieSpSayQ()">🔁 ${L('أعد السؤال','Repeat question')}</button></div>
+      <p class="mut" style="margin:6px 0">${L('جاوب بصوت عالي (2–3 جمل في Part 1، وأطول في Part 3: رأي + سبب + مثال). اكتب إجابتك أو استخدم الإملاء الصوتي:','Answer out loud (2–3 sentences in Part 1; longer in Part 3: opinion + reason + example). Type your answer or use dictation:')}</p>
+      <textarea class="ie-ta" style="min-height:22vh" id="ieSpA" spellcheck="false" oninput="ieSpIn('${key}',this.value)" placeholder="Your answer…">${ieEsc(sp.a[key]||'')}</textarea>${mic('ieSpA')}
+      <div class="row" style="justify-content:flex-end;margin-top:8px"><button class="pri" onclick="ieSpNext(false)">${sp.qi<qs.length-1?L('السؤال التالي ▶','Next question ▶'):(st==='p1'?L('إلى Part 2 ▶','Go to Part 2 ▶'):L('إنهاء الاختبار ✔','Finish test ✔'))}</button></div></div>`;
+  }else if(st==='p2prep'){
+    lbl='Part 2 · '+L('تحضير','Preparation');
+    body=`<div class="card en">${card()}<p class="mut" style="margin:8px 0 4px">${L('عندك دقيقة تكتب ملاحظات (كلمات مفتاحية لكل نقطة، مو جمل كاملة):','You have one minute to make notes (key words for each point, not full sentences):')}</p>
+      <textarea class="ie-ta" style="min-height:20vh" id="ieSpN" oninput="ieSpIn('notes',this.value)" placeholder="Notes…">${ieEsc(sp.a.notes||'')}</textarea>
+      <div class="row" style="justify-content:flex-end;margin-top:8px"><button class="pri" onclick="ieSpNext(false)">${L('جاهز — ابدأ الكلام ▶','Ready — start speaking ▶')}</button></div></div>`;
+  }else if(st==='p2talk'){
+    lbl='Part 2 · '+L('تكلّم','Talk');
+    body=`<div class="card en">${card()}${sp.a.notes?`<div class="ie-box"><b>Your notes:</b><div style="white-space:pre-wrap">${ieEsc(sp.a.notes)}</div></div>`:''}
+      <p class="mut" style="margin:8px 0 4px">${L('تكلّم دقيقتين كاملة بصوت عالي. اكتب أو استخدم الإملاء الصوتي:','Speak for the full two minutes, out loud. Type or use dictation:')}</p>
+      <textarea class="ie-ta" style="min-height:26vh" id="ieSpA" spellcheck="false" oninput="ieSpIn('p2',this.value)" placeholder="Your talk…">${ieEsc(sp.a.p2||'')}</textarea>${mic('ieSpA')}
+      <div class="row" style="justify-content:flex-end;margin-top:8px"><button class="pri" onclick="ieSpNext(false)">${L('خلصت ▶ Part 3','Finished ▶ Part 3')}</button></div></div>`;
+  }
+  ieEl('view').innerHTML=`<div class="ie-wrap" style="max-width:820px;margin:0 auto"><div class="ie-bar" id="ieRunBox">${ieClockHtml()}<span class="lbl">${lbl}</span>${IE.rec?'<span class="pill p-pink">● REC</span>':''}<span class="sp"></span><button class="ghost" onclick="ieQuitAsk()" aria-label="${L('إيقاف','Quit')}">✕</button></div>${body}</div>`;
+  if(!IE.spSaid||IE.spSaid!==st+sp.qi){IE.spSaid=st+sp.qi;ieSpSay()}
+}
+function ieSpIn(k,v){var r=IE.run;if(!r||!r.sp)return;r.sp.a[k]=v;ieSaveSoon()}
+function ieSpSayQ(){var r=IE.run;if(!r)return;var t=ieTest(r.skill,r.id),sp=r.sp,q=(ieSpQs(t,sp.st)[sp.qi]||{}).q;if(q){ieStopAudio();ieSay(q,ieVN(),IE.gen)}}
+function ieSpSay(){
+  var r=IE.run;if(!r||r.ph!=='test')return;var t=ieTest(r.skill,r.id),sp=r.sp,txt='';
+  if(sp.st==='p1'){var q=ieSpQs(t,'p1')[sp.qi]||{};
+    if(sp.qi===0)txt='Good morning. In this first part, I’d like to ask you some questions about yourself. ';
+    if(q.topic)txt+='Let’s talk about '+q.topic+'. ';txt+=q.q||''}
+  else if(sp.st==='p2prep')txt='Now, I’m going to give you a topic, and I’d like you to talk about it for one to two minutes. Before you talk, you’ll have one minute to think about what you’re going to say. You can make some notes if you wish. '+String((t.p2&&t.p2.card)||'');
+  else if(sp.st==='p2talk')txt='All right? Remember, you have one to two minutes for this, so don’t worry if I stop you. I’ll tell you when the time is up. Can you start speaking now, please?';
+  else if(sp.st==='p3'){var q3=ieSpQs(t,'p3')[sp.qi]||{};if(sp.qi===0)txt='Thank you. We’ve been talking about '+String((t.p2&&t.p2.card)||'this topic').replace(/^Describe\s+/i,'').replace(/\.$/,'')+', and I’d like to discuss with you one or two more general questions related to this. ';txt+=q3.q||''}
+  if(!txt)return;ieStopAudio();ieSay(txt,ieVN(),IE.gen);
+}
+function ieSpNext(timeUp){
+  var r=IE.run;if(!r||r.ph!=='test')return;var t=ieTest(r.skill,r.id),sp=r.sp,now=Date.now();
+  ieMicStop();
+  if(sp.st==='p1'){var n1=ieSpQs(t,'p1').length;if(!timeUp&&sp.qi<n1-1){sp.qi++}else{if(timeUp)toast(L('⏰ خلص وقت Part 1','⏰ Part 1 time is over'));sp.st='p2prep';sp.qi=0;r.end=now+60000}}
+  else if(sp.st==='p2prep'){sp.st='p2talk';r.end=now+120000}
+  else if(sp.st==='p2talk'){if(timeUp){ieStopAudio();ieSay('Thank you.',ieVN(),IE.gen)}sp.st='p3';sp.qi=0;r.end=now+5*60000}
+  else if(sp.st==='p3'){var n3=ieSpQs(t,'p3').length;if(!timeUp&&sp.qi<n3-1){sp.qi++}else{ieSubmit(timeUp);ieStopAudio();ieSay('Thank you. That is the end of the speaking test.',ieVN(),IE.gen);return}}
+  ieSaveNow();ieScreen();ieTick();window.scrollTo(0,0);
+}
+function ieSpReview(r,t){
+  var sp=r.sp||{a:{}},a=sp.a||{},p1=ieSpQs(t,'p1'),p3=ieSpQs(t,'p3'),m3=(t.p3&&t.p3.model)||[];
+  var mine=function(x){return x?`<div class="ie-mine">${ieEsc(x)}</div>`:`<p class="mut" style="margin:4px 0"><i>${L('(ما كتبت/سجلت إجابة)','(no written answer)')}</i></p>`};
+  var p2w=ieWords(a.p2);
+  return `<div class="card">${IE.recUrl?`<div><b>🎧 ${L('تسجيلك','Your recording')}</b><br><audio id="ieRecAu" controls style="width:100%;margin-top:6px"></audio></div>`:''}
+    <p style="margin:6px 0 0">${L('قارن إجاباتك بالنماذج، بعدين قيّم نفسك على المعايير الأربعة.','Compare your answers with the models, then assess yourself on the four criteria.')}</p></div>
+   <div class="card en" style="margin-top:12px"><h3>Part 1</h3>${p1.map(function(q,i){return `${q.topic?`<p class="pill p-lav">Topic: ${ieEsc(q.topic)}</p>`:''}<p style="margin:8px 0 2px"><b>Q${i+1}. ${q.q}</b></p>${mine(a['p1_'+i])}`}).join('')}
+     <p class="key" style="margin-top:10px">💡 ${L('في Part 1: جواب مباشر + سبب + مثال صغير. لا تجاوب بكلمة وحدة ولا تلقي خطبة.','Part 1: direct answer + reason + small example. Not one word, not a speech.')}</p></div>
+   <div class="card en" style="margin-top:12px"><h3>Part 2</h3><div class="ie-cue"><b>${(t.p2&&t.p2.card)||''}</b><ul>${((t.p2&&t.p2.points)||[]).map(function(x){return '<li>'+x+'</li>'}).join('')}</ul></div>
+     ${a.notes?`<p style="margin:8px 0 2px"><b>Your notes</b></p><div class="ie-mine">${ieEsc(a.notes)}</div>`:''}
+     <p style="margin:8px 0 2px"><b>${L('إجابتك','Your answer')}</b> <span class="mut">(${p2w} words${p2w?L(' — دقيقتين كلام ≈ 250–300 كلمة',' — 2 minutes of speech ≈ 250–300 words'):''})</span></p>${mine(a.p2)}
+     <h3 style="margin-top:12px">⭐ Model answer</h3><div class="ie-model">${(t.p2&&t.p2.model)||''}</div>
+     <div class="row" style="margin-top:6px"><button class="sec" onclick="ieSpModel(this)">🔊 ${L('اسمع النموذج','Listen to the model')}</button></div></div>
+   <div class="card en" style="margin-top:12px"><h3>Part 3</h3>${p3.map(function(q,i){return `<p style="margin:10px 0 2px"><b>Q${i+1}. ${q.q}</b></p>${mine(a['p3_'+i])}${m3[i]?`<details><summary class="mut" style="cursor:pointer">⭐ Model answer</summary><div class="ie-model">${m3[i]}</div></details>`:''}`}).join('')}</div>
+   <div class="card" style="margin-top:12px"><h3>🧾 ${L('قيّم نفسك','Self-assessment')}</h3>${ieCritHtml('sp',IE_CRIT.speaking)}
+     <div class="key" id="ieSelfOut"></div><div class="row"><button class="pri" onclick="ieSelfSave()">💾 ${L('احفظ تقديري','Save my estimate')}</button></div>
+     <p class="mut" style="font-size:13.5px;margin:6px 0 0">${L('التقدير الذاتي تقريبي — تدرّب مع زميل أو مدرس يسمعك.','Self-assessment is only an estimate — practise with a classmate or teacher listening.')}</p></div>`;
+}
+function ieSpModel(btn){
+  if(btn.getAttribute('data-on')){ieStopAudio();btn.removeAttribute('data-on');btn.textContent='🔊 '+L('اسمع النموذج','Listen to the model');return}
+  var r=IE.run,t=ieTest(r.skill,r.id),txt=String((t.p2&&t.p2.model)||'').replace(/<[^>]+>/g,' ');
+  ieStopAudio();btn.setAttribute('data-on','1');btn.textContent='⏹ '+L('إيقاف','Stop');
+  ieSay(txt,ieVN(),IE.gen,function(){btn.removeAttribute('data-on');btn.textContent='🔊 '+L('اسمع النموذج','Listen to the model')});
+}
+/* dictation: artifact 'dictation' capability → Web Speech API → typing */
+function ieMicSt(t){var s=ieEl('ieMicS');if(s)s.textContent=t||''}
+function ieMicBtn(on){var b=ieEl('ieMicB');if(b)b.textContent=on?'⏹ '+L('إيقاف الإملاء','Stop dictation'):'🎙️ '+L('إملاء صوتي','Dictate')}
+function ieMicAppend(tid,text){var ta=ieEl(tid);if(!ta||!text)return;ta.value=(ta.value+' '+text).replace(/\s+/g,' ').trim();try{ta.dispatchEvent(new Event('input'))}catch(e){}}
+function ieMic(tid){
+  if(IE.dict&&IE.dict.on){ieMicStop();return}
+  var cl=window.claude&&window.claude.use;
+  if(cl){
+    window.claude.use('dictation').then(function(d){
+      if(!d)throw 0;IE.dict={on:true,cd:d,tid:tid};
+      try{d.onFinal(function(x){ieMicAppend(IE.dict&&IE.dict.tid,x&&x.text)});d.onPartial(function(x){ieMicSt(x&&x.text)});d.onState(function(x){var on=x&&x.state==='listening';if(IE.dict)IE.dict.on=on;ieMicBtn(on);if(!on)ieMicSt('')})}catch(e){}
+      ieMicBtn(true);return d.start();
+    }).catch(function(){IE.dict=null;ieMicWeb(tid)});
+    return;
+  }
+  ieMicWeb(tid);
+}
+function ieMicWeb(tid){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){toast(L('الإملاء الصوتي غير متاح في هذا المتصفح — تكلّم بصوت عالي واكتب إجابتك.','Dictation is not available in this browser — speak out loud and type your answer.'));return}
+  try{
+    var rec=new SR();rec.lang='en-GB';rec.continuous=true;rec.interimResults=true;
+    rec.onresult=function(e){var fin='',tmp='';for(var i=e.resultIndex;i<e.results.length;i++){var tr=e.results[i][0].transcript;if(e.results[i].isFinal)fin+=tr;else tmp+=tr}if(fin)ieMicAppend(IE.dict&&IE.dict.tid,fin);ieMicSt(tmp)};
+    rec.onerror=function(e){if(e&&(e.error==='not-allowed'||e.error==='service-not-allowed')){toast(L('اسمح للموقع باستخدام الميكروفون','Allow the site to use the microphone'));ieMicStop()}};
+    rec.onend=function(){if(IE.dict&&IE.dict.on&&IE.dict.rec===rec){try{rec.start()}catch(e){ieMicStop()}}};
+    IE.dict={on:true,rec:rec,tid:tid};rec.start();ieMicBtn(true);
+  }catch(e){IE.dict=null;toast(L('ما قدرنا نشغّل الميكروفون','Could not start the microphone'))}
+}
+function ieMicStop(){var d=IE.dict;IE.dict=null;if(!d)return;try{if(d.rec)d.rec.stop();if(d.cd)d.cd.stop()}catch(e){}ieMicBtn(false);ieMicSt('')}
+function ieRecStart(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia||typeof MediaRecorder==='undefined'){toast(L('التسجيل غير مدعوم في هذا المتصفح','Recording is not supported in this browser'));return}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stm){
+    var mr=new MediaRecorder(stm),ch=[];
+    mr.ondataavailable=function(e){if(e.data&&e.data.size)ch.push(e.data)};
+    mr.onstop=function(){stm.getTracks().forEach(function(x){x.stop()});if(ch.length){if(IE.recUrl)try{URL.revokeObjectURL(IE.recUrl)}catch(e){}IE.recUrl=URL.createObjectURL(new Blob(ch,{type:mr.mimeType||'audio/webm'}));var a=ieEl('ieRecAu');if(a)a.src=IE.recUrl;else if(IE.run&&IE.run.ph==='review'&&IE.run.skill==='speaking')ieScreen()}};
+    mr.start(1000);IE.rec=mr;
+    var b=ieEl('ieRunBox');if(b&&!b.querySelector('.p-pink')){var s=document.createElement('span');s.className='pill p-pink';s.textContent='● REC';b.insertBefore(s,b.children[2]||null)}
+  }).catch(function(){toast(L('ما قدرنا نوصل للميكروفون — الاختبار بيكمل بدون تسجيل.','Could not access the microphone — the test continues without recording.'))});
+}
+function ieRecStop(){var m=IE.rec;IE.rec=null;try{if(m&&m.state!=='inactive')m.stop()}catch(e){}}
+
+/* ================= VOCABULARY TAB ================= */
+function ieWordsTab(){
+  var W=(typeof WORDS!=='undefined'&&WORDS)||[];
+  if(!W.length)return `<p class="mut">${L('قريبًا','Coming soon')}</p>`;
+  var w=W[Math.floor(Date.now()/864e5)%W.length];
+  return `<div class="card en" style="text-align:center"><span class="pill p-pink">Word of the day</span><h2 style="font-size:34px;margin:8px 0">${ieEsc(w[0])}</h2><p style="font-size:20px;direction:rtl">${ieEsc(w[1])}</p><p class="mut"><i>${ieEsc(w[2])}</i></p></div>
+   <div class="ie-grid" style="margin-top:12px">${W.map(function(x,i){return `<div class="card en"><b>${ieEsc(x[0])}</b> · <span dir="rtl">${ieEsc(x[1])}</span><div class="mut" style="font-size:14px">${ieEsc(x[2])}</div><button class="ghost" style="padding:3px 10px;font-size:13px;margin-top:4px" onclick="ieSayWord(${i})">🔊</button></div>`}).join('')}</div>`;
+}
+function ieSayWord(i){var w=WORDS[i];ieStopAudio();ieSay(w[0]+'. '+w[2],ieVN(),IE.gen)}
+
+/* ================= BASICS & RULES ================= */
+function ieConvTable(sk){
+  var t=IE_CONV[sk],rows=[];
+  for(var i=0;i<t.length&&t[i][1]>=4;i++){var lo=t[i][0],hi=i===0?40:t[i-1][0]-1;rows.push(`<tr><td>${lo===hi?lo:lo+'–'+hi}</td><td><b>${t[i][1].toFixed(1)}</b></td></tr>`)}
+  return `<table class="tbl en" style="direction:ltr"><tr><th>Raw /40</th><th>Band</th></tr>${rows.join('')}</table>`;
+}
+function ieCalcUpd(){
+  var ids=['ieCL','ieCR','ieCW','ieCS'],v=[],ok=true;
+  ids.forEach(function(id){var e=ieEl(id);if(!e){ok=false;return}v.push(+e.value)});
+  var o=ieEl('ieCOut');if(!ok||!o)return;
+  var avg=(v[0]+v[1]+v[2]+v[3])/4;
+  o.innerHTML=`<span style="direction:ltr;display:inline-block">(${v.map(function(x){return x.toFixed(1)}).join(' + ')}) ÷ 4 = ${avg.toFixed(3).replace(/0+$/,'').replace(/\.$/,'')}</span> → ${L('Overall Band','Overall band')} <b style="font-size:24px;color:var(--pink)">${ieRound(avg).toFixed(1)}</b>`;
+}
+function ieCalcHtml(){
+  var pre={ieCL:ieTopBand('listening'),ieCR:ieTopBand('reading'),ieCW:ieTopBand('writing'),ieCS:ieTopBand('speaking')};
+  var opt=function(id){var d=pre[id]!=null?pre[id]:6,s='';for(var b=9;b>=0;b-=0.5)s+=`<option value="${b}"${b===d?' selected':''}>${b.toFixed(1)}</option>`;return s};
+  var f=[['ieCL','🎧 Listening'],['ieCR','📖 Reading'],['ieCW','✍️ Writing'],['ieCS','🗣️ Speaking']];
+  return `<div class="ie-calc">${f.map(function(x){return `<label>${x[1]}<select id="${x[0]}" onchange="ieCalcUpd()">${opt(x[0])}</select></label>`}).join('')}</div><div class="key" id="ieCOut" style="margin-top:8px"></div>
+   <p class="mut" style="font-size:13.5px;margin:4px 0 0">${L('القيم المبدئية = أعلى Band حققته هنا في كل مهارة (أو 6.0).','Starting values = your highest band here in each skill (or 6.0).')}</p>`;
+}
+function ieSec(i,title,body,open){return `<details class="lesson"${open?' open':''}><summary><span class="n">${i}</span><span class="t">${title}</span></summary><div class="body">${body}</div></details>`}
+function ieBasics(){
+  var A=LANG!=='en',s=[];
+  s.push([L('ما هو IELTS Academic؟','What is IELTS Academic?'),A?`
+   <p><b>IELTS</b> (International English Language Testing System) امتحان عالمي يقيس مستواك في الإنجليزي. نسخة <b>Academic</b> هي اللي تطلبها الجامعات (داخل الإمارات وبرّا)، ونسخة General Training للهجرة والعمل.</p>
+   <ul><li>فيه <b>4 أجزاء</b>: Listening و Reading و Writing و Speaking.</li><li>Listening و Reading و Writing في نفس اليوم ورا بعض <b>بدون استراحة</b>. Speaking ممكن نفس اليوم أو قبله/بعده بأسبوع.</li><li>المدة الكلية حوالي <b>ساعتين و45 دقيقة</b>.</li><li>تقدر تختبره على الورق أو على الكمبيوتر — نفس الأسئلة ونفس الصعوبة.</li><li>النتيجة <b>Band من 0 إلى 9</b> لكل مهارة + Overall. أغلب الجامعات تطلب تقريبًا 6.0–6.5 (تأكد من شروط جامعتك). الشهادة عادة مقبولة لمدة سنتين.</li></ul>
+   <div class="key">🧭 <b>كيف تستخدم هذا القسم:</b> اقرأ الأساسيات ← سوّ Practice Test 1 في كل مهارة بالتوقيت ← راجع كل غلطة وسببها ← ارجع لاستراتيجية نوع السؤال اللي تغلط فيه ← الاختبار اللي بعده.</div>`:`
+   <p><b>IELTS</b> (International English Language Testing System) is a worldwide test of English. The <b>Academic</b> version is the one universities ask for (in the UAE and abroad); General Training is for migration and work.</p>
+   <ul><li>It has <b>4 parts</b>: Listening, Reading, Writing and Speaking.</li><li>Listening, Reading and Writing are taken on the same day, one after another, <b>with no breaks</b>. Speaking is the same day or up to a week before/after.</li><li>Total time: about <b>2 hours 45 minutes</b>.</li><li>You can take it on paper or on computer — same questions, same difficulty.</li><li>You get a <b>band from 0 to 9</b> for each skill plus an Overall band. Many universities ask for about 6.0–6.5 (check your university). Results are usually accepted for two years.</li></ul>
+   <div class="key">🧭 <b>How to use this section:</b> read the basics → do Practice Test 1 in each skill, timed → review every mistake and its reason → reread the strategy for the question types you miss → next test.</div>`]);
+  s.push([L('الأجزاء الأربعة: الوقت وعدد الأسئلة','The 4 parts: timing and questions'),`<div class="ie-x"><table class="tbl">
+   <tr><th>${L('المهارة','Skill')}</th><th>${L('الوقت','Time')}</th><th>${L('الأقسام','Sections')}</th><th>${L('الأسئلة','Questions')}</th></tr>
+   <tr><td>🎧 Listening</td><td>${L('~30 دقيقة + 10 دقائق نقل (ورقي) / دقيقتين (كمبيوتر)','~30 min + 10 min transfer (paper) / 2 min (computer)')}</td><td>${L('4 أجزاء','4 parts')}</td><td>40</td></tr>
+   <tr><td>📖 Reading</td><td>${L('60 دقيقة (بدون وقت إضافي)','60 min (no extra time)')}</td><td>${L('3 نصوص طويلة (2150–2750 كلمة مجموعًا)','3 long passages (2,150–2,750 words in total)')}</td><td>40</td></tr>
+   <tr><td>✍️ Writing</td><td>${L('60 دقيقة','60 min')}</td><td>Task 1 (150+) · Task 2 (250+)</td><td>2</td></tr>
+   <tr><td>🗣️ Speaking</td><td>${L('11–14 دقيقة','11–14 min')}</td><td>${L('3 أجزاء مع ممتحن','3 parts with an examiner')}</td><td>—</td></tr></table></div>
+   ${A?`<ul><li><b>Listening:</b> Part 1 محادثة يومية (تعبئة نموذج) · Part 2 شخص يتكلم عن موضوع يومي (خريطة/اختيار) · Part 3 نقاش أكاديمي بين 2–4 أشخاص · Part 4 محاضرة أكاديمية (إكمال ملاحظات). الصعوبة تزيد.</li><li><b>Reading:</b> نصوص من كتب ومجلات وصحف أكاديمية، الصعوبة تزيد من النص الأول للثالث.</li><li><b>Writing:</b> Task 1 وصف رسم بياني/جدول/عملية/خريطة · Task 2 مقال رأي أو نقاش.</li><li><b>Speaking:</b> Part 1 أسئلة عنك (4–5 د) · Part 2 بطاقة: دقيقة تحضير + دقيقتين كلام · Part 3 نقاش أعمق (4–5 د).</li></ul>`
+   :`<ul><li><b>Listening:</b> Part 1 everyday conversation (form completion) · Part 2 a monologue on an everyday topic (map/multiple choice) · Part 3 an academic discussion, 2–4 speakers · Part 4 an academic lecture (note completion). Difficulty increases.</li><li><b>Reading:</b> texts from books, magazines and journals; difficulty increases from passage 1 to 3.</li><li><b>Writing:</b> Task 1 describe a graph/table/process/map · Task 2 an opinion or discussion essay.</li><li><b>Speaking:</b> Part 1 questions about you (4–5 min) · Part 2 task card: 1 min preparation + 2 min talk · Part 3 deeper discussion (4–5 min).</li></ul>`}`]);
+  var bands=[[9,'Expert user','مستخدم خبير'],[8,'Very good user','جيد جدًا'],[7,'Good user','جيد'],[6,'Competent user','كفء'],[5,'Modest user','متواضع'],[4,'Limited user','محدود'],[3,'Extremely limited user','محدود جدًا'],[2,'Intermittent user','متقطع'],[1,'Non-user','غير مستخدم'],[0,'Did not attempt the test','لم يجب']];
+  s.push([L('الـBand من 0 إلى 9 وحساب الدرجة الكلية','Band scores 0–9 and the overall band'),`
+   <div class="ie-x"><table class="tbl">${bands.map(function(b){return `<tr><td><b>${b[0]}</b></td><td class="en">${b[1]}</td>${A?`<td>${b[2]}</td>`:''}</tr>`}).join('')}</table></div>
+   ${A?`<p><b>الـOverall</b> = متوسط المهارات الأربع، ويتقرّب لأقرب نصف Band:</p><ul><li>لو المتوسط ينتهي بـ <b>.25</b> يطلع لـ <b>.5</b> (6.25 ← 6.5)</li><li>لو ينتهي بـ <b>.75</b> يطلع للرقم الصحيح اللي بعده (6.75 ← 7.0)</li><li>أقل من .25 ينزل (6.125 ← 6.0)</li></ul><div class="ex">مثال: L 6.5 + R 6.5 + W 5.0 + S 7.0 = 25 ÷ 4 = 6.25 ← <b>Overall 6.5</b></div>
+   <p><b>Listening و Reading:</b> كل سؤال بدرجة، والمجموع من 40 يتحوّل لـBand بجدول (تقريبي، يتغير شوي من امتحان لامتحان):</p>`
+   :`<p>The <b>Overall band</b> is the average of the four skills, rounded to the nearest half band:</p><ul><li>an average ending in <b>.25</b> rounds up to <b>.5</b> (6.25 → 6.5)</li><li>an average ending in <b>.75</b> rounds up to the next whole band (6.75 → 7.0)</li><li>below .25 rounds down (6.125 → 6.0)</li></ul><div class="ex">Example: L 6.5 + R 6.5 + W 5.0 + S 7.0 = 25 ÷ 4 = 6.25 → <b>Overall 6.5</b></div>
+   <p><b>Listening and Reading:</b> 1 mark per question; the raw score /40 is converted with a table (approximate — it varies slightly between versions):</p>`}
+   <div class="ie-grid"><div><b>📖 Academic Reading</b>${ieConvTable('reading')}</div><div><b>🎧 Listening</b>${ieConvTable('listening')}</div></div>
+   ${A?`<p><b>Writing و Speaking:</b> 4 معايير متساوية لكل واحد (تحت). في Writing، Task 2 وزنها <b>ضعف</b> Task 1 (ثلثين الدرجة).</p>`:`<p><b>Writing and Speaking:</b> 4 equally weighted criteria each (below). In Writing, Task 2 counts <b>twice</b> as much as Task 1 (two thirds of the score).</p>`}
+   <h3 style="margin-top:12px">🧮 ${L('احسب الـOverall','Overall band calculator')}</h3>${ieCalcHtml()}`]);
+  s.push([L('القواعد الرسمية اللي لازم تعرفها','The official rules you must know'),A?`
+   <h3>🎧📖 Listening و Reading</h3><ul>
+   <li><b>حدود الكلمات:</b> «NO MORE THAN TWO WORDS» = كلمة أو كلمتين بس. «ONE WORD ONLY» = كلمة وحدة. «NO MORE THAN THREE WORDS AND/OR A NUMBER» = حتى 3 كلمات و/أو رقم. لو زدت ← الإجابة <b>غلط</b> حتى لو فيها الجواب الصحيح.</li>
+   <li>الرقم يتكتب أرقام (25) أو حروف، والكلمة اللي فيها شرطة (well-known) تنحسب <b>كلمة وحدة</b>.</li>
+   <li><b>التهجئة تنحسب:</b> كلمة غلط إملائيًا = إجابة غلط. التهجئة البريطانية والأمريكية مقبولة (colour/color).</li>
+   <li>الحروف الكبيرة والصغيرة ما تفرق، وتقدر تكتب كل شي CAPITAL في الورقي.</li>
+   <li>الإجابة لازم تناسب القواعد (مفرد/جمع): لو الجملة تقول «two ____» فالجواب جمع.</li>
+   <li>لا تكتب إجابتين في نفس الخانة — تنحسب غلط.</li>
+   <li><b>ما في خصم على الغلط</b> ← لا تترك أي سؤال فاضي.</li>
+   <li><b>Listening يُسمع مرة وحدة بس.</b> فيه وقت تقرأ الأسئلة قبل كل جزء، و10 دقائق نقل في الآخر (الورقي).</li>
+   <li><b>Reading ما فيه وقت إضافي</b> لنقل الإجابات — 60 دقيقة لكل شي.</li></ul>
+   <h3>✍️ Writing</h3><ul>
+   <li>Task 1 <b>150 كلمة على الأقل</b>، Task 2 <b>250 كلمة على الأقل</b>. أقل ← خصم. ما في حد أعلى، بس الأطول مو دايمًا أحسن.</li>
+   <li>Task 2 وزنها ضعف Task 1 ← لا تعطي Task 1 أكثر من 20 دقيقة.</li>
+   <li>الكلمات المنسوخة من السؤال ما تنحسب. اكتب جمل وفقرات كاملة — بدون نقاط أو عناوين.</li>
+   <li>الإجابات المحفوظة أو اللي برّا الموضوع تاخذ درجة قليلة جدًا.</li></ul>
+   <h3>🗣️ Speaking</h3><ul>
+   <li>مقابلة وجهًا لوجه مع ممتحن، ويتسجّل الكلام.</li><li>في Part 1 تقدر تطلب إعادة السؤال. في Part 2 عندك ورقة وقلم للملاحظات، والممتحن يوقفك بعد دقيقتين.</li><li>ما تقدر تختار الموضوع، ولا تحفظ إجابات جاهزة — الممتحن يلاحظ.</li></ul>`:`
+   <h3>🎧📖 Listening and Reading</h3><ul>
+   <li><b>Word limits:</b> “NO MORE THAN TWO WORDS” = one or two words only. “ONE WORD ONLY” = one word. “NO MORE THAN THREE WORDS AND/OR A NUMBER” = up to 3 words and/or a number. Go over the limit → the answer is <b>wrong</b>, even if it contains the right words.</li>
+   <li>Numbers may be written as digits (25) or words; a hyphenated word (well-known) counts as <b>one word</b>.</li>
+   <li><b>Spelling counts:</b> a misspelt word = a wrong answer. British and American spellings are both accepted (colour/color).</li>
+   <li>Capital letters do not matter; on paper you may write everything in CAPITALS.</li>
+   <li>Your answer must fit the grammar (singular/plural): if the sentence says “two ____”, the answer is plural.</li>
+   <li>Never write two answers in one box — it is marked wrong.</li>
+   <li><b>No marks are lost for wrong answers</b> → never leave a blank.</li>
+   <li><b>Listening is heard ONCE only.</b> You get time to read the questions before each part, and 10 minutes transfer time at the end (paper).</li>
+   <li><b>Reading has NO extra time</b> to transfer answers — 60 minutes for everything.</li></ul>
+   <h3>✍️ Writing</h3><ul>
+   <li>Task 1 <b>at least 150 words</b>, Task 2 <b>at least 250 words</b>. Fewer → penalty. No upper limit, but longer isn’t automatically better.</li>
+   <li>Task 2 is worth twice Task 1 → don’t give Task 1 more than 20 minutes.</li>
+   <li>Words copied from the question are not counted. Write full sentences and paragraphs — no bullet points or headings.</li>
+   <li>Memorised or off-topic answers receive very low marks.</li></ul>
+   <h3>🗣️ Speaking</h3><ul>
+   <li>A face-to-face interview with an examiner; it is recorded.</li><li>In Part 1 you may ask the examiner to repeat a question. In Part 2 you get paper and a pencil for notes, and the examiner stops you after 2 minutes.</li><li>You cannot choose the topic, and memorised answers are noticed.</li></ul>`]);
+  s.push([L('معايير تصحيح Writing و Speaking','Writing & Speaking marking criteria'),`<div class="ie-grid">
+   <div class="card"><b>✍️ Writing (25% ${L('لكل معيار','each')})</b><ul><li><b>Task Achievement / Response</b> — ${L('جاوبت على المطلوب كامل؟ Overview في Task 1؟ موقف واضح في Task 2؟','did you answer everything? Overview in Task 1? Clear position in Task 2?')}</li><li><b>Coherence & Cohesion</b> — ${L('فقرات، ترتيب، روابط','paragraphs, order, linking')}</li><li><b>Lexical Resource</b> — ${L('تنوع ودقة المفردات','range and accuracy of vocabulary')}</li><li><b>Grammatical Range & Accuracy</b> — ${L('تنوع الجمل وصحتها','sentence variety and accuracy')}</li></ul></div>
+   <div class="card"><b>🗣️ Speaking (25% ${L('لكل معيار','each')})</b><ul><li><b>Fluency & Coherence</b> — ${L('تتكلم بسلاسة وترتيب','speaking smoothly and logically')}</li><li><b>Lexical Resource</b> — ${L('مفردات متنوعة','varied vocabulary')}</li><li><b>Grammatical Range & Accuracy</b></li><li><b>Pronunciation</b> — ${L('وضوح، تشديد، نبرة','clarity, stress, intonation')}</li></ul></div></div>`]);
+  s.push([L('استراتيجيات كل مهارة','Strategies for each skill'),A?`
+   <h3>🎧 Listening</h3><ul><li>استغل وقت القراءة: ظلّل الكلمات المفتاحية وتوقّع نوع الجواب (رقم؟ اسم؟ مكان؟ جمع؟).</li><li>انتبه للتصحيحات والفخاخ: «It was Tuesday… sorry, I mean <b>Thursday</b>» ← الجواب Thursday.</li><li>الأسماء تنتهجّى حرف حرف — اكتب كل حرف. تعلّم نطق الحروف (A/E/I، G/J، double L).</li><li>الأرقام: 15 (fifteen) و 50 (fifty) — التشديد يفرق. «double three» = 33.</li><li>لو فاتك سؤال، خلّه وركّز على اللي بعده — لا تضيع الباقي.</li><li>علامات الانتقال (signposts): «Moving on to…»، «Finally…» تقول لك إن السؤال اللي بعده قرّب.</li></ul>
+   <h3>📖 Reading</h3><ul><li>20 دقيقة لكل نص. اقرأ النص بسرعة (skim) 2–3 دقائق عشان تعرف فكرة كل فقرة.</li><li>ابحث (scan) عن الأسماء والأرقام والتواريخ والكلمات المميزة.</li><li>الأسئلة تجي <b>بالترتيب</b> في أغلب الأنواع (ما عدا matching headings/information).</li><li>الأسئلة تستخدم مرادفات (paraphrase) — لا تدوّر على نفس الكلمة.</li><li>لا تعلق في سؤال أكثر من دقيقة ونص — خمّن وكمل وارجع له.</li></ul>
+   <h3>✍️ Writing</h3><ul><li>ابدأ بـ Task 2؟ مسموح! كثير طلاب يبدأون بها لأنها ضعف الوزن.</li><li>خطط 3–5 دقائق قبل ما تكتب، وخلّ 3 دقائق للمراجعة (أخطاء الفعل، الجمع، أدوات التعريف).</li><li>اعرف كم كلمة تكتب في السطر عشان تقدّر الطول بسرعة.</li></ul>
+   <h3>🗣️ Speaking</h3><ul><li>Part 1: جواب + سبب + مثال (2–3 جمل).</li><li>Part 2: استغل الدقيقة في كلمات مفتاحية لكل نقطة، وتكلّم بالترتيب، واستخدم الماضي لو القصة في الماضي. كمل لين الممتحن يوقفك.</li><li>Part 3: رأي ← سبب ← مثال ← رأي مخالف أو مقارنة ← خلاصة.</li><li>لو احتجت وقت تفكر: «That’s an interesting question…», «Let me think…». الأخطاء الصغيرة عادي، المهم تكمل.</li></ul>`:`
+   <h3>🎧 Listening</h3><ul><li>Use the reading time: underline key words and predict the type of answer (number? name? place? plural?).</li><li>Watch out for corrections and distractors: “It was Tuesday… sorry, I mean <b>Thursday</b>” → the answer is Thursday.</li><li>Names are spelled letter by letter — write every letter. Practise letter names (A/E/I, G/J, double L).</li><li>Numbers: 15 (fifteen) vs 50 (fifty) — the stress differs. “Double three” = 33.</li><li>If you miss an answer, let it go and focus on the next one.</li><li>Signposts (“Moving on to…”, “Finally…”) tell you the next question is coming.</li></ul>
+   <h3>📖 Reading</h3><ul><li>20 minutes per passage. Skim the passage for 2–3 minutes to get the idea of each paragraph.</li><li>Scan for names, numbers, dates and unusual words.</li><li>Questions follow the <b>text order</b> in most types (not matching headings/information).</li><li>Questions use paraphrase — don’t hunt for identical words.</li><li>Don’t spend more than about 1.5 minutes on one question — guess, move on, come back.</li></ul>
+   <h3>✍️ Writing</h3><ul><li>Starting with Task 2 is allowed — many candidates do, because it carries double weight.</li><li>Plan for 3–5 minutes before writing and keep 3 minutes to check (verb forms, plurals, articles).</li><li>Know how many words you write per line so you can estimate length quickly.</li></ul>
+   <h3>🗣️ Speaking</h3><ul><li>Part 1: answer + reason + example (2–3 sentences).</li><li>Part 2: use the minute for key words per bullet point, follow the order, use past tenses for past events, and keep talking until the examiner stops you.</li><li>Part 3: opinion → reason → example → contrast/comparison → conclusion.</li><li>Buying time is fine: “That’s an interesting question…”, “Let me think…”. Small mistakes are OK — keep going.</li></ul>`]);
+  s.push([L('استراتيجيات أنواع الأسئلة','Strategies by question type'),A?`
+   <h3>TRUE / FALSE / NOT GIVEN (معلومات) و YES / NO / NOT GIVEN (رأي الكاتب)</h3>
+   <ul><li><b>TRUE/YES</b> = النص يقول نفس المعنى. <b>FALSE/NO</b> = النص يقول <b>العكس</b>. <b>NOT GIVEN</b> = النص ما يقول شي عن هذي النقطة (لا تأكيد ولا نفي).</li><li>TFNG للحقائق، YNNG لآراء الكاتب ومواقفه.</li><li>انتبه لكلمات التقييد: all / some / always / usually / only / the first / more than — كلمة وحدة تقلب الجواب.</li><li>لا تستخدم معلوماتك العامة — بس النص.</li></ul>
+   <div class="ex">النص: «Only certain types of cloud are suitable.» · الجملة: «All clouds can be seeded.» ← <b>FALSE</b>. · الجملة: «Seeding is cheaper than desalination.» (التكلفة ما انذكرت) ← <b>NOT GIVEN</b>.</div>
+   <h3>Matching headings</h3><ul><li>اقرأ الفقرة كاملة وحدد <b>الفكرة الرئيسية</b> (غالبًا في أول أو آخر جملة)، بعدين اختار العنوان.</li><li>العناوين أكثر من الفقرات — فيه عناوين زيادة للتمويه.</li><li>لا تختار عنوان لأن فيه كلمة موجودة في الفقرة — هذا فخ.</li><li>ابدأ بالفقرات القصيرة/الواضحة، واشطب العناوين اللي استخدمتها.</li></ul>
+   <h3>Matching information / features / sentence endings</h3><ul><li>Matching information: «أي فقرة فيها…» — الترتيب مو مضمون، وممكن نفس الحرف يتكرر (NB).</li><li>Matching features: دوّر على أسماء الأشخاص في النص وظلّلها، بعدين اقرأ حولها.</li><li>Sentence endings: النهاية لازم تكمل المعنى <b>والقواعد</b>.</li></ul>
+   <h3>Gap fill: summary / sentence / note / table / form completion</h3><ul><li>اقرأ حد الكلمات أول شي واكتبه جنب الأسئلة.</li><li>توقّع نوع الكلمة (اسم، فعل، صفة، رقم) من الكلمات حول الفراغ.</li><li>انسخ الكلمة <b>من النص بالضبط</b> (Reading) — لا تغيّر صيغتها.</li><li>لو فيه صندوق كلمات، الكلمات غالبًا مرادفات لكلمات النص.</li><li>الإجابات بالترتيب غالبًا.</li></ul>
+   <h3>Multiple choice</h3><ul><li>اقرأ السؤال وحدد الكلمات المفتاحية قبل الخيارات.</li><li>استبعد الخيارات: الخطأ غالبًا «صحيح لكن مو جواب السؤال» أو «مذكور لكن بعكس المعنى».</li><li>في Listening، كل الخيارات تنذكر غالبًا — الجواب اللي يتأكد في الآخر.</li></ul>
+   <h3>Map / plan labelling (Listening)</h3><ul><li>حدد نقطة البداية (You are here / entrance) والاتجاهات (north, south) قبل التسجيل.</li><li>احفظ كلمات الاتجاه: opposite (مقابل)، next to (جنب)، behind (ورا)، in front of، at the end of (في نهاية)، on the corner، turn left/right، go past (تعدّي)، clockwise.</li><li>تابع بإصبعك مع المتكلم.</li></ul>
+   <h3>Form completion (Listening Part 1)</h3><ul><li>أسماء، أرقام تلفون، تواريخ، عناوين، أسعار — انتبه للتهجئة والتصحيحات.</li><li>التاريخ: 3 March أو March 3 كلاهما صحيح.</li></ul>
+   <h3>✍️ Task 1 — الـOverview والهيكل</h3><ul><li><b>مقدمة:</b> أعد صياغة السؤال (The chart compares… / The table illustrates…).</li><li><b>Overview (أهم جزء):</b> 2 من أبرز الاتجاهات بدون أرقام: «Overall, X rose significantly, while Y remained the lowest throughout.»</li><li><b>فقرتين:</b> قسّم البيانات لمجموعتين منطقيتين، واذكر الأرقام مع المقارنة.</li><li>لا رأي ولا أسباب. للعملية (process): المراحل بالترتيب + المبني للمجهول. للخريطة: التغيرات (was replaced by, was extended).</li><li>مفردات: rose sharply / fell slightly / peaked at / fluctuated / remained stable / accounted for / twice as many as.</li></ul>
+   <h3>📝 Task 2 — هياكل المقال (4–5 فقرات، 270–300 كلمة)</h3><ul>
+   <li><b>Opinion (agree/disagree):</b> مقدمة + رأيك ← سبب 1 ← سبب 2 (أو رأي مخالف ورد عليه) ← خاتمة تعيد الرأي.</li>
+   <li><b>Discuss both views + opinion:</b> مقدمة ← الرأي الأول ← الرأي الثاني ← رأيك واضح (في المقدمة والخاتمة).</li>
+   <li><b>Advantages / disadvantages:</b> مقدمة ← المميزات ← العيوب ← خاتمة (وإذا سألك أيهما أكثر، جاوب بوضوح).</li>
+   <li><b>Problem / solution (أو cause / solution):</b> مقدمة ← المشاكل/الأسباب مع أمثلة ← الحلول المرتبطة بها ← خاتمة.</li>
+   <li><b>Two-part question:</b> مقدمة ← جواب السؤال الأول ← جواب السؤال الثاني ← خاتمة.</li>
+   <li>كل فقرة: Topic sentence ← شرح ← مثال ← ربط بالسؤال.</li></ul>
+   <h3>🗣️ Part 2 — ملاحظات الدقيقة الوحدة</h3><ul><li>اكتب 2–4 كلمات مفتاحية لكل نقطة في البطاقة + كلمة للنقطة الأخيرة «and explain…» لأنها أطول جزء.</li><li>رتّب: مقدمة جملة ← النقاط بالترتيب ← سبب ومشاعر ← خاتمة.</li><li>أضف تفاصيل حسية (شو شفت، سمعت، حسيت) عشان تكمل دقيقتين.</li></ul>`:`
+   <h3>TRUE / FALSE / NOT GIVEN (facts) vs YES / NO / NOT GIVEN (writer’s views)</h3>
+   <ul><li><b>TRUE/YES</b> = the text says the same thing. <b>FALSE/NO</b> = the text says the <b>opposite</b>. <b>NOT GIVEN</b> = the text says nothing about this point (it neither confirms nor contradicts).</li><li>TFNG tests factual information; YNNG tests the writer’s opinions and claims.</li><li>Watch qualifiers: all / some / always / usually / only / the first / more than — one word can change the answer.</li><li>Do not use your general knowledge — only the text.</li></ul>
+   <div class="ex">Text: “Only certain types of cloud are suitable.” · Statement: “All clouds can be seeded.” → <b>FALSE</b>. · Statement: “Seeding is cheaper than desalination.” (cost is never mentioned) → <b>NOT GIVEN</b>.</div>
+   <h3>Matching headings</h3><ul><li>Read the whole paragraph and identify its <b>main idea</b> (often in the first or last sentence), then choose the heading.</li><li>There are more headings than paragraphs — some are distractors.</li><li>Don’t pick a heading just because it shares a word with the paragraph — that’s a trap.</li><li>Start with short/clear paragraphs and cross out headings you’ve used.</li></ul>
+   <h3>Matching information / features / sentence endings</h3><ul><li>Matching information: “Which paragraph contains…” — not in order, and a letter may be used more than once (NB).</li><li>Matching features: find and underline the people’s names in the text, then read around them.</li><li>Sentence endings: the ending must fit the meaning <b>and the grammar</b>.</li></ul>
+   <h3>Gap fill: summary / sentence / note / table / form completion</h3><ul><li>Read the word limit first and note it next to the questions.</li><li>Predict the word type (noun, verb, adjective, number) from the words around the gap.</li><li>Copy the word <b>exactly from the text</b> (Reading) — don’t change its form.</li><li>With a word box, the options are usually synonyms of words in the text.</li><li>Answers are usually in order.</li></ul>
+   <h3>Multiple choice</h3><ul><li>Read the question stem and underline key words before the options.</li><li>Eliminate: wrong options are often “true but not the answer to the question” or “mentioned but with the opposite meaning”.</li><li>In Listening, often every option is mentioned — the answer is the one finally confirmed.</li></ul>
+   <h3>Map / plan labelling (Listening)</h3><ul><li>Find the starting point (You are here / entrance) and the compass directions before the recording starts.</li><li>Know the language: opposite, next to, behind, in front of, at the end of, on the corner, turn left/right, go past, clockwise.</li><li>Follow the route with your finger as the speaker talks.</li></ul>
+   <h3>Form completion (Listening Part 1)</h3><ul><li>Names, phone numbers, dates, addresses, prices — watch spelling and corrections.</li><li>Dates: 3 March or March 3 are both fine.</li></ul>
+   <h3>✍️ Task 1 — the overview and structure</h3><ul><li><b>Introduction:</b> paraphrase the prompt (The chart compares… / The table illustrates…).</li><li><b>Overview (the most important part):</b> the 2 most striking trends, without numbers: “Overall, X rose significantly, while Y remained the lowest throughout.”</li><li><b>Two body paragraphs:</b> group the data logically and give figures with comparisons.</li><li>No opinions or reasons. Process: stages in order + passive voice. Map: changes (was replaced by, was extended).</li><li>Language: rose sharply / fell slightly / peaked at / fluctuated / remained stable / accounted for / twice as many as.</li></ul>
+   <h3>📝 Task 2 — essay structures (4–5 paragraphs, 270–300 words)</h3><ul>
+   <li><b>Opinion (agree/disagree):</b> intro + your position → reason 1 → reason 2 (or the opposing view and your answer to it) → conclusion restating your view.</li>
+   <li><b>Discuss both views + give your opinion:</b> intro → view 1 → view 2 → your clear opinion (in intro and conclusion).</li>
+   <li><b>Advantages / disadvantages:</b> intro → advantages → disadvantages → conclusion (if asked which outweighs, say so clearly).</li>
+   <li><b>Problem / solution (or cause / solution):</b> intro → problems/causes with examples → matching solutions → conclusion.</li>
+   <li><b>Two-part question:</b> intro → answer to question 1 → answer to question 2 → conclusion.</li>
+   <li>Every body paragraph: topic sentence → explanation → example → link back to the question.</li></ul>
+   <h3>🗣️ Part 2 — one-minute notes</h3><ul><li>Write 2–4 key words for each bullet on the card, plus notes for the final “and explain…” point — it is usually the longest part.</li><li>Order: one-sentence intro → points in order → reasons and feelings → short conclusion.</li><li>Add sensory detail (what you saw, heard, felt) to fill the full two minutes.</li></ul>`]);
+  s.push([L('خطة 4 أسابيع','A 4-week plan'),`<div class="ie-grid">${[[L('الأسبوع 1','Week 1'),L('افهم شكل الامتحان والقواعد + Reading Test 1 و Listening Test 1 + راجع كل غلطة.','Learn the format and rules + Reading Test 1 and Listening Test 1 + review every mistake.')],[L('الأسبوع 2','Week 2'),L('Tests 2–4 في Reading و Listening + Writing Test 1 (Task 2 أول).','Tests 2–4 in Reading and Listening + Writing Test 1 (Task 2 first).')],[L('الأسبوع 3','Week 3'),L('Writing Tests 2–3 + Speaking Tests 1–3 مع تسجيل صوتك كل يوم.','Writing Tests 2–3 + Speaking Tests 1–3, recording yourself daily.')],[L('الأسبوع 4','Week 4'),L('اختبارات كاملة بالتوقيت (L + R + W ورا بعض) + ركّز على أضعف نوع أسئلة.','Full timed tests (L + R + W in a row) + focus on your weakest question type.')]].map(function(w){return `<div class="card"><b>${w[0]}</b><p style="margin:4px 0 0">${w[1]}</p></div>`}).join('')}</div>`]);
+  return `<div class="card" style="background:var(--lav-soft);border-color:var(--lav)"><b style="font-size:18px">${L('👋 ابدأ من هنا','👋 Start here')}</b><p style="margin:4px 0 0">${L('قبل ما تحل أي اختبار، اعرف شكل الامتحان وقواعده ووقته وطريقة حساب الدرجة. بعدها جرّب الاختبارات التدريبية في كل مهارة.','Before any test, learn the format, the rules, the timing and how the score is calculated. Then try the practice tests in each skill.')}</p>
+    <div class="row" style="margin-top:8px">${IE_SK.map(function(k){return `<button class="sec" onclick="ieTabGo('${k}')">${IE_IC[k]} ${IE_NM[k]}</button>`}).join('')}</div></div>`+
+    s.map(function(x,i){return ieSec(i+1,x[0],x[1],i===0)}).join('');
+}
+
 
 render();
 </script>
