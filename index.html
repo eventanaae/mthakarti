@@ -121,6 +121,7 @@ h3{font-size:19px;margin:0 0 6px}
 /* assistant */
 .fab{position:fixed;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:calc(16px + env(safe-area-inset-left,0px));z-index:20;background:var(--lav);color:#fff;border-radius:999px;padding:12px 18px;box-shadow:0 8px 24px rgba(123,98,232,.35);display:flex;gap:8px;align-items:center}
 [dir="ltr"] .fab{left:auto;right:calc(16px + env(safe-area-inset-right,0px))}
+.fab .fabshort{display:none}
 /* private tutor */
 .tutor{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:10px}
 .tuhead{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,var(--pink-soft),var(--lav-soft));border:1.5px solid var(--line);border-radius:22px;padding:14px}
@@ -208,9 +209,10 @@ html,body{overflow-x:hidden;overflow-x:clip}
   .top .crumbs{display:none!important}
   .hacts{gap:5px}
   .hbtn{width:36px;height:36px;border-radius:11px;font-size:14px}
-  .fab{padding:0;width:56px;height:56px;border-radius:50%;justify-content:center}
-  .fab span{display:none}
-  .fab .fabic{font-size:28px;line-height:1}
+  .fab{padding:6px 12px 6px 8px;border-radius:999px;gap:6px}
+  .fab .fabfull{display:none}
+  .fab .fabshort{display:inline;font-size:12.5px;font-weight:700;white-space:nowrap}
+  .fab .fabic{font-size:24px;line-height:1}
   .exgrid{grid-template-columns:1fr 1fr}
   .termbar button{font-size:14px}
 }
@@ -247,7 +249,7 @@ html,body{overflow-x:hidden;overflow-x:clip}
   </div>
 </div></header>
 <main class="wrap" id="view"></main>
-<button class="fab" id="fab" onclick="go('assistant')" aria-label="اسأل مدرسك الخصوصي"><b class="fabic">👩‍🏫</b> <span>اسأل مدرسك الخصوصي</span></button>
+<button class="fab" id="fab" onclick="go('assistant')" aria-label="اسأل مدرسك الخصوصي"><b class="fabic">👩‍🏫</b> <span class="fabfull">اسأل مدرسك الخصوصي</span><span class="fabshort">مدرس خصوصي</span></button>
 </div>
 
 <script>
@@ -31948,7 +31950,7 @@ function applyLang(){
   set('#langBtn',L('English','عربي'),L('Switch to English','التبديل إلى العربية'));
   const lb=$('#langBtn');if(lb)lb.textContent=L('EN','ع');
   const sc=$('#stuChip');if(sc)sc.title=L('تغيير الاسم أو الصف','Change name or grade');
-  const f=$('#fab span');if(f)f.textContent=L('اسأل مدرسك الخصوصي','Ask your private tutor');
+  const f=$('#fab .fabfull');if(f)f.textContent=L('اسأل مدرسك الخصوصي','Ask your private tutor');const fs=$('#fab .fabshort');if(fs)fs.textContent=L('مدرس خصوصي','Tutor');
 }
 function setLang(l){l=l==='en'?'en':'ar';if(l!==LANG){LANG=l;store.set('lang',l)}applyLang();render();if(store.get('pushOn',false))syncPush()}
 applyLang();
@@ -32486,7 +32488,8 @@ Rules:
 3) If the student sends a photo of a question: read it, solve it step by step, and explain the idea so they can solve similar ones.
 4) Encourage the student, and finish with a short question to check they understood.
 5) Use simple formatting: bullet points, **bold** for key points. No long tables.
-6) Base every answer on the curriculum content below (lessons and deep explanations). When relevant, name the lesson it comes from. Make answers interactive: short steps, and end with ONE small check question.
+6) Base every answer on the curriculum content below (lessons and deep explanations). When relevant, name the lesson it comes from.
+7) Tutor interactively, like a real one-to-one lesson: explain ONE idea per reply (under 120 words), then ask the student a question they must engage with (predict, compute one step, or choose A/B/C/D on separate lines), and wait for their answer before continuing. If they are right, praise them and move to the next step; if wrong, give a hint instead of the answer.
 ${k&&k!=='all'?syllabus(k):allSyllabus()}`;
   return `أنت «مدرس مذاكرتي الخصوصي»، مدرس خصوصي ودود وصبور لطلاب المدارس في الإمارات.
 القواعد:
@@ -32495,7 +32498,8 @@ ${k&&k!=='all'?syllabus(k):allSyllabus()}`;
 3) إذا أرسل الطالب صورة سؤال: اقرأ السؤال، حلّه خطوة بخطوة، واشرح الفكرة عشان يقدر يحل مثله.
 4) شجّع الطالب، واختم بسؤال صغير يتأكد فيه أنه فهم.
 5) استخدم تنسيق بسيط: نقاط، **غامق** للمهم. بدون جداول طويلة.
-6) اعتمد في كل جواب على محتوى المنهج التالي (الدروس والشرح الأعمق)، واذكر اسم الدرس اللي منه الجواب إذا يفيد. خلّ الجواب تفاعلي: خطوات قصيرة، واختم بسؤال صغير واحد تتأكد فيه إنه فهم.
+6) اعتمد في كل جواب على محتوى المنهج التالي (الدروس والشرح الأعمق)، واذكر اسم الدرس اللي منه الجواب إذا يفيد.
+7) كن مدرس تفاعلي مثل الحصة الخصوصية: لا تشرح كل شي مرة وحدة. اشرح فكرة وحدة بس في كل رد (أقل من 120 كلمة)، بعدها اسأل الطالب سؤال يشارك فيه (يتوقع، يحسب خطوة وحدة، أو يختار من أ ب ج د كل خيار في سطر)، وانتظر جوابه قبل ما تكمل. إذا جاوب صح امدحه وانتقل للخطوة اللي بعدها، وإذا غلط لمّح له بدون ما تعطيه الجواب على طول.
 ${k&&k!=='all'?syllabus(k):allSyllabus()}`}
 let chat={k:'all',turns:[],ctl:null};
 function askAbout(k,id){const t=SUBJ[k].T.find(x=>x.id===id);chat.k=k;chat.prefill=L(`اشرح لي درس «${t.t}» بطريقة أسهل مع مثال جديد.`,`Explain the lesson "${t.t}" in a simpler way with a new example.`);go('assistant')}
@@ -32518,6 +32522,9 @@ function tutorErr(e){const c=e&&e.code;
   if(c==='not_configured')return L('المدرس الخصوصي بيكون جاهز قريب جدًا إن شاء الله 🛠️','Your private tutor will be ready very soon 🛠️');
   if(c==='rate_limited')return L('سألت وايد هالساعة 😅 ارتاح شوي وارجع بعد شوي.','You’ve asked a lot this hour 😅 take a short break and come back.');
   if(c==='no_account')return L('سجّل دخول أول عشان تكلم مدرسك.','Sign in first to talk to your tutor.');
+  if(c==='daily_limit')return L('خلصت أسئلتك لليوم (60 سؤال) 💪 ارجع بكرة، ولين ذاك الوقت راجع الدروس وحل الكويزات.','You’ve used today’s 60 questions 💪 Come back tomorrow — meanwhile review the lessons and quizzes.');
+  if(c==='site_limit')return L('المدرس الخصوصي مشغول وايد اليوم 🙏 جرّب بكرة.','The tutor is very busy today 🙏 please try tomorrow.');
+  if(c==='refusal')return L('ما أقدر أجاوب على هذا السؤال. اسألني عن دروسك 📚','I can’t answer that one. Ask me about your lessons 📚');
   return L('صار خطأ في الاتصال، جرّب مرة ثانية.','Connection problem — please try again.')}
 async function vAssistant(){
   crumbs([[L('الرئيسية','Home'),'home'],[L('مدرسك الخصوصي','Private tutor')]]);
@@ -32564,7 +32571,7 @@ async function vAssistant(){
        [L('🎯 اختبرني','🎯 Quiz me'),L('اختبرني بسؤال واحد اختيار من متعدد (أ، ب، ج، د) على نفس الفكرة، ولا تقول الجواب لين أجاوب.','Quiz me with ONE multiple-choice question (A, B, C, D) on the same idea, and do not reveal the answer until I reply.')],
        [L('📚 وين هذا في الدروس؟','📚 Which lesson is this?'),L('في أي درس من دروس المنهج هذا الموضوع؟ وشو أهم شي لازم أحفظه منه للامتحان؟','Which lesson of the curriculum covers this, and what must I remember for the exam?')]]
        .forEach(([lb,q])=>{const b=document.createElement('button');b.textContent=lb;b.onclick=()=>{document.querySelectorAll('.tufu').forEach(x=>x.remove());inp.value=q;$('#aiSend').click()};fu.appendChild(b)});
-      if(/(^|\n)\s*[(]?\s*(أ|A)\s*[).-]/.test(ans)&&/(^|\n)\s*[(]?\s*(د|D)\s*[).-]/.test(ans)){const qa=document.createElement('div');qa.className='chips tufu';
+      if(/(^|\n)[\s*_•\-]*[(]?\s*(أ|A)\s*[).:-]/.test(ans)&&/(^|\n)[\s*_•\-]*[(]?\s*(د|D)\s*[).:-]/.test(ans)){const qa=document.createElement('div');qa.className='chips tufu';
         L('أ ب ج د','A B C D').split(' ').forEach(x=>{const b=document.createElement('button');b.textContent=x;b.style.minWidth='48px';b.onclick=()=>{document.querySelectorAll('.tufu').forEach(y=>y.remove());inp.value=L('جوابي: ','My answer: ')+x;$('#aiSend').click()};qa.appendChild(b)});bub.appendChild(qa)}
       bub.appendChild(fu);
 
