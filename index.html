@@ -31998,6 +31998,7 @@ function render(){
   if(h.startsWith('s-')){const k=h.slice(2);if(SUBJ[k])return vSubject(k,ctx.subj===k?ctx.tab:'lessons')}
   if(h==='compete')return vCompete();
   if(h==='exams')return vExams();
+  if(h==='admin')return vAdmin();
   if(h==='ielts')return vIelts();
   if(h==='assistant')return vAssistant();
   vHome();
@@ -32620,6 +32621,25 @@ function examStrip(){
     <div class="row" style="justify-content:space-between"><b style="font-size:18px">${r?r.icon+' '+r.txt:L(`📆 أقرب امتحان: ${nm(next.k)} بعد ${DAYS(next.n)}`,`📆 Next exam: ${nm(next.k)} in ${DAYS(next.n)}`)}</b>
     <div class="row" style="gap:6px"><button class="pri" onclick="go('exams')">${L('📅 جدول الامتحانات','📅 Exam timetable')}</button><button class="sec" onclick="enableNotif()" id="notifBtn">${L('🔔 فعّل التنبيهات','🔔 Turn on reminders')}</button></div></div>
     <div class="exgrid">${EL.filter(e=>e.n<=15).map(e=>`<div class="exi ${e.n<=3?'soon':''}"><span class="exic">${e.s.icon}</span><span class="exn">${nm(e.k)}</span><span class="exd">${WHEN(e.n)}</span></div>`).join('')}</div></div>`;
+}
+/* Owner-only page: paste the Anthropic API key once (needs the admin code) */
+function vAdmin(){
+  crumbs([[L('الرئيسية','Home'),'home'],['🔐 Admin']]);
+  $('#view').innerHTML=`<div class="card" style="max-width:520px;margin:20px auto">
+   <h2 style="margin-top:0">🔐 ${L('تشغيل المدرس الخصوصي','Turn on the private tutor')}</h2>
+   <p class="mut">${L('هذي الصفحة لصاحبة الموقع بس.','This page is for the site owner only.')}</p>
+   <label for="admCode" style="font-weight:800">${L('الكود السري','Admin code')}</label>
+   <input id="admCode" dir="ltr" autocomplete="off" style="margin:6px 0 12px">
+   <label for="admKey" style="font-weight:800">${L('مفتاح Anthropic (يبدأ بـ sk-ant-)','Anthropic key (starts with sk-ant-)')}</label>
+   <input id="admKey" type="password" dir="ltr" autocomplete="off" placeholder="sk-ant-..." style="margin:6px 0 12px">
+   <p id="admMsg" style="min-height:1.5em"></p>
+   <button class="pri" id="admGo" style="width:100%">${L('حفظ وتشغيل ✅','Save and turn on ✅')}</button></div>`;
+  $('#admGo').onclick=async()=>{const m=$('#admMsg');m.style.color='';m.textContent=L('جاري الحفظ…','Saving…');
+    try{await rpc('admin_set_ai_key',{p_code:$('#admCode').value.trim(),p_key:$('#admKey').value.trim()});$('#admKey').value='';
+      m.textContent=L('✅ انحفظ! جاري تجربة المدرس…','✅ Saved! Testing the tutor…');
+      try{const a=await tutorAsk([{role:'user',content:'Reply with one short friendly Arabic sentence.'},{role:'user',content:'هلا'}],null);m.style.color='var(--mint)';m.textContent='✅ '+L('المدرس الخصوصي شغّال: ','The tutor works: ')+a.slice(0,80)}
+      catch(e){m.style.color='var(--bad)';m.textContent=L('انحفظ، بس المدرس ما رد: ','Saved, but the tutor did not answer: ')+(e&&e.code||'')+L(' (تأكدي إن في رصيد في حساب Anthropic)',' (check your Anthropic credit)')}}
+    catch(e){m.style.color='var(--bad)';m.textContent=/bad_code/.test(e.message)?L('الكود السري غلط','Wrong admin code'):/bad_key/.test(e.message)?L('المفتاح لازم يبدأ بـ sk-ant-','The key must start with sk-ant-'):L('صار خطأ، جرّبي مرة ثانية','Something went wrong, try again')}};
 }
 function vExams(){
   crumbs([[L('الرئيسية','Home'),'home'],[L('جدول الامتحانات','Exam timetable')]]);
