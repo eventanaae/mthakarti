@@ -32473,6 +32473,7 @@ async function toggleMic(){
 let sampleNS=null; const sampleReady=window.claude?.use?.('sample').then(s=>{sampleNS=s;return s}).catch(()=>null)||Promise.resolve(null);
 const AI_ERR={not_granted:['المساعد يحتاج موافقتك على استخدام Claude. اضغط سماح لما يطلع لك الطلب.','The helper needs your permission to use Claude. Tap Allow when the request appears.'],sampling_disabled:['المساعد غير متاح لهذا الحساب.','The helper isn’t available for this account.'],rate_limited:['كثرت الأسئلة 😅 انتظر شوي وجرّب مرة ثانية.','Too many questions 😅 Wait a bit and try again.'],session_expired:['سجّل دخولك في Claude مرة ثانية.','Please sign in to Claude again.'],image_rejected:['الصورة ما انقبلت، جرّب صورة أوضح (JPG أو PNG).','The image wasn’t accepted — try a clearer one (JPG or PNG).'],refused:['ما قدرت أجاوب على هذا. جرّب تكتب السؤال بطريقة ثانية.','I couldn’t answer that. Try asking the question another way.']};
 function aiMsg(e){const m=AI_ERR[e&&e.code];return m?L(m[0],m[1]):L('صار خطأ في الاتصال، جرّب مرة ثانية.','Connection error — please try again.')}
+function allSyllabus(){return L('منهج الطالب كامل (كل المواد، الفصل الأول):\n','The student’s full curriculum (all subjects, Term 1):\n')+Object.keys(SUBJ).map(k=>{const s=SUBJ[k];return '## '+nm(k)+'\n'+(s.summary?strip(s.summary).slice(0,1500)+'\n':'')+s.T.filter(t=>t.term!==0).map(t=>'- '+t.t+': '+strip(t.html).slice(0,220)).join('\n')}).join('\n\n')}
 function syllabus(k){const s=SUBJ[k];if(!s)return '';const head=L(`مادة ${s.name} (${GR[CUR].name}، الإمارات، الفصل الأول 2026-2027). محتوى المادة من موقع مذاكرتي (مبني على ماتيريال المدرسة):\n`,`Subject: ${nm(k)}${nm(k)!==s.name?' ('+s.name+')':''} (${GR[CUR].name}, UAE, Term 1 2026-2027). Subject content from the Mthakarti site (based on the school material)${CD(s)==='rtl'?' — the content is in Arabic':''}:\n`);
   const lessons=s.T.filter(t=>t.term!==0).map(t=>`- ${t.t}: ${strip(t.html).slice(0,700)}${t.deep?' | '+strip(t.deep).slice(0,1400):''}`).join('\n');
   return head+(s.summary?(L('الملخص:\n','Summary:\n')+s.summary+L('\n\nالدروس:\n','\n\nLessons:\n')+lessons):lessons)}
@@ -32483,7 +32484,8 @@ Rules:
 3) If the student sends a photo of a question: read it, solve it step by step, and explain the idea so they can solve similar ones.
 4) Encourage the student, and finish with a short question to check they understood.
 5) Use simple formatting: bullet points, **bold** for key points. No long tables.
-${k&&k!=='all'?syllabus(k):'Available subjects: '+Object.keys(SUBJ).map(x=>nm(x)).join(', ')}`;
+6) Base every answer on the curriculum content below (lessons and deep explanations). When relevant, name the lesson it comes from. Make answers interactive: short steps, and end with ONE small check question.
+${k&&k!=='all'?syllabus(k):allSyllabus()}`;
   return `أنت «مدرس مذاكرتي الخصوصي»، مدرس خصوصي ودود وصبور لطلاب المدارس في الإمارات.
 القواعد:
 1) اعتمد أولًا على محتوى المادة التالي (منهج وزارة التربية الإماراتية)، وإذا السؤال خارج المحتوى جاوب بمعرفتك العامة وقل ذلك.
@@ -32491,7 +32493,8 @@ ${k&&k!=='all'?syllabus(k):'Available subjects: '+Object.keys(SUBJ).map(x=>nm(x)
 3) إذا أرسل الطالب صورة سؤال: اقرأ السؤال، حلّه خطوة بخطوة، واشرح الفكرة عشان يقدر يحل مثله.
 4) شجّع الطالب، واختم بسؤال صغير يتأكد فيه أنه فهم.
 5) استخدم تنسيق بسيط: نقاط، **غامق** للمهم. بدون جداول طويلة.
-${k&&k!=='all'?syllabus(k):'المواد المتاحة: '+Object.values(SUBJ).map(s=>s.name).join('، ')}`}
+6) اعتمد في كل جواب على محتوى المنهج التالي (الدروس والشرح الأعمق)، واذكر اسم الدرس اللي منه الجواب إذا يفيد. خلّ الجواب تفاعلي: خطوات قصيرة، واختم بسؤال صغير واحد تتأكد فيه إنه فهم.
+${k&&k!=='all'?syllabus(k):allSyllabus()}`}
 let chat={k:'all',turns:[],ctl:null};
 function askAbout(k,id){const t=SUBJ[k].T.find(x=>x.id===id);chat.k=k;chat.prefill=L(`اشرح لي درس «${t.t}» بطريقة أسهل مع مثال جديد.`,`Explain the lesson "${t.t}" in a simpler way with a new example.`);go('assistant')}
 function askQ(){const q=Z.qs[Z.i];const s=SUBJ[Z.k];chat.k=Z.k;chat.prefill=L(`ما فهمت هذا السؤال: ${strip(q[1])}\nالجواب الصحيح: ${strip(q[2])}\nاشرح لي ليش خطوة بخطوة.`,`I didn't understand this question: ${strip(q[1])}\nThe correct answer: ${strip(q[2])}\nExplain why, step by step.`);clearInterval(quizTimer);go('assistant')}
@@ -32553,6 +32556,15 @@ async function vAssistant(){
     try{const ans=await tutorAsk(turns,pic);chat.turns.push({role:'assistant',content:ans});
       const al=(ans.match(/[؀-ۿ]/g)||[]).length>(ans.match(/[A-Za-z]/g)||[]).length?'ar':'en';
       bub.innerHTML=md(ans)+`<div class="row" style="margin-top:6px"><button class="ghost" style="padding:4px 10px;font-size:13px" onclick="speak(this.closest('.msg').innerText.replace(this.textContent,''),'${al}',this)">${LISTEN()}</button></div>`;
+      const fu=document.createElement('div');fu.className='chips tufu';
+      [[L('😕 ما فهمت، اشرح أبسط','😕 Simpler please'),L('ما فهمت، اشرح لي نفس الشي بطريقة أبسط مع تشبيه من الحياة.','I did not understand. Explain the same thing more simply with an everyday analogy.')],
+       [L('✏️ مثال ثاني','✏️ Another example'),L('أعطني مثال ثاني محلول خطوة بخطوة.','Give me another example solved step by step.')],
+       [L('🎯 اختبرني','🎯 Quiz me'),L('اختبرني بسؤال واحد اختيار من متعدد (أ، ب، ج، د) على نفس الفكرة، ولا تقول الجواب لين أجاوب.','Quiz me with ONE multiple-choice question (A, B, C, D) on the same idea, and do not reveal the answer until I reply.')],
+       [L('📚 وين هذا في الدروس؟','📚 Which lesson is this?'),L('في أي درس من دروس المنهج هذا الموضوع؟ وشو أهم شي لازم أحفظه منه للامتحان؟','Which lesson of the curriculum covers this, and what must I remember for the exam?')]]
+       .forEach(([lb,q])=>{const b=document.createElement('button');b.textContent=lb;b.onclick=()=>{document.querySelectorAll('.tufu').forEach(x=>x.remove());inp.value=q;$('#aiSend').click()};fu.appendChild(b)});
+      if(/(^|\n)\s*[(]?\s*(أ|A)\s*[).-]/.test(ans)&&/(^|\n)\s*[(]?\s*(د|D)\s*[).-]/.test(ans)){const qa=document.createElement('div');qa.className='chips tufu';
+        L('أ ب ج د','A B C D').split(' ').forEach(x=>{const b=document.createElement('button');b.textContent=x;b.style.minWidth='48px';b.onclick=()=>{document.querySelectorAll('.tufu').forEach(y=>y.remove());inp.value=L('جوابي: ','My answer: ')+x;$('#aiSend').click()};qa.appendChild(b)});bub.appendChild(qa)}
+      bub.appendChild(fu);
       earn(1);
     }catch(e){bub.innerHTML=`<span class="mut">${tutorErr(e)}</span>`;chat.turns.pop()}
     finally{chat.busy=false;send.disabled=false;bub.scrollIntoView({block:'end'})}
