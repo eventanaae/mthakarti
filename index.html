@@ -31991,8 +31991,10 @@ function render(){
   stuChip();
   { const p=$('#notifPanel'); if(p) p.remove(); }
   if(h==='admin'){$('#fab').classList.add('hidden');return vAdmin();}
-  if(!STU||!ACC||!GR[STU.grade]||h==='welcome'){$('#fab').classList.add('hidden');return vWelcome();}
+  const IEO=!!(STU&&STU.grade==='ielts'); /* IELTS-only accounts: no school subjects, no competition */
+  if(!STU||!ACC||(!GR[STU.grade]&&!IEO)||h==='welcome'){$('#fab').classList.add('hidden');return vWelcome();}
   if(VER.need){$('#fab').classList.add('hidden');return vVerify();}
+  if(IEO){$('#fab').classList.add('hidden');if(h!=='ielts'){location.hash='ielts';return}return vIelts();}
   setGrade(STU.grade); bellUpdate(); pushDue(false);
   $('#fab').classList.toggle('hidden',h==='assistant');
   if(h==='home')return vHome();
@@ -32013,7 +32015,7 @@ function render(){
 
 /* ================= STUDENT PROFILE ================= */
 let STU=store.get('student',null);
-function stuChip(){const c=$('#stuChip');if(!c)return;if(STU&&GR[STU.grade]){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+GR[STU.grade].short}else c.classList.add('hidden')}
+function stuChip(){const c=$('#stuChip');if(!c)return;if(STU&&STU.grade==='ielts'){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+L('آيلتس','IELTS');return}if(STU&&GR[STU.grade]){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+GR[STU.grade].short}else c.classList.add('hidden')}
 let welDraft=null; // keeps typed fields when switching language on the welcome view
 /* ===== Cloud account (required): email + PIN; progress syncs to Supabase so it follows the student to any device ===== */
 let ACC=store.get('acct',null);
@@ -32080,6 +32082,7 @@ function vWelcome(){
    <select id="gradeSel" style="margin:0 0 6px;cursor:pointer" ${mode==='edit'?'disabled':''}>
     <option value="" ${sel?'':'selected'} disabled>${L('اختر صفك ومسارك','Choose your grade and stream')}</option>
     ${grades.map(([g,n])=>['عام','متقدم'].map(tr=>{const id='g'+g+(tr==='عام'?'g':'a');return `<option value="${id}" ${sel===id?'selected':''}>${g==='10'?'📗':g==='11'?'📘':'🎓'} ${L(`الصف ${n} · ${tr}`,`Grade ${g} · ${tr==='عام'?'General':'Advanced'}`)}</option>`}).join('')).join('')}
+    <option value="ielts" ${sel==='ielts'?'selected':''}>✈️ ${L('تجهيز آيلتس بس (مب طالب مدرسة)','IELTS prep only (not a school student)')}</option>
    </select>
    ${mode==='edit'?`<p class="mut" style="font-size:13px;margin:0 0 6px">${L('🔒 الصف ينحدد مرة وحدة وقت التسجيل وما يتغير.','🔒 Your grade is set once at sign-up and cannot be changed.')}</p>`:''}
    <p id="gradeMsg" class="note hidden" style="margin:6px 0 0">${L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!')}</p>`;
@@ -32116,7 +32119,7 @@ function vWelcome(){
      <p style="text-align:center;margin-top:12px"><a href="#" onclick="welSwitch('login');return false">${L('عندي حساب؟ سجّل دخول','I have an account — sign in')}</a></p>`;
   }
   $('#view').innerHTML=`<div class="card" style="max-width:640px;margin:20px auto">${langBar}${body}</div>`;
-  const hasContent=id=>!!(GR[id]&&GR[id].S&&Object.keys(GR[id].S).length);
+  const hasContent=id=>id==='ielts'||!!(GR[id]&&GR[id].S&&Object.keys(GR[id].S).length);
   let pick=sel;const gs=$('#gradeSel');
   const chk=()=>{if(!gs)return;const soon=!!pick&&!hasContent(pick);$('#gradeMsg').classList.toggle('hidden',!soon);if(!soon)$('#welErr').textContent=''};
   if(gs){gs.onchange=()=>{pick=gs.value;chk()};chk()}
@@ -32685,7 +32688,7 @@ setTimeout(logVisit,4000);document.addEventListener('visibilitychange',()=>{if(d
     rpc('log_time',{p_dev:d,p_acc:ACC&&ACC.id||null,p_secret:ACC&&ACC.secret||null,p_secs:s,p_grade:STU&&STU.grade||null,p_lang:LANG}).catch(()=>{})};
   setInterval(()=>{if(document.visibilityState==='visible'&&Date.now()-lastAct<120000)acc+=10},10000);
   setInterval(send,60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')send()})})();
-const GRN={g10g:L('عاشر عام','G10 General'),g10a:L('عاشر متقدم','G10 Advanced'),g12a:L('ثاني عشر متقدم','G12 Advanced'),g11g:L('حادي عشر عام','G11 General'),g11a:L('حادي عشر متقدم','G11 Advanced'),g12g:L('ثاني عشر عام','G12 General')};
+const GRN={g10g:L('عاشر عام','G10 General'),g10a:L('عاشر متقدم','G10 Advanced'),g12a:L('ثاني عشر متقدم','G12 Advanced'),g11g:L('حادي عشر عام','G11 General'),g11a:L('حادي عشر متقدم','G11 Advanced'),g12g:L('ثاني عشر عام','G12 General'),ielts:L('آيلتس بس','IELTS only')};
 /* ===== Owner dashboard (#admin): email + password login, session kept on this device for 30 days ===== */
 const ADM={tok:(()=>{try{return localStorage.getItem('mthAdmTok')||''}catch(e){return ''}})(),tab:'over',s:null,w:null};
 function admSetTok(t){ADM.tok=t||'';try{t?localStorage.setItem('mthAdmTok',t):localStorage.removeItem('mthAdmTok')}catch(e){}}
@@ -32932,7 +32935,7 @@ setTimeout(notifOffer,5000);
 const SB_URL='https://valzeoiilqbmmrosspsp.supabase.co', SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhbHplb2lpbHFibW1yb3NzcHNwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2NzY0MzksImV4cCI6MjExMDI1MjQzOX0.JawQDFBJz50zM-P03QRNifi3ZiiH6n3ZtDK8oI968GA';
 const COMP={me:store.get('compMe',null),pend:0,timer:null};
 /* Everyone with an account is in the competition automatically (same email) */
-async function compAuto(){try{if(!ACC||!STU)return false;const r=await rpc('comp_auto',{p_acc_id:ACC.id,p_acc_secret:ACC.secret});const row=Array.isArray(r)?r[0]:r;if(!row)return false;
+async function compAuto(){try{if(!ACC||!STU||STU.grade==='ielts')return false;const r=await rpc('comp_auto',{p_acc_id:ACC.id,p_acc_secret:ACC.secret});const row=Array.isArray(r)?r[0]:r;if(!row)return false;
   COMP.me={id:row.player_id,secret:row.player_secret,name:STU.name,grade:STU.grade,points:row.points||0};store.set('compMe',COMP.me);return true}catch(e){return false}}
 setTimeout(()=>{if(ACC&&STU&&(!COMP.me||COMP.me.grade!==STU.grade||COMP.me.name!==STU.name))compAuto()},1200);
 async function rpc(fn,args){const r=await fetch(SB_URL+'/rest/v1/rpc/'+fn,{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify(args)});const t=await r.text();let j=null;try{j=JSON.parse(t)}catch(e){}if(!r.ok)throw new Error((j&&j.message)||t||r.status);return j}
