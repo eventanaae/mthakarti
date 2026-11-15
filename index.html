@@ -32080,14 +32080,22 @@ function vWelcome(){
   const langBar=`<div class="row" role="group" aria-label="Language / اللغة" style="justify-content:flex-end;gap:6px"><span class="mut" style="font-size:14px">🌐</span>
     <button type="button" class="${LANG==='ar'?'pri':'ghost'}" lang="ar" style="padding:6px 14px" onclick="welLang('ar')">عربي</button>
     <button type="button" class="${LANG==='en'?'pri':'ghost'}" lang="en" style="padding:6px 14px" onclick="welLang('en')">English</button></div>`;
-  const gradeSel=`<label for="gradeSel" style="font-weight:800;display:block;margin-bottom:6px">${L('في أي صف ومسار؟','Which grade and stream?')}</label>
+  const ieSel=sel==='ielts';
+  /* two separate choices: school student (then grade) or IELTS practice only */
+  const kindSel=mode==='new'?`<div style="font-weight:800;margin-bottom:6px">${L('تسجّل كـ:','Sign up as:')}</div>
+   <div class="row" role="radiogroup" style="gap:8px;margin:0 0 14px;flex-wrap:wrap">
+    <button type="button" id="kSchool" role="radio" aria-checked="${!ieSel}" class="${ieSel?'ghost':'pri'}" style="flex:1 1 160px" onclick="welKind('school')">🏫 ${L('طالب مدرسة','School student')}</button>
+    <button type="button" id="kIelts" role="radio" aria-checked="${ieSel}" class="${ieSel?'pri':'ghost'}" style="flex:1 1 160px" onclick="welKind('ielts')">✈️ ${L('تدريب آيلتس بس','IELTS practice only')}</button></div>`:'';
+  const gradeSel=(mode==='edit'&&ieSel)?`<p style="margin:0 0 14px"><b>✈️ ${L('حسابك: تدريب آيلتس بس','Your account: IELTS practice only')}</b> 🔒</p>`
+   :`${kindSel}<div id="gradeWrap" style="${ieSel?'display:none':''}"><label for="gradeSel" style="font-weight:800;display:block;margin-bottom:6px">${L('في أي صف ومسار؟','Which grade and stream?')}</label>
    <select id="gradeSel" style="margin:0 0 6px;cursor:pointer" ${mode==='edit'?'disabled':''}>
-    <option value="" ${sel?'':'selected'} disabled>${L('اختر صفك ومسارك','Choose your grade and stream')}</option>
+    <option value="" ${sel&&!ieSel?'':'selected'} disabled>${L('اختر صفك ومسارك','Choose your grade and stream')}</option>
     ${grades.map(([g,n])=>['عام','متقدم'].map(tr=>{const id='g'+g+(tr==='عام'?'g':'a');return `<option value="${id}" ${sel===id?'selected':''}>${g==='10'?'📗':g==='11'?'📘':'🎓'} ${L(`الصف ${n} · ${tr}`,`Grade ${g} · ${tr==='عام'?'General':'Advanced'}`)}</option>`}).join('')).join('')}
-    <option value="ielts" ${sel==='ielts'?'selected':''}>✈️ ${L('تدريب آيلتس بس (مب طالب في مذاكرتي)','IELTS practice only (not a school student here)')}</option>
    </select>
    ${mode==='edit'?`<p class="mut" style="font-size:13px;margin:0 0 6px">${L('🔒 الصف ينحدد مرة وحدة وقت التسجيل وما يتغير.','🔒 Your grade is set once at sign-up and cannot be changed.')}</p>`:''}
-   <p id="gradeMsg" class="note hidden" style="margin:6px 0 0">${L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!')}</p>`;
+   ${mode==='new'?`<p class="mut" style="font-size:13px;margin:0 0 8px">${L('⚠️ تأكد من صفك، ما تقدر تغيّره بعد التسجيل.','⚠️ Double-check your grade, it cannot be changed after sign-up.')}</p>`:''}
+   <p id="gradeMsg" class="note hidden" style="margin:6px 0 0">${L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!')}</p></div>
+   ${mode==='new'?`<p id="ieNote" class="mut" style="font-size:13px;margin:0 0 8px;${ieSel?'':'display:none'}">${L('✈️ بتشوف قسم الآيلتس بس: اختبارات تدريبية بنفس شكل وتوقيت الاختبار الرسمي.','✈️ You will only see the IELTS section: practice tests in the official format and timing.')}</p>`:''}`;
   const emailIn=`<label for="accEmail" style="font-weight:800">${L('إيميلك','Your email')}</label>
    <input id="accEmail" type="email" autocomplete="email" dir="ltr" placeholder="name@example.com" value="${esc(emailV)}" style="margin:6px 0 14px" ${mode==='edit'?'disabled':''}>`;
   const pinIn=(lbl)=>`<label for="accPin" style="font-weight:800">${lbl}</label>
@@ -32113,7 +32121,7 @@ function vWelcome(){
      ${LANG==='en'?'<p class="mut" style="margin-top:0;font-size:14px">Arabic Language, Islamic Education and Social Studies always stay in Arabic.</p>':''}
      <label for="stuName" style="font-weight:800">${L('شو اسمك؟','What’s your name?')}</label>
      <input id="stuName" autocomplete="given-name" maxlength="30" placeholder="${L('اكتب اسمك','Type your name')}" value="${esc(nameV)}" style="margin:6px 0 14px">
-     ${gradeSel}<p class="mut" style="font-size:13px;margin:0 0 8px">${L('⚠️ تأكد من صفك، ما تقدر تغيّره بعد التسجيل.','⚠️ Double-check your grade, it cannot be changed after sign-up.')}</p>${emailIn}
+     ${gradeSel}${emailIn}
      ${pinIn(L('اختر رقم سري (4 إلى 6 أرقام)','Choose a PIN (4–6 digits)'))}
      <p class="mut" style="font-size:13px;margin:4px 0 0">${L('🔒 تحتاجه لما تدخل من جهاز ثاني، فاحفظه. إذا عمرك أقل من 18 خذ موافقة ولي أمرك.','🔒 You’ll need it to sign in on another device, so remember it. If you’re under 18, ask a parent first.')}</p>
      <p id="welErr" class="mut" style="color:var(--bad);min-height:1.5em"></p>
@@ -32125,6 +32133,10 @@ function vWelcome(){
   let pick=sel;const gs=$('#gradeSel');
   const chk=()=>{if(!gs)return;const soon=!!pick&&!hasContent(pick);$('#gradeMsg').classList.toggle('hidden',!soon);if(!soon)$('#welErr').textContent=''};
   if(gs){gs.onchange=()=>{pick=gs.value;chk()};chk()}
+  window.welKind=k=>{const ie=k==='ielts';pick=ie?'ielts':(gs&&gs.value||'');
+    const w=$('#gradeWrap'),n=$('#ieNote');if(w)w.style.display=ie?'none':'';if(n)n.style.display=ie?'':'none';
+    [['#kSchool',!ie],['#kIelts',ie]].forEach(([id,on])=>{const b=$(id);if(b){b.className=on?'pri':'ghost';b.setAttribute('aria-checked',on)}});
+    $('#welErr').textContent='';chk()};
   const draft=m=>({mode:m,name:$('#stuName')?$('#stuName').value:nameV,pick,email:$('#accEmail')?$('#accEmail').value:emailV});
   window.welLang=l=>{welDraft=draft(mode);setLang(l)};
   window.welSwitch=m=>{welDraft=draft(m);vWelcome()};
