@@ -32008,13 +32008,15 @@ function render(){
   if(h==='alef')return vAlef();
   if(h==='exams')return vExams();
   if(h==='admin')return vAdmin();
-  if(h==='ielts')return vIelts();
+  if(h==='ielts'){if(!IEOK()){location.hash='home';return}return vIelts();}
   if(h==='assistant')return vAssistant();
   vHome();
 }
 
 /* ================= STUDENT PROFILE ================= */
 let STU=store.get('student',null);
+/* IELTS is for Grade 12 students and IELTS-only accounts */
+function IEOK(){return !!(STU&&(/^g12/.test(STU.grade)||STU.grade==='ielts'))}
 function stuChip(){const c=$('#stuChip');if(!c)return;if(STU&&STU.grade==='ielts'){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+L('آيلتس','IELTS');return}if(STU&&GR[STU.grade]){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+GR[STU.grade].short}else c.classList.add('hidden')}
 let welDraft=null; // keeps typed fields when switching language on the welcome view
 /* ===== Cloud account (required): email + PIN; progress syncs to Supabase so it follows the student to any device ===== */
@@ -32082,7 +32084,7 @@ function vWelcome(){
    <select id="gradeSel" style="margin:0 0 6px;cursor:pointer" ${mode==='edit'?'disabled':''}>
     <option value="" ${sel?'':'selected'} disabled>${L('اختر صفك ومسارك','Choose your grade and stream')}</option>
     ${grades.map(([g,n])=>['عام','متقدم'].map(tr=>{const id='g'+g+(tr==='عام'?'g':'a');return `<option value="${id}" ${sel===id?'selected':''}>${g==='10'?'📗':g==='11'?'📘':'🎓'} ${L(`الصف ${n} · ${tr}`,`Grade ${g} · ${tr==='عام'?'General':'Advanced'}`)}</option>`}).join('')).join('')}
-    <option value="ielts" ${sel==='ielts'?'selected':''}>✈️ ${L('تجهيز آيلتس بس (مب طالب مدرسة)','IELTS prep only (not a school student)')}</option>
+    <option value="ielts" ${sel==='ielts'?'selected':''}>✈️ ${L('تدريب آيلتس بس (مب طالب في مذاكرتي)','IELTS practice only (not a school student here)')}</option>
    </select>
    ${mode==='edit'?`<p class="mut" style="font-size:13px;margin:0 0 6px">${L('🔒 الصف ينحدد مرة وحدة وقت التسجيل وما يتغير.','🔒 Your grade is set once at sign-up and cannot be changed.')}</p>`:''}
    <p id="gradeMsg" class="note hidden" style="margin:6px 0 0">${L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!')}</p>`;
@@ -32166,7 +32168,7 @@ function vHome(){
       <span class="pill p-pink">${L('منهج الإمارات · الفصل الأول 2026-2027','UAE curriculum · Term 1 2026-2027')}</span>
       <h1>${L(`هلا ${esc(STU.name)}! ذاكر صح، وافهم قبل الامتحان ✏️`,`Hi ${esc(STU.name)}! Study smart and understand it before the exam ✏️`)}</h1>
       <p class="big">${L('دروس مختصرة تسمعها بالصوت، تدريب تفاعلي بعد كل درس، امتحانات نهائية على شكل الامتحان الحقيقي، وتجهيز لآيلتس. ومدرس خصوصي يشرح لك أي سؤال بالكتابة أو بالتصوير.','Short lessons you can listen to, interactive practice after every lesson, final exams in the real exam format, and IELTS prep. Plus a private tutor that explains any question you type or snap a photo of.')}</p>
-      <div class="row"><button class="pri" onclick="go('${STU.grade}')">${L('ابدأ: ','Start: ')}${GR[STU.grade].name}</button><button class="sec" onclick="go('ielts')">${L('🎓 تجهيز آيلتس','🎓 IELTS prep')}</button></div>
+      <div class="row"><button class="pri" onclick="go('${STU.grade}')">${L('ابدأ: ','Start: ')}${GR[STU.grade].name}</button>${IEOK()?`<button class="sec" onclick="go('ielts')">${L('🎓 تجهيز آيلتس','🎓 IELTS prep')}</button>`:''}</div>
     </div>
     <div class="notebook" aria-hidden="true">
       <p>${L('📌 خطة المذاكرة الذكية','📌 Smart study plan')}</p>
@@ -32203,7 +32205,7 @@ function vGrade(){
   ${Object.values(SUBJ).every(s=>s.noTerm)?NOTERM():''}
   <div class="grid">
    ${Object.entries(SUBJ).filter(([k,s])=>!s.noTerm).map(([k,s])=>{const pr=subjProgress(k);return `<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small dir="${CD(s)}">${s.desc}</small><span class="pill ${s.tone}">${L(`${s.T.length} دروس`,`${s.T.length} lessons`)}</span><div class="bar" title="${L('تقدمك','Your progress')}"><i style="width:${pr}%"></i></div><small>${L('تقدمك','Progress')} ${pr}%</small></div>`}).join('')}
-   <div class="tile" role="button" tabindex="0" onclick="go('ielts')"><span class="ic">🎓</span><b>${L('تجهيز IELTS','IELTS prep')}</b><small>Reading · Listening · Writing · Speaking</small><span class="pill p-pink">${L('تدريب بنفس الشكل والتوقيت','Same format and timing as the real test')}</span></div>
+   ${IEOK()?`<div class="tile" role="button" tabindex="0" onclick="go('ielts')"><span class="ic">🎓</span><b>${L('تجهيز IELTS','IELTS prep')}</b><small>Reading · Listening · Writing · Speaking</small><span class="pill p-pink">${L('تدريب بنفس الشكل والتوقيت','Same format and timing as the real test')}</span></div>`:''}
    ${SOON.map(([n,i])=>`<div class="tile off"><span class="ic">${i}</span><b>${LANG==='en'&&SOON_EN[n]?SOON_EN[n]:n}</b><small>${L('قريبًا','Coming soon')}</small></div>`).join('')}
   </div>`;
 }
@@ -32969,13 +32971,13 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 const EXT={on:false,linked:false};
 const ALEF_STORE='';/* Chrome Web Store link — filled in once the extension is published */
 window.addEventListener('message',e=>{if(e.source!==window||!e.data)return;
-  if(e.data.type==='MTH_EXT'){EXT.on=true;EXT.linked=!!e.data.linked;if(!EXT.linked&&ACC){alefLink();return}if(location.hash==='#alef')alefExtUI()}
+  if(e.data.type==='MTH_EXT'){const was=EXT.on;EXT.on=true;EXT.linked=!!e.data.linked;if(!EXT.linked&&ACC){alefLink();return}if(location.hash==='#alef'){was?alefExtUI():vAlef()}}
   if(e.data.type==='MTH_LINKED'){EXT.linked=true;toast(L('تم ربط الإضافة بحسابك ✅','Extension linked to your account ✅'));if(location.hash==='#alef')alefExtUI()}});
 setTimeout(()=>window.postMessage({type:'MTH_PING'},location.origin),1500);
 function alefLink(){if(!ACC)return;window.postMessage({type:'MTH_LINK',acc:{id:ACC.id,secret:ACC.secret,name:STU&&STU.name}},location.origin)}
 function alefExtUI(){const b=$('#alefExt');if(!b)return;
   b.innerHTML=!EXT.on?(ALEF_STORE?`<p style="margin:0 0 10px">${L('ضغطتين بس: اضغط الزر، وبعدين «Add to Chrome». ونربطها بحسابك تلقائيًا ✨','Two clicks: press the button, then “Add to Chrome”. We link it to your account automatically ✨')}</p><a class="btn pri" href="${ALEF_STORE}" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none;padding:12px 20px;border-radius:14px;background:var(--pink);color:#fff;font-weight:800">🔗 ${L('اربط مذاكرتي مع ألف','Connect Mthakarti with Alef')}</a><p class="mut" style="font-size:13px;margin:8px 0 0">${L('بعد ما تركّبها، ارجع لهالصفحة وحدّثها.','After installing, come back and refresh this page.')}</p>`
-     :`<p style="margin:0">🔌 ${L('الإضافة مب متركّبة في هذا المتصفح.','The extension is not installed in this browser.')}</p>`)
+     :`<div style="text-align:center;padding:6px 0"><div style="font-size:42px">🔜</div><b style="font-size:19px">${L('قريبًا!','Coming soon!')}</b><p style="margin:6px 0 0">${L('قريبًا بتقدر تربط ألف بمذاكرتي بضغطتين، وكل واجب تحلّه في ألف بينحسب لك نقاط في المسابقة، وبتشوف هني شو باقي عليك من واجبات. ترقّبوا! 🎉','Soon you can connect Alef to Mthakarti in two clicks. Every Alef task you finish will earn competition points, and you will see here what is left. Stay tuned! 🎉')}</p></div>`)
    :!EXT.linked?`<p style="margin:0 0 8px">✅ ${L('الإضافة متركّبة! جاري ربطها بحسابك…','Extension installed! Linking it to your account…')}</p><button class="pri" onclick="alefLink()">🔗 ${L('اربط الإضافة بحسابي','Link the extension')}</button>`
    :`<p style="margin:0">✅ ${L('الإضافة متركّبة ومربوطة بحسابك. افتح ألف وروح «To-Do List»، ونحسب واجباتك تلقائيًا.','Installed and linked. Open Alef and go to “To-Do List”, and we count your tasks automatically.')}</p><p style="margin:8px 0 0"><a href="https://moe.alefed.com/#/todo-list" target="_blank" rel="noopener">${L('افتح ألف ↗','Open Alef ↗')}</a></p>`}
 async function vAlef(){
@@ -32985,7 +32987,7 @@ async function vAlef(){
    <p class="mut">${L('كل واجب تخلّصه في ألف = <b>+2 نقطة</b> في المسابقة. الإضافة تقرا قائمة واجباتك بس، وما تاخذ الباسورد أبد.','Every task you finish in Alef = <b>+2 points</b>. The extension only reads your to-do list and never takes your password.')}</p>
    <div class="card" id="alefExt"></div>
    <div class="card" id="alefStat"><p class="mut">${L('جاري التحميل…','Loading…')}</p></div>
-   <details class="card"><summary style="font-weight:800;cursor:pointer">🧩 ${L('كيف أركّب الإضافة؟ (كمبيوتر بس: كروم أو إيدج)','How do I install the extension? (computer only: Chrome or Edge)')}</summary>
+   <details class="card"><summary style="font-weight:800;cursor:pointer">🧪 ${L('للتجربة: تركيب الإضافة يدويًا (كمبيوتر بس: كروم أو إيدج)','For testing: install the extension manually (computer only: Chrome or Edge)')}</summary>
     <ol style="line-height:1.9;margin:10px 0 0">
      <li>${L('نزّل الملف:','Download the file:')} <a href="/mthakarti-alef.zip" download>mthakarti-alef.zip</a></li>
      <li>${L('افتح الملف المضغوط وطلّع المجلد (Extract) وحطه في مكان ما تمسحه.','Unzip it (Extract) and keep the folder somewhere safe.')}</li>
@@ -32998,7 +33000,8 @@ async function vAlef(){
   alefExtUI();window.postMessage({type:'MTH_PING'},location.origin);
   try{const s=await rpc('alef_status',{p_acc:ACC.id,p_secret:ACC.secret});const b=$('#alefStat');if(!b)return;
     const p=s.pending||[];
-    b.innerHTML=!s.synced_at?`<p class="mut" style="margin:0">${L('للحين ما وصلتنا واجباتك من ألف. ركّب الإضافة وافتح «To-Do List» في ألف.','We have not received your Alef tasks yet. Install the extension and open “To-Do List” in Alef.')}</p>`
+    if(!s.synced_at&&!EXT.on){b.style.display='none';return}b.style.display='';
+    b.innerHTML=!s.synced_at?`<p class="mut" style="margin:0">${L('للحين ما وصلتنا واجباتك من ألف. افتح «To-Do List» في ألف.','We have not received your Alef tasks yet. Open “To-Do List” in Alef.')}</p>`
      :`<div class="row" style="justify-content:space-between"><b style="font-size:18px">${L(`باقي عليك ${p.length} واجب`,`${p.length} tasks left`)}</b><span class="mut" style="font-size:13px">${L('آخر تحديث:','Last update:')} ${new Date(s.synced_at).toLocaleString(LANG==='en'?'en-GB':'ar-AE',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span></div>
       <p class="mut" style="margin:4px 0 10px">${L(`خلّصت ${s.done_count} واجب من وقت ما ربطت`,`${s.done_count} finished since you linked`)}${s.done_week!=null?L(` · ألف يقول: ${s.done_week} هالأسبوع`,` · Alef says: ${s.done_week} this week`):''}</p>
       ${p.length?`<div style="display:grid;gap:6px">${p.map(t=>`<div style="display:flex;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:12px;padding:8px 12px"><span style="min-width:0;overflow-wrap:anywhere"><b>${esc(t.title||'')}</b><br><small class="mut">${esc(t.kind||'')}</small></span><span class="pill p-lav" style="align-self:center;white-space:nowrap">${t.action==='Continue'?L('بديته','Started'):L('ما بديته','Not started')}</span></div>`).join('')}</div>`:`<p>🎉 ${L('ما عليك ولا واجب!','No tasks left!')}</p>`}`}
