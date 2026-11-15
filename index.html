@@ -32173,7 +32173,7 @@ function vHome(){
   </section>
   ${examStrip()}
   <div class="card row" style="justify-content:space-between;margin-top:14px;background:var(--lav-soft)">
-    <div><b style="font-size:18px">${L('🏆 مسابقة أكثر واحد يذاكر','🏆 Who studies the most? Competition')}</b><div class="mut" style="font-size:14px">${L(`🎁 أول واحد يجمع 300 نقطة هالأسبوع يفوز بنقاط بينز! الفايز ينعلن كل جمعة.`,`🎁 The first to collect 300 points this week wins Penz points! Winner announced every Friday.`)}</div></div>
+    <div><b style="font-size:18px">${L('🏆 مسابقة أكثر واحد يذاكر','🏆 Who studies the most? Competition')}</b><div class="mut" style="font-size:14px">${L(`🎁 أول واحد يجمع 500 نقطة هالأسبوع يفوز بنقاط بينز! الفايز ينعلن كل جمعة.`,`🎁 The first to collect 500 points this week wins Penz points! Winner announced every Friday.`)}</div></div>
     <button class="pri" onclick="go('compete')">${L('🏆 وين مركزي؟','🏆 Where do I rank?')}</button>
   </div>
   <h2>${L('موادك','Your subjects')} · ${GR[STU.grade].name} ${GR[STU.grade].icon}</h2>
@@ -32705,7 +32705,7 @@ async function admStats(){const box=$('#admDash'),code=$('#admCode').value.trim(
      <div id="admWin"></div>
      <div class="row" style="justify-content:center;margin-top:12px"><button class="ghost" onclick="admStats()">🔄 ${L('تحديث','Refresh')}</button></div>`;
     try{const w=await rpc('admin_winners',{p_code:code});const el=$('#admWin');
-      if(el)el.innerHTML=`<h3 style="margin:16px 0 8px">🎁 ${L('فائزين جائزة الأسبوع (أول واحد يوصل 300)','Weekly prize winners (first to 300)')}</h3>`+(w&&w.length?`<div style="overflow-x:auto"><table class="tbl" style="font-size:13px"><tr><th>${L('الأسبوع','Week')}</th><th>${L('الصف','Grade')}</th><th>${L('الاسم','Name')}</th><th>${L('الإيميل','Email')}</th><th>${L('وصل','Reached')}</th></tr>${w.map(r=>`<tr><td dir="ltr">${esc(r.week_start)}</td><td>${esc(GRN[r.grade]||r.grade)}</td><td>${esc(r.name||'')}</td><td dir="ltr">${esc(r.email||'')}</td><td dir="ltr">${new Date(r.reached_at).toLocaleString('en-GB',{timeZone:'Asia/Dubai',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td></tr>`).join('')}</table></div>`:`<p class="mut">${L('ما في فايز للحين هالأسبوع.','No winner yet this week.')}</p>`)}catch(e){}}
+      if(el)el.innerHTML=`<h3 style="margin:16px 0 8px">🎁 ${L('فائزين جائزة الأسبوع (أول واحد يوصل 500)','Weekly prize winners (first to 500)')}</h3>`+(w&&w.length?`<div style="overflow-x:auto"><table class="tbl" style="font-size:13px"><tr><th>${L('الأسبوع','Week')}</th><th>${L('الصف','Grade')}</th><th>${L('الاسم','Name')}</th><th>${L('الإيميل','Email')}</th><th>${L('وصل','Reached')}</th></tr>${w.map(r=>`<tr><td dir="ltr">${esc(r.week_start)}</td><td>${esc(GRN[r.grade]||r.grade)}</td><td>${esc(r.name||'')}</td><td dir="ltr">${esc(r.email||'')}</td><td dir="ltr">${new Date(r.reached_at).toLocaleString('en-GB',{timeZone:'Asia/Dubai',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td></tr>`).join('')}</table></div>`:`<p class="mut">${L('ما في فايز للحين هالأسبوع.','No winner yet this week.')}</p>`)}catch(e){}}
   catch(e){box.innerHTML=`<p style="color:var(--bad)">${/bad_code/.test(e.message)?L('الكود السري غلط','Wrong admin code'):/too_many/.test(e.message)?L('محاولات كثيرة، جرّبي بعد 10 دقايق','Too many tries, wait 10 minutes'):L('صار خطأ، جرّبي مرة ثانية','Something went wrong')}</p>`}}
 function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl tr').forEach((tr,i)=>{if(i)tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none'})}
 function vAdmin(){
@@ -32873,12 +32873,12 @@ document.addEventListener('visibilitychange',()=>{if(document.visibilityState===
 /* weekly prize: the first in the grade to collect 300 points this week (Sat → Fri) wins; we contact them by email */
 async function weekPrize(g){const box=$('#cmpPrize');if(!box)return;
   const head=`<b style="font-size:18px">${L('🎁 جائزة الأسبوع','🎁 Prize of the week')}</b>
-    <p style="margin:6px 0">${L(`أول واحد في ${GR[g].short} يجمع <b>300 نقطة</b> هالأسبوع يفوز بـ<b>نقاط بينز</b>! 🎉 نعلن الفايز كل يوم <b>جمعة</b> ونتواصل وياه على إيميله.`,`The first student in ${GR[g].short} to collect <b>300 points</b> this week wins <b>Penz points</b>! 🎉 We announce the winner every <b>Friday</b> and contact them by email.`)}</p>`;
+    <p style="margin:6px 0">${L(`أول واحد في ${GR[g].short} يجمع <b>500 نقطة</b> هالأسبوع يفوز بـ<b>نقاط بينز</b>! 🎉 نعلن الفايز كل يوم <b>جمعة</b> ونتواصل وياه على إيميله.`,`The first student in ${GR[g].short} to collect <b>500 points</b> this week wins <b>Penz points</b>! 🎉 We announce the winner every <b>Friday</b> and contact them by email.`)}</p>`;
   box.innerHTML=`<div class="card" style="background:var(--sun-soft);border-color:var(--sun)">${head}</div>`;
   try{const w=await rpc('week_info',{p_grade:g,p_acc:ACC?ACC.id:null,p_secret:ACC?ACC.secret:null});if(!w||!$('#cmpPrize'))return;
     const fmt=d=>new Date(d+'T12:00:00').toLocaleDateString(LANG==='en'?'en-GB':'ar-AE',{weekday:'long',day:'numeric',month:'long'});
-    const mine=w.mine==null?null:Math.min(w.mine,300),pct=mine==null?0:Math.round(mine/3);
-    const prog=mine==null?'':`<div style="margin:8px 0 4px;font-weight:800">${L('نقاطك هالأسبوع:','Your points this week:')} ${w.mine} / 300</div>
+    const mine=w.mine==null?null:Math.min(w.mine,500),pct=mine==null?0:Math.round(mine/5);
+    const prog=mine==null?'':`<div style="margin:8px 0 4px;font-weight:800">${L('نقاطك هالأسبوع:','Your points this week:')} ${w.mine} / 500</div>
       <div style="height:14px;background:var(--line);border-radius:99px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--pink);border-radius:99px"></div></div>`;
     const res=w.me?`<p style="margin:10px 0 0;font-size:18px;font-weight:800">${L('🏆 مبروك! إنت الفايز هالأسبوع! بنتواصل وياك على إيميلك.','🏆 Congratulations! You are this week’s winner! We will contact you by email.')}</p>`
       :w.winner?`<p style="margin:10px 0 0;font-weight:800">${L(`🏆 فايز هالأسبوع: ${esc(w.winner)}! الجائزة الجاية تبدأ يوم السبت، استعد 💪`,`🏆 This week’s winner: ${esc(w.winner)}! The next prize starts on Saturday, get ready 💪`)}</p>`
