@@ -32105,9 +32105,12 @@ function vWelcome(){
   const ieSel=sel==='ielts';
   /* two separate choices: school student (then grade) or IELTS practice only */
   const kindSel=mode==='new'?`<div style="font-weight:800;margin-bottom:6px">${L('تسجّل كـ:','Sign up as:')}</div>
-   <div class="row" role="radiogroup" style="gap:8px;margin:0 0 14px;flex-wrap:wrap">
-    <button type="button" id="kSchool" role="radio" aria-checked="${!ieSel}" class="${ieSel?'ghost':'pri'}" style="flex:1 1 160px" onclick="welKind('school')">🏫 ${L('طالب مدرسة','School student')}</button>
-    <button type="button" id="kIelts" role="radio" aria-checked="${ieSel}" class="${ieSel?'pri':'ghost'}" style="flex:1 1 160px" onclick="welKind('ielts')">✈️ ${L('تدريب آيلتس بس','IELTS practice only')}</button></div>`:'';
+   <style>.kseg{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;margin:0 0 14px;border:1px solid var(--line);border-radius:16px;background:var(--surface2)}
+    .kseg button{min-width:0;margin:0;padding:11px 6px;border-radius:12px;border:0;background:transparent;color:var(--ink);font-weight:800;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:none;cursor:pointer}
+    .kseg button[aria-checked="true"]{background:var(--pink);color:#fff}</style>
+   <div class="kseg" role="radiogroup" aria-label="${L('تسجّل كـ','Sign up as')}">
+    <button type="button" id="kSchool" role="radio" aria-checked="${!ieSel}" onclick="welKind('school')">🏫 ${L('طالب مدرسة','School student')}</button>
+    <button type="button" id="kIelts" role="radio" aria-checked="${ieSel}" onclick="welKind('ielts')">✈️ ${L('آيلتس بس','IELTS only')}</button></div>`:'';
   const gradeSel=(mode==='edit'&&ieSel)?`<p style="margin:0 0 14px"><b>✈️ ${L('حسابك: تدريب آيلتس بس','Your account: IELTS practice only')}</b> 🔒</p>`
    :`${kindSel}<div id="gradeWrap" style="${ieSel?'display:none':''}"><label for="gradeSel" style="font-weight:800;display:block;margin-bottom:6px">${L('في أي صف ومسار؟','Which grade and stream?')}</label>
    <select id="gradeSel" style="margin:0 0 6px;cursor:pointer" ${mode==='edit'?'disabled':''}>
@@ -32159,7 +32162,7 @@ function vWelcome(){
   if(gs){gs.onchange=()=>{pick=gs.value;chk()};chk()}
   window.welKind=k=>{const ie=k==='ielts';pick=ie?'ielts':(gs&&gs.value||'');
     const w=$('#gradeWrap'),n=$('#ieNote');if(w)w.style.display=ie?'none':'';if(n)n.style.display=ie?'':'none';
-    [['#kSchool',!ie],['#kIelts',ie]].forEach(([id,on])=>{const b=$(id);if(b){b.className=on?'pri':'ghost';b.setAttribute('aria-checked',on)}});
+    [['#kSchool',!ie],['#kIelts',ie]].forEach(([id,on])=>{const b=$(id);if(b)b.setAttribute('aria-checked',on)});
     $('#welErr').textContent='';chk()};
   const draft=m=>({mode:m,name:$('#stuName')?$('#stuName').value:nameV,pick,email:$('#accEmail')?$('#accEmail').value:emailV});
   window.welLang=l=>{welDraft=draft(mode);setLang(l)};
