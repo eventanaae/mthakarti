@@ -32009,7 +32009,8 @@ function crumbs(list){$('#crumbs').innerHTML=list.map(([t,h])=>h?`<a href="#${h}
 function render(){
   stopSpeak(); speakingBtn=null; clearInterval(quizTimer);
   const h=(location.hash||'#home').slice(1)||'home';
-  const sameRoute=route===h; route=h; if(!sameRoute)window.scrollTo(0,0); /* re-rendering the same page (term switch, language) keeps your place */
+  const sameRoute=route===h; route=h; if(!sameRoute)window.scrollTo(0,0);
+  else{const y=window.scrollY;requestAnimationFrame(()=>window.scrollTo(0,y));setTimeout(()=>{if(Math.abs(window.scrollY-y)>40)window.scrollTo(0,y)},60)} /* re-rendering the same page (term switch, language) keeps your place */
   stuChip();
   { const p=$('#notifPanel'); if(p) p.remove(); }
   if(h==='admin'){$('#fab').classList.add('hidden');return vAdmin();}
