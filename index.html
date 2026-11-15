@@ -32984,19 +32984,8 @@ async function vAlef(){
   crumbs([[L('الرئيسية','Home'),'home'],[L('واجبات ألف','Alef homework')]]);
   $('#view').innerHTML=`<div style="max-width:760px;margin:0 auto">
    <h1>📝 ${L('واجبات ألف','Alef homework')}</h1>
-   <p class="mut">${L('كل واجب تخلّصه في ألف = <b>+2 نقطة</b> في المسابقة. الإضافة تقرا قائمة واجباتك بس، وما تاخذ الباسورد أبد.','Every task you finish in Alef = <b>+2 points</b>. The extension only reads your to-do list and never takes your password.')}</p>
    <div class="card" id="alefExt"></div>
-   <div class="card" id="alefStat"><p class="mut">${L('جاري التحميل…','Loading…')}</p></div>
-   <details class="card"><summary style="font-weight:800;cursor:pointer">🧪 ${L('للتجربة: تركيب الإضافة يدويًا (كمبيوتر بس: كروم أو إيدج)','For testing: install the extension manually (computer only: Chrome or Edge)')}</summary>
-    <ol style="line-height:1.9;margin:10px 0 0">
-     <li>${L('نزّل الملف:','Download the file:')} <a href="/mthakarti-alef.zip" download>mthakarti-alef.zip</a></li>
-     <li>${L('افتح الملف المضغوط وطلّع المجلد (Extract) وحطه في مكان ما تمسحه.','Unzip it (Extract) and keep the folder somewhere safe.')}</li>
-     <li>${L('في كروم اكتب في الرابط:','In Chrome, type in the address bar:')} <code dir="ltr">chrome://extensions</code> ${L('(في إيدج: edge://extensions)','(Edge: edge://extensions)')}</li>
-     <li>${L('شغّل «وضع المطوّر» (Developer mode) فوق.','Turn on “Developer mode” at the top.')}</li>
-     <li>${L('اضغط «تحميل غير مضغوط» (Load unpacked) واختار المجلد.','Click “Load unpacked” and choose the folder.')}</li>
-     <li>${L('ارجع لهالصفحة وحدّثها، واضغط «اربط الإضافة بحسابي».','Come back here, refresh, and click “Link the extension”.')}</li>
-     <li>${L('افتح ألف وروح «To-Do List». بيطلع لك تحت شريط صغير «مذاكرتي ✓».','Open Alef and go to “To-Do List”. A small «مذاكرتي ✓» badge appears at the bottom.')}</li>
-    </ol></details></div>`;
+   <div class="card" id="alefStat"><p class="mut">${L('جاري التحميل…','Loading…')}</p></div></div>`;
   alefExtUI();window.postMessage({type:'MTH_PING'},location.origin);
   try{const s=await rpc('alef_status',{p_acc:ACC.id,p_secret:ACC.secret});const b=$('#alefStat');if(!b)return;
     const p=s.pending||[];
