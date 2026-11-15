@@ -32173,7 +32173,7 @@ function vHome(){
   </section>
   ${examStrip()}
   <div class="card row" style="justify-content:space-between;margin-top:14px;background:var(--lav-soft)">
-    <div><b style="font-size:18px">${L('🏆 مسابقة أكثر واحد يذاكر','🏆 Who studies the most? Competition')}</b><div class="mut" style="font-size:14px">${L(`كل درس وكل جواب صح يعطيك نقاط. نافس ربعك في ${GR[STU.grade].short} حول الإمارات! 🇦🇪`,`Every lesson and every right answer gives you points. Compete with your friends in ${GR[STU.grade].short}!`)}</div></div>
+    <div><b style="font-size:18px">${L('🏆 مسابقة أكثر واحد يذاكر','🏆 Who studies the most? Competition')}</b><div class="mut" style="font-size:14px">${L(`🎁 أول واحد يجمع 300 نقطة هالأسبوع يفوز بنقاط بينز! الفايز ينعلن كل جمعة.`,`🎁 The first to collect 300 points this week wins Penz points! Winner announced every Friday.`)}</div></div>
     <button class="pri" onclick="go('compete')">${L('🏆 وين مركزي؟','🏆 Where do I rank?')}</button>
   </div>
   <h2>${L('موادك','Your subjects')} · ${GR[STU.grade].name} ${GR[STU.grade].icon}</h2>
@@ -32702,7 +32702,10 @@ async function admStats(){const box=$('#admDash'),code=$('#admCode').value.trim(
      <div style="overflow-x:auto"><table class="tbl" id="admTbl" style="font-size:13px;min-width:640px"><tr><th>${L('الاسم','Name')}</th><th>${L('الإيميل','Email')}</th><th>${L('الصف','Grade')}</th><th>${L('آخر دخول','Last seen')}</th><th>${L('دقايق اليوم','Min today')}</th><th>${L('دقايق 7 أيام','Min 7d')}</th><th>${L('كل الوقت','All time')}</th><th>${L('أسئلة المدرس','Tutor Qs')}</th></tr>
      ${(s.students||[]).map(r=>`<tr><td>${esc(r.name||'—')}</td><td dir="ltr">${esc(r.email||'')}</td><td>${esc(GRN[r.grade]||r.grade||'')}</td><td dir="ltr">${r.last?new Date(r.last).toLocaleString('en-GB',{timeZone:'Asia/Dubai',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—'}</td><td>${r.m_today}</td><td>${r.m_7d}</td><td>${r.m_all>=60?(r.m_all/60).toFixed(1)+L(' س',' h'):r.m_all+L(' د',' m')}</td><td>${r.tutor_today} / ${r.tutor_all}</td></tr>`).join('')}</table></div>
      <p class="mut" style="font-size:12px">${L('أسئلة المدرس: اليوم / من البداية. الوقت ينحسب بس لما الصفحة مفتوحة والطالبة تستخدمها (بدأ العد 15 نوفمبر).','Tutor Qs: today / all-time. Time counts only while the page is open and in use (tracking began 15 Nov).')}</p>
-     <div class="row" style="justify-content:center;margin-top:12px"><button class="ghost" onclick="admStats()">🔄 ${L('تحديث','Refresh')}</button></div>`}
+     <div id="admWin"></div>
+     <div class="row" style="justify-content:center;margin-top:12px"><button class="ghost" onclick="admStats()">🔄 ${L('تحديث','Refresh')}</button></div>`;
+    try{const w=await rpc('admin_winners',{p_code:code});const el=$('#admWin');
+      if(el)el.innerHTML=`<h3 style="margin:16px 0 8px">🎁 ${L('فائزين جائزة الأسبوع (أول واحد يوصل 300)','Weekly prize winners (first to 300)')}</h3>`+(w&&w.length?`<div style="overflow-x:auto"><table class="tbl" style="font-size:13px"><tr><th>${L('الأسبوع','Week')}</th><th>${L('الصف','Grade')}</th><th>${L('الاسم','Name')}</th><th>${L('الإيميل','Email')}</th><th>${L('وصل','Reached')}</th></tr>${w.map(r=>`<tr><td dir="ltr">${esc(r.week_start)}</td><td>${esc(GRN[r.grade]||r.grade)}</td><td>${esc(r.name||'')}</td><td dir="ltr">${esc(r.email||'')}</td><td dir="ltr">${new Date(r.reached_at).toLocaleString('en-GB',{timeZone:'Asia/Dubai',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td></tr>`).join('')}</table></div>`:`<p class="mut">${L('ما في فايز للحين هالأسبوع.','No winner yet this week.')}</p>`)}catch(e){}}
   catch(e){box.innerHTML=`<p style="color:var(--bad)">${/bad_code/.test(e.message)?L('الكود السري غلط','Wrong admin code'):/too_many/.test(e.message)?L('محاولات كثيرة، جرّبي بعد 10 دقايق','Too many tries, wait 10 minutes'):L('صار خطأ، جرّبي مرة ثانية','Something went wrong')}</p>`}}
 function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl tr').forEach((tr,i)=>{if(i)tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none'})}
 function vAdmin(){
@@ -32867,13 +32870,28 @@ async function flushPts(){if(flushing||!ACC||!COMP.q.length)return;flushing=true
 try{localStorage.removeItem('mth_compPend')}catch(e){}
 setTimeout(()=>{if(COMP.q.length)flushPts()},6000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&COMP.q.length)flushPts()});
+/* weekly prize: the first in the grade to collect 300 points this week (Sat → Fri) wins; we contact them by email */
+async function weekPrize(g){const box=$('#cmpPrize');if(!box)return;
+  const head=`<b style="font-size:18px">${L('🎁 جائزة الأسبوع','🎁 Prize of the week')}</b>
+    <p style="margin:6px 0">${L(`أول واحد في ${GR[g].short} يجمع <b>300 نقطة</b> هالأسبوع يفوز بـ<b>نقاط بينز</b>! 🎉 نعلن الفايز كل يوم <b>جمعة</b> ونتواصل وياه على إيميله.`,`The first student in ${GR[g].short} to collect <b>300 points</b> this week wins <b>Penz points</b>! 🎉 We announce the winner every <b>Friday</b> and contact them by email.`)}</p>`;
+  box.innerHTML=`<div class="card" style="background:var(--sun-soft);border-color:var(--sun)">${head}</div>`;
+  try{const w=await rpc('week_info',{p_grade:g,p_acc:ACC?ACC.id:null,p_secret:ACC?ACC.secret:null});if(!w||!$('#cmpPrize'))return;
+    const fmt=d=>new Date(d+'T12:00:00').toLocaleDateString(LANG==='en'?'en-GB':'ar-AE',{weekday:'long',day:'numeric',month:'long'});
+    const mine=w.mine==null?null:Math.min(w.mine,300),pct=mine==null?0:Math.round(mine/3);
+    const prog=mine==null?'':`<div style="margin:8px 0 4px;font-weight:800">${L('نقاطك هالأسبوع:','Your points this week:')} ${w.mine} / 300</div>
+      <div style="height:14px;background:var(--line);border-radius:99px;overflow:hidden"><div style="height:100%;width:${pct}%;background:var(--pink);border-radius:99px"></div></div>`;
+    const res=w.me?`<p style="margin:10px 0 0;font-size:18px;font-weight:800">${L('🏆 مبروك! إنت الفايز هالأسبوع! بنتواصل وياك على إيميلك.','🏆 Congratulations! You are this week’s winner! We will contact you by email.')}</p>`
+      :w.winner?`<p style="margin:10px 0 0;font-weight:800">${L(`🏆 فايز هالأسبوع: ${esc(w.winner)}! الجائزة الجاية تبدأ يوم السبت، استعد 💪`,`🏆 This week’s winner: ${esc(w.winner)}! The next prize starts on Saturday, get ready 💪`)}</p>`
+      :`<p class="mut" style="margin:8px 0 0;font-size:14px">${L(`للحين ما في فايز! المسابقة من ${fmt(w.start)} لين ${fmt(w.end)}.`,`No winner yet! The race runs from ${fmt(w.start)} to ${fmt(w.end)}.`)}</p>`;
+    box.innerHTML=`<div class="card" style="background:var(--sun-soft);border-color:var(--sun)">${head}${prog}${res}</div>`}catch(e){}}
 async function vCompete(){
   crumbs([[L('الرئيسية','Home'),'home'],[L('🏆 المسابقة','🏆 Competition')]]);
   const g=STU.grade;
   $('#view').innerHTML=`<div style="max-width:720px;margin:0 auto">
    <h1>${L(`🏆 مسابقة ${GR[g].short}`,`🏆 ${GR[g].short} competition`)}</h1>
    <p class="mut">${L(`الترتيب خاص بـ${GR[g].name} بس. النقاط: <b>+5</b> لما تنجح في كويز الدرس، <b>+2</b> لكل جواب صح في التدريب، وحتى <b>+25</b> على الامتحان النهائي.`,`The leaderboard is for ${GR[g].name} only. Points: <b>+5</b> when you pass a lesson quiz, <b>+2</b> for each correct practice answer, and up to <b>+25</b> for a final exam.`)}</p>
-   <div id="cmpTop"></div><div id="cmpBoard" class="card" style="margin-top:12px"><p class="mut">${L('جاري تحميل الترتيب…','Loading the leaderboard…')}</p></div></div>`;
+   <div id="cmpPrize"></div><div id="cmpTop"></div><div id="cmpBoard" class="card" style="margin-top:12px"><p class="mut">${L('جاري تحميل الترتيب…','Loading the leaderboard…')}</p></div></div>`;
+  weekPrize(g);
   const top=$('#cmpTop');
   if(COMP.me&&COMP.me.grade===g){top.innerHTML=`<div class="card" style="background:var(--mint-soft)">👤 <b>${esc(COMP.me.name)}</b> · ${L('نقاطك:','Your points:')} <b id="myPts">${COMP.me.points||0}</b></div>`}
   else{top.innerHTML=`<div class="card"><p class="mut">${L('جاري تجهيزك في المسابقة…','Setting you up in the competition…')}</p></div>`;
