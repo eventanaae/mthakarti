@@ -31861,7 +31861,11 @@ const G10A_SHARED=['arabic','islamic','social','ai','pe'];
 let CUR='g10g';
 let TERM=null;
 const TERM_NAME=n=>L(['','الفصل الأول','الفصل الثاني','الفصل الثالث'][n],'Term '+n);
-function setTerm(n){TERM=n;store.set('term',n);setGrade(CUR);render()}
+/* switching term keeps the term buttons exactly where they were on screen (no jump to the top) */
+function setTerm(n){const v=$('#view'),tb=document.querySelector('.termbar'),top=tb?tb.getBoundingClientRect().top:null;
+  if(v)v.style.minHeight=v.offsetHeight+'px';
+  TERM=n;store.set('term',n);setGrade(CUR);window._noAnim=true;render();
+  if(top!=null){const nb=document.querySelector('.termbar');if(nb)window.scrollTo(0,window.scrollY+nb.getBoundingClientRect().top-top)}}
 function termBar(){return `<div class="tabs termbar" role="tablist" aria-label="${L('الفصل الدراسي','Term')}" style="margin:14px 0 6px">${[1,2,3].map(n=>`<button class="${TERM===n?'on':''}" onclick="setTerm(${n})">📘 ${TERM_NAME(n)}</button>`).join('')}</div>`}
 const NOTERM=()=>`<div class="card" style="text-align:center;background:var(--lav-soft)"><b style="font-size:18px">${L('بعدنا نشتغل على دروس '+TERM_NAME(TERM)+' 🛠️','We’re still working on '+TERM_NAME(TERM)+' lessons 🛠️')}</b><p class="mut">${L('بننزلها أول ما تنشرها المدرسة. حاليًا ذاكر دروس الفصل الأول 📚','We’ll add them as soon as school publishes them. For now, study Term 1 📚')}</p><button class="sec" onclick="setTerm(1)">${TERM_NAME(1)}</button></div>`;
 function setGrade(g){if(!GR[g])return;CUR=g;Object.keys(SUBJ).forEach(k=>delete SUBJ[k]);Object.assign(SUBJ,GR[g].S);
@@ -32009,8 +32013,7 @@ function crumbs(list){$('#crumbs').innerHTML=list.map(([t,h])=>h?`<a href="#${h}
 function render(){
   stopSpeak(); speakingBtn=null; clearInterval(quizTimer);
   const h=(location.hash||'#home').slice(1)||'home';
-  const sameRoute=route===h; route=h; if(!sameRoute)window.scrollTo(0,0);
-  else{const y=window.scrollY;requestAnimationFrame(()=>window.scrollTo(0,y));setTimeout(()=>{if(Math.abs(window.scrollY-y)>40)window.scrollTo(0,y)},60)} /* re-rendering the same page (term switch, language) keeps your place */
+  const sameRoute=route===h; route=h; if(!sameRoute){window.scrollTo(0,0);const v0=$('#view');if(v0)v0.style.minHeight=''} /* re-rendering the same page (term switch, language) keeps your place */
   stuChip();
   { const p=$('#notifPanel'); if(p) p.remove(); }
   if(h==='admin'){$('#fab').classList.add('hidden');return vAdmin();}
@@ -37915,7 +37918,7 @@ function iebPlan(i,cb){var d=store.get('iePlan',[])||[];d=d.filter(function(x){r
 /* ===== motion: every time a page is drawn it slides in, and cards further down appear as you scroll to them ===== */
 const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 let rvIO=null;
-function animateView(){const v=$('#view');if(!v||RM)return;v.classList.remove('vin');void v.offsetWidth;v.classList.add('vin');
+function animateView(){const v=$('#view');if(!v||RM)return;if(window._noAnim){window._noAnim=false;return}v.classList.remove('vin');void v.offsetWidth;v.classList.add('vin');
   if(!('IntersectionObserver' in window))return;
   rvIO=rvIO||new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');rvIO.unobserve(e.target)}}),{rootMargin:'0px 0px -6% 0px'});
   const vh=innerHeight;let n=0;
