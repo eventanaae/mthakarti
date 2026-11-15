@@ -32,7 +32,7 @@ body{display:flex;align-items:center;justify-content:center;font-family:var(--fb
 /* phone */
 #phone{position:absolute;left:170px;top:560px;width:740px;height:1200px;border-radius:84px;background:#2b1d27;padding:22px;box-shadow:0 40px 90px rgba(123,98,232,.35);will-change:transform}
 #screen{position:relative;width:100%;height:100%;border-radius:64px;background:#fff;overflow:hidden}
-.scr{position:absolute;inset:0;padding:110px 46px 40px;will-change:transform}
+.scr{position:absolute;inset:0;padding:110px 46px 40px;will-change:transform;background:#fff}
 .notch{position:absolute;top:22px;left:50%;width:210px;height:44px;margin-left:-105px;background:#2b1d27;border-radius:30px;z-index:5}
 .bar{position:absolute;top:0;left:0;right:0;height:92px;padding:40px 40px 0;font:800 30px var(--fd);display:flex;justify-content:space-between;color:var(--ink);z-index:4}
 .bar i{font-style:normal;color:var(--pink)}
@@ -104,7 +104,7 @@ body.rec #ctl{display:none}
     <div class="capt" id="c0">دروس من <span class="hl">ماتيريال مدرستك</span> 📖</div>
     <div class="capt" id="c1">كويزات وامتحانات <span class="hl">بنفس الهيكل</span> ✅</div>
     <div class="capt" id="c2">مدرس خصوصي <span class="hl">يرد عليك</span> 🤖</div>
-    <div class="capt" id="c3">نافس <span class="hl">صفك</span> واجمع نقاط 🏆</div>
+    <div class="capt" id="c3">نافس طلاب صفك <span class="hl">في كل الإمارات</span> 🏆</div>
   </div>
   <div id="phone"><div id="screen">
     <div class="notch"></div>
@@ -219,7 +219,7 @@ function render(t){
     const sc=$('sc'+i), inP=i===0?1:oC(k(t,a-.05,a+.35)), outP=i===3?0:ioC(k(t,b-.05,b+.3));
     sc.style.transform=`translateX(${(1-inP)*-760+outP*760}px)`; /* RTL: next screen comes from the left */
     sc.style.opacity=(t<a-.1&&i>0)||t>b+.35&&i<3?0:1;
-    A($('c'+i),t,{in:[a-.05,a+.3],y:60,out:i===3?[12.5,12.85]:[b-.1,b+.15],oy:-60});
+    A($('c'+i),t,{in:[a+.08,a+.38],y:60,out:i===3?[12.5,12.85]:[b-.28,b-.04],oy:-60});
   });
   /* lesson details */
   dots.forEach((d,i)=>{const p=oB(k(t,6.5+i*.04,6.85+i*.04));d.style.transform=`scale(${p})`});
