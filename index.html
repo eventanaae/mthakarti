@@ -31992,8 +31992,9 @@ function render(){
   { const p=$('#notifPanel'); if(p) p.remove(); }
   if(h==='admin'){$('#fab').classList.add('hidden');return vAdmin();}
   const IEO=!!(STU&&STU.grade==='ielts'); /* IELTS-only accounts: no school subjects, no competition */
-  if(!STU||!ACC||(!GR[STU.grade]&&!IEO)||h==='welcome'){$('#fab').classList.add('hidden');return vWelcome();}
+  if(!STU||(!ACC&&!STU.guest)||(!GR[STU.grade]&&!IEO)||h==='welcome'){$('#fab').classList.add('hidden');return vWelcome();}
   if(VER.need){$('#fab').classList.add('hidden');return vVerify();}
+  if(isGuest()&&['compete','assistant','alef'].includes(h)){joinPrompt(h);return}
   if(IEO){$('#fab').classList.add('hidden');if(h!=='ielts'){location.hash='ielts';return}return vIelts();}
   setGrade(STU.grade); bellUpdate(); pushDue(false);
   $('#fab').classList.toggle('hidden',h==='assistant');
@@ -32015,9 +32016,20 @@ function render(){
 
 /* ================= STUDENT PROFILE ================= */
 let STU=store.get('student',null);
+/* Guest mode: visitors can try lessons and quizzes before signing up; sign-up is asked for the competition, tutor and Alef */
+let GUEST=store.get('guest',null);
+function guestStu(g){return {name:L('زائر','Guest'),grade:g,guest:true}}
+if(!STU&&GUEST&&GUEST.grade)STU=guestStu(GUEST.grade);
+function isGuest(){return !!(STU&&STU.guest&&!ACC)}
+/* visitor funnel: each step counted once per device per day */
+function step(s){try{if(!location.protocol.startsWith('http'))return;let d=store.get('devId',null);if(!d){d=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12));store.set('devId',d)}
+  const k='mth_st|'+new Date().toDateString()+'|'+s;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}
+  rpc('log_step',{p_dev:d,p_step:s}).catch(()=>{})}catch(e){}}
+function guestStart(g){GUEST={grade:g};store.set('guest',GUEST);STU=guestStu(g);step('guest_start');const h=g==='ielts'?'ielts':'home';if(location.hash==='#'+h)render();else location.hash=h}
+function joinPrompt(why){step('join_prompt');welDraft={mode:'new',pick:STU&&STU.grade,why};if(location.hash==='#welcome')render();else location.hash='welcome'}
 /* IELTS is for Grade 12 students and IELTS-only accounts */
 function IEOK(){return !!(STU&&(/^g12/.test(STU.grade)||STU.grade==='ielts'))}
-function stuChip(){const c=$('#stuChip');if(!c)return;if(STU&&STU.grade==='ielts'){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+L('آيلتس','IELTS');return}if(STU&&GR[STU.grade]){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+GR[STU.grade].short}else c.classList.add('hidden')}
+function stuChip(){const c=$('#stuChip');if(!c)return;if(STU&&STU.guest&&!ACC){c.classList.remove('hidden');c.textContent='👤 '+L('زائر · سجّل الحين','Guest · Sign up');return}if(STU&&STU.grade==='ielts'){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+L('آيلتس','IELTS');return}if(STU&&GR[STU.grade]){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+GR[STU.grade].short}else c.classList.add('hidden')}
 let welDraft=null; // keeps typed fields when switching language on the welcome view
 /* ===== Cloud account (required): email + PIN; progress syncs to Supabase so it follows the student to any device ===== */
 let ACC=store.get('acct',null);
@@ -32076,7 +32088,15 @@ function vWelcome(){
   const dr=welDraft||{};welDraft=null;
   const mode=dr.mode||(ACC?'edit':'new');
   const sel=dr.pick!=null?dr.pick:(STU?STU.grade:'');
-  const nameV=dr.name!=null?dr.name:(STU?STU.name:'');
+  const nameV=dr.name!=null?dr.name:(STU&&!STU.guest?STU.name:'');
+  const WHY={compete:L('🏆 سجّل عشان تدخل المسابقة وتجمع نقاط وتفوز بالجوائز!','🏆 Sign up to join the competition, earn points and win prizes!'),assistant:L('👩‍🏫 سجّل عشان تكلم مدرسك الخصوصي!','👩‍🏫 Sign up to talk to your private tutor!'),alef:L('📝 سجّل عشان تنحسب لك واجبات ألف نقاط!','📝 Sign up so your Alef homework earns points!')};
+  const whyBox=dr.why&&WHY[dr.why]?`<div class="card" style="background:var(--sun-soft);border-color:var(--sun);margin:0 0 14px"><b>${WHY[dr.why]}</b><div class="mut" style="font-size:13.5px;margin-top:4px">${L('دقيقة وحدة بس، وكل اللي ذاكرته كزائر ينحفظ في حسابك 👍','Takes a minute, and everything you studied as a guest is kept 👍')}</div></div>`:'';
+  const gIds=['g10g','g10a','g11g','g11a','g12g','g12a'].filter(id=>GR[id]&&GR[id].S&&Object.keys(GR[id].S).length);
+  const guestBox=(mode==='new'&&!(STU&&STU.guest))?`<div class="card" style="background:var(--mint-soft);border-color:var(--mint);margin:0 0 16px">
+    <b style="font-size:17px">👀 ${L('تبي تشوف الموقع أول؟','Want to look around first?')}</b>
+    <p class="mut" style="margin:4px 0 10px;font-size:14px">${L('جرّب الدروس والأسئلة بدون تسجيل. اختر صفك:','Try lessons and quizzes without signing up. Pick your grade:')}</p>
+    <div class="row" style="flex-wrap:wrap;gap:6px">${gIds.map(id=>`<button type="button" class="sec" onclick="guestStart('${id}')">${esc(GRN[id]||id)}</button>`).join('')}<button type="button" class="sec" onclick="guestStart('ielts')">✈️ ${L('آيلتس','IELTS')}</button></div></div>
+    <div class="mut" style="text-align:center;margin:0 0 12px;font-size:14px">${L('— أو سجّل الحين عشان تنحفظ مذاكرتك وتدخل المسابقة —','— or sign up now to save your progress and join the competition —')}</div>`:'';
   const emailV=dr.email!=null?dr.email:(ACC?ACC.email:'');
   const langBar=`<div class="row" role="group" aria-label="Language / اللغة" style="justify-content:flex-end;gap:6px"><span class="mut" style="font-size:14px">🌐</span>
     <button type="button" class="${LANG==='ar'?'pri':'ghost'}" lang="ar" style="padding:6px 14px" onclick="welLang('ar')">عربي</button>
@@ -32119,6 +32139,7 @@ function vWelcome(){
      <p style="text-align:center;margin-top:12px"><a href="#" onclick="accLogout();return false">${L('تسجيل خروج من هذا الجهاز','Sign out on this device')}</a></p>`;
   }else{
     body=`<h1 style="margin-top:0">${L('أهلًا في مذاكرتي 🌸','Welcome to Mthakarti 🌸')}</h1>
+     ${whyBox}${guestBox}
      ${LANG==='en'?'<p class="mut" style="margin-top:0;font-size:14px">Arabic Language, Islamic Education and Social Studies always stay in Arabic.</p>':''}
      <label for="stuName" style="font-weight:800">${L('شو اسمك؟','What’s your name?')}</label>
      <input id="stuName" autocomplete="given-name" maxlength="30" placeholder="${L('اكتب اسمك','Type your name')}" value="${esc(nameV)}" style="margin:6px 0 14px">
@@ -32131,6 +32152,7 @@ function vWelcome(){
   }
   $('#view').innerHTML=`<div class="card" style="max-width:640px;margin:20px auto">${langBar}${body}</div>`;
   const hasContent=id=>id==='ielts'||!!(GR[id]&&GR[id].S&&Object.keys(GR[id].S).length);
+  if(mode==='new'){step('welcome_view');document.querySelectorAll('#stuName,#accEmail,#accPin,#gradeSel').forEach(x=>x.addEventListener('focus',()=>step('form_focus'),{once:true}))}
   let pick=sel;const gs=$('#gradeSel');
   const chk=()=>{if(!gs)return;const soon=!!pick&&!hasContent(pick);$('#gradeMsg').classList.toggle('hidden',!soon);if(!soon)$('#welErr').textContent=''};
   if(gs){gs.onchange=()=>{pick=gs.value;chk()};chk()}
@@ -32153,7 +32175,7 @@ function vWelcome(){
         const data=a.data||{};try{Object.keys(data).forEach(k=>{localStorage.setItem('mth_'+k,data[k])})}catch(e){}
         ACC={id:a.acc_id,secret:a.acc_secret,email};store.set('acct',ACC);
         Object.keys(data).forEach(k=>{try{store.set(k,JSON.parse(data[k]))}catch(e){}});
-        STU={name:a.name,grade:a.grade};store.set('student',STU);store.set('lang',a.lang||LANG);
+        STU={name:a.name,grade:a.grade};store.set('student',STU);store.set('lang',a.lang||LANG);store.set('guest',null);step('login_ok');
         location.hash='home';location.reload();
       }catch(e){go.disabled=false;err(accErr(e.message))}
       return;
@@ -32165,17 +32187,20 @@ function vWelcome(){
     if(mode==='edit'){STU={name,grade:STU.grade};store.set('student',STU);stuChip();accSave().then(compAuto);location.hash='home';render();if(store.get('pushOn',false))syncPush();return}
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return err(L('اكتب إيميل صحيح','Enter a valid email'));
     if(!/^[0-9]{4,6}$/.test(pin))return err(L('اختر رقم سري من 4 إلى 6 أرقام','Choose a 4–6 digit PIN'));
-    go.disabled=true;err('');
-    try{STU={name,grade:pick};store.set('student',STU);
+    go.disabled=true;err('');step('reg_submit');
+    const prevStu=STU;
+    try{STU={name,grade:pick};
       const r=await rpc('acc_register',{p_email:email,p_pin:pin,p_name:name,p_grade:pick,p_lang:LANG,p_data:accDump()});const a=Array.isArray(r)?r[0]:r;
+      store.set('student',STU);store.set('guest',null);GUEST=null;step('reg_ok');
       ACC={id:a.acc_id,secret:a.acc_secret,email};store.set('acct',ACC);accSave().then(compAuto);verCheck();
-      stuChip();location.hash='home';render();if(store.get('pushOn',false))syncPush();setTimeout(notifOffer,4000);
-    }catch(e){go.disabled=false;err(accErr(e.message))}
+      stuChip();location.hash=pick==='ielts'?'ielts':'home';render();if(store.get('pushOn',false))syncPush();setTimeout(notifOffer,4000);
+    }catch(e){STU=prevStu;go.disabled=false;const c=(String(e.message).match(/email_taken|bad_email|bad_pin|bad_grade|too_big|Failed to fetch|NetworkError|Load failed/)||['other'])[0];step('reg_err_'+c.toLowerCase().replace(/[^a-z_]/g,'_').slice(0,20));err(accErr(e.message))}
   };
 }
 function vHome(){
   crumbs([[L('الرئيسية','Home')]]);
   $('#view').innerHTML=`
+  ${isGuest()?`<div class="card row" style="justify-content:space-between;background:var(--sun-soft);border-color:var(--sun);margin-bottom:12px"><div style="min-width:0"><b>👀 ${L('إنت تتصفح كزائر','You are browsing as a guest')}</b><div class="mut" style="font-size:14px">${L('سجّل عشان تنحفظ مذاكرتك، وتدخل المسابقة والجوائز، وتكلم مدرسك الخصوصي.','Sign up to save your progress, join the competition and prizes, and talk to your tutor.')}</div></div><button class="pri" onclick="joinPrompt('home')">${L('سجّل الحين ✏️','Sign up ✏️')}</button></div>`:''}
   <section class="hero">
     <div>
       <span class="pill p-pink">${L('منهج الإمارات · الفصل الأول 2026-2027','UAE curriculum · Term 1 2026-2027')}</span>
@@ -32259,6 +32284,7 @@ function vSubject(k,tab){
 let Z=null, quizTimer=null;
 function pickExam(s){const byT={};s.Q.forEach(q=>(byT[q[0]]=byT[q[0]]||[]).push(q));let out=s.T.map(t=>shuffle(byT[t.id]||[])[0]).filter(Boolean);const rest=shuffle(s.Q.filter(q=>!out.includes(q)));while(out.length<s.exam.n&&rest.length)out.push(rest.pop());return shuffle(out).slice(0,s.exam.n)}
 function startQuiz(k,mode,topic){
+  if(isGuest())step('guest_quiz');
   const s=SUBJ[k];let qs;
   if(mode==='practice')qs=shuffle(s.Q.filter(q=>q[0]===topic));
   else if(mode==='mix')qs=shuffle(s.Q).slice(0,10);
@@ -32343,6 +32369,7 @@ function openLesson(k,id){ctx.tab='lessons';go(CUR+'-'+k+'-'+id)}
 /* ================= LESSON PAGE ================= */
 function vLesson(k,id){
   const s=SUBJ[k], i=s.T.findIndex(x=>x.id===id); if(i<0){go(CUR+'-'+k);return}
+  if(isGuest())step('guest_lesson');
   const t=s.T[i], cd=CD(s), p=P(k), prev=s.T[i-1], next=s.T[i+1];
   ctx={subj:k,tab:'lessons',g:CUR};
   crumbs([[L('الرئيسية','Home'),'home'],[GR[CUR].short,CUR],[nm(k),CUR+'-'+k],[L('درس ','Lesson ')+t.id]]);
@@ -32768,7 +32795,7 @@ async function vAdmin(){
   if(ADM.s)admShow();
   admLoad();
 }
-async function admLoad(){try{const [s,w,pt]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[])]);
+async function admLoad(){try{const [s,w,pt,fn]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_funnel',{p_code:ADM.tok}).catch(()=>null)]);ADM.fn=fn;
   const pm={};(pt||[]).forEach(r=>{pm[(r.email||'').toLowerCase()]=r});(s.students||[]).forEach(r=>{const p=pm[(r.email||'').toLowerCase()];r.pts=p?p.points:0;r.wk=p?p.week:0});
   ADM.s=s;ADM.w=w||[];admShow()}
   catch(e){if(/bad_code/.test(e.message)){admSetTok('');return admLoginView(L('انتهت الجلسة، سجّلي دخول مرة ثانية','Session expired, please sign in again'))}const b=$('#admBody');if(b)b.innerHTML=`<p style="color:var(--bad)">${admErr(e)}</p>`}}
@@ -32793,7 +32820,18 @@ function admShow(){const b=$('#admBody');if(!b)return;document.querySelectorAll(
       <div class="adm-chart">${daily.map(x=>`<div title="${x.d}: ${x.v}"><small>${x.v||''}</small><em style="height:${Math.round(x.v/dm*95)}px"></em><small>${String(x.d).slice(8,10)}</small></div>`).join('')}</div></div>
      <div class="adm-box"><h3>🏫 ${L('الحسابات حسب الصف','Accounts by grade')}</h3>${bars(s.acc_grades)}</div>
      <div class="adm-box"><h3>🏫 ${L('الزوار حسب الصف (7 أيام)','Visitors by grade (7 days)')}</h3>${bars(s.visit_grades_7d)}</div>
+     ${admFunnel()}
     </div>`}
+/* visitor journey: how many devices reached each step (today / 7 days) */
+function admFunnel(){const f=ADM.fn;if(!f)return '';const T=f.today||{},W=f.d7||{};
+  const rows=[['welcome_view',L('شافوا صفحة التسجيل','Saw the sign-up page')],['guest_start',L('جرّبوا كزوار','Tried as a guest')],['guest_lesson',L('زوار فتحوا درس','Guests opened a lesson')],['guest_quiz',L('زوار حلّوا كويز','Guests took a quiz')],['join_prompt',L('زوار انطلب منهم التسجيل','Guests asked to sign up')],['form_focus',L('بدوا يكتبون في الاستمارة','Started filling the form')],['reg_submit',L('ضغطوا «سجّل»','Pressed “Register”')],['reg_ok',L('سجّلوا بنجاح ✅','Signed up ✅')],['login_ok',L('دخلوا بحساب قديم','Signed in to an existing account')]];
+  const errs=Object.keys(W).filter(k=>k.startsWith('reg_err_'));
+  const EN={reg_err_email_taken:L('الإيميل مسجّل من قبل','Email already used'),reg_err_bad_email:L('إيميل غلط','Bad email'),reg_err_bad_pin:L('رقم سري غلط','Bad PIN'),reg_err_failed_to_fetch:L('مشكلة إنترنت','Network problem'),reg_err_networkerror:L('مشكلة إنترنت','Network problem'),reg_err_load_failed:L('مشكلة إنترنت','Network problem')};
+  return `<div class="adm-box"><h3>🧭 ${L('رحلة الزائر','Visitor journey')}</h3>
+   <div class="adm-bar" style="grid-template-columns:1fr 48px 48px;font-weight:800;font-size:12.5px;color:var(--mut)"><span></span><span style="text-align:center">${L('اليوم','Today')}</span><span>${L('7 أيام','7d')}</span></div>
+   ${rows.map(([k,n])=>`<div class="adm-bar" style="grid-template-columns:1fr 48px 48px"><span>${n}</span><b style="text-align:center">${T[k]||0}</b><b>${W[k]||0}</b></div>`).join('')}
+   ${errs.length?`<p class="mut" style="font-size:13px;margin:8px 0 0">⚠️ ${L('أخطاء التسجيل (7 أيام):','Sign-up errors (7d):')} ${errs.map(k=>`${esc(EN[k]||k.slice(8))}: ${W[k]}`).join(' · ')}</p>`:''}
+   <p class="mut" style="font-size:12px;margin:8px 0 0">${L('بدأ العد 15 نوفمبر. كل جهاز ينحسب مرة وحدة باليوم في كل خطوة.','Tracking began 15 Nov. Each device counts once per day per step.')}</p></div>`}
 function admStudents(b,s){const rows=(s.students||[]).slice();const k=ADM.sort||'wk';
   const val={wk:r=>-(r.wk||0),pts:r=>-(r.pts||0),name:r=>(r.name||'').toLowerCase(),grade:r=>r.grade||'',last:r=>r.last?-new Date(r.last):0,m_today:r=>-r.m_today,m_7d:r=>-r.m_7d,m_all:r=>-r.m_all,tutor:r=>-r.tutor_all};
   rows.sort((a,c)=>{const x=val[k](a),y=val[k](c);return x<y?-1:x>y?1:0});
