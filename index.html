@@ -32691,7 +32691,8 @@ const ADM_CSS=`<style>
 .adm-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .adm-tabs button{padding:8px 16px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:700;cursor:pointer}
 .adm-tabs button.on{background:var(--pink);border-color:var(--pink);color:#fff}
-.adm-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.adm-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+@media(max-width:600px){.adm-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.adm-kpi b{font-size:24px}.adm-grid{grid-template-columns:minmax(0,1fr)}.adm-bar{grid-template-columns:100px 1fr 30px}}
 .adm-kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-width:0}
 .adm-kpi b{display:block;font-size:30px;line-height:1.1}
 .adm-kpi span{font-size:13px;color:var(--mut)}
@@ -32713,6 +32714,18 @@ const ADM_CSS=`<style>
 .adm-t tr:last-child td{border-bottom:0}
 .adm-t td.num{text-align:center}
 .adm-login{max-width:420px;margin:30px auto}
+.adm-tools{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.adm-tools input,.adm-tools select{flex:1 1 200px;margin:0;min-width:0}
+.adm-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.adm-sc{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 14px;min-width:0}
+.adm-sh{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.adm-sh b{font-size:17px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm-pill{font-size:12px;background:var(--lav-soft);border:1px solid var(--lav);border-radius:99px;padding:2px 10px;white-space:nowrap}
+.adm-em{font-size:13px;color:var(--mut);margin:4px 0;overflow-wrap:anywhere;text-align:end}
+.adm-sts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:8px}
+.adm-st{background:var(--surface2);border-radius:10px;padding:6px 4px;text-align:center;min-width:0}
+.adm-st b{display:block;font-size:13.5px}
+.adm-st span{font-size:11px;color:var(--mut)}
 .adm-login input{margin:6px 0 12px}
 </style>`;
 const admDate=d=>d?new Date(d).toLocaleString(LANG==='en'?'en-GB':'ar-AE',{timeZone:'Asia/Dubai',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
@@ -32756,16 +32769,23 @@ function admShow(){const b=$('#admBody');if(!b)return;document.querySelectorAll(
 function admStudents(b,s){const rows=(s.students||[]).slice();const k=ADM.sort||'last';
   const val={name:r=>(r.name||'').toLowerCase(),grade:r=>r.grade||'',last:r=>r.last?-new Date(r.last):0,m_today:r=>-r.m_today,m_7d:r=>-r.m_7d,m_all:r=>-r.m_all,tutor:r=>-r.tutor_all};
   rows.sort((a,c)=>{const x=val[k](a),y=val[k](c);return x<y?-1:x>y?1:0});
-  const th=(key,t)=>`<th onclick="ADM.sort='${key}';admShow()">${t}${k===key?' ▾':''}</th>`;
-  b.innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:10px"><b style="font-size:18px">${L(`الطالبات (${rows.length})`,`Students (${rows.length})`)}</b>
-    <input id="admQ" placeholder="${L('🔎 بحث بالاسم أو الإيميل','🔎 Search name or email')}" oninput="admFilter()" style="max-width:320px;margin:0"></div>
-   <div class="adm-tw"><table class="adm-t" id="admTbl"><thead><tr>${th('name',L('الاسم','Name'))}<th>${L('الإيميل','Email')}</th>${th('grade',L('الصف','Grade'))}${th('last',L('آخر دخول','Last seen'))}${th('m_today',L('اليوم','Today'))}${th('m_7d',L('7 أيام','7 days'))}${th('m_all',L('المجموع','Total'))}${th('tutor',L('أسئلة المدرس','Tutor Qs'))}</tr></thead><tbody>
-   ${rows.map(r=>`<tr><td><b>${esc(r.name||'—')}</b></td><td dir="ltr">${esc(r.email||'')}</td><td>${esc(admGr(r.grade))}</td><td>${admDate(r.last)}</td><td class="num">${admMin(r.m_today)}</td><td class="num">${admMin(r.m_7d)}</td><td class="num">${admMin(r.m_all)}</td><td class="num">${r.tutor_all}${r.tutor_today?` <small class="mut">(${L('اليوم','today')} ${r.tutor_today})</small>`:''}</td></tr>`).join('')}</tbody></table></div>
-   <p class="mut" style="font-size:12px">${L('اضغطي على عنوان العمود عشان ترتّبين. الوقت ينحسب بس لما الصفحة مفتوحة والطالبة تستخدمها (بدأ العد 15 نوفمبر).','Tap a column title to sort. Time counts only while the page is open and in use (tracking began 15 Nov).')}</p>`}
-function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl tbody tr').forEach(tr=>{tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none'})}
+  const opts=[['last',L('آخر دخول','Last seen')],['m_today',L('الأكثر مذاكرة اليوم','Most study today')],['m_7d',L('الأكثر مذاكرة هالأسبوع','Most study this week')],['m_all',L('الأكثر مذاكرة بالمجموع','Most study overall')],['tutor',L('الأكثر استخدام للمدرس','Most tutor use')],['name',L('الاسم','Name')],['grade',L('الصف','Grade')]];
+  const st=(n,l)=>`<div class="adm-st"><b>${n}</b><span>${l}</span></div>`;
+  b.innerHTML=`<b style="font-size:18px">${L(`الطالبات (${rows.length})`,`Students (${rows.length})`)}</b>
+   <div class="adm-tools"><input id="admQ" placeholder="${L('🔎 بحث بالاسم أو الإيميل','🔎 Search name or email')}" oninput="admFilter()">
+    <select onchange="ADM.sort=this.value;admShow()" aria-label="${L('ترتيب','Sort')}">${opts.map(([v,n])=>`<option value="${v}" ${k===v?'selected':''}>${L('ترتيب: ','Sort: ')}${n}</option>`).join('')}</select></div>
+   <div class="adm-cards" id="admTbl">${rows.map(r=>`<div class="adm-sc">
+     <div class="adm-sh"><b>${esc(r.name||'—')}</b><span class="adm-pill">${esc(admGr(r.grade))}</span></div>
+     <div class="adm-em" dir="ltr">${esc(r.email||'')}</div>
+     <div class="mut" style="font-size:12.5px">🕒 ${L('آخر دخول:','Last seen:')} ${admDate(r.last)}</div>
+     <div class="adm-sts">${st(admMin(r.m_today),L('اليوم','Today'))}${st(admMin(r.m_7d),L('7 أيام','7 days'))}${st(admMin(r.m_all),L('المجموع','Total'))}${st(r.tutor_all,L('أسئلة المدرس','Tutor Qs'))}</div></div>`).join('')}</div>
+   <p class="mut" style="font-size:12px">${L('الوقت ينحسب بس لما الصفحة مفتوحة والطالبة تستخدمها (بدأ العد 15 نوفمبر).','Time counts only while the page is open and in use (tracking began 15 Nov).')}</p>`}
+function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl .adm-sc').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q)?'':'none'})}
 function admPrize(b){const w=ADM.w||[];
   b.innerHTML=`<div class="adm-box" style="background:var(--sun-soft);border-color:var(--sun)"><b>🎁 ${L('القاعدة:','Rule:')}</b> ${L('أول طالب في كل صف يجمع 500 نقطة خلال الأسبوع (من السبت لين الجمعة) يفوز بنقاط بينز. تواصلي وياه على إيميله.','The first student in each grade to collect 500 points in the week (Saturday to Friday) wins Penz points. Contact them by email.')}</div>
-   <div class="adm-tw" style="margin-top:12px">${w.length?`<table class="adm-t"><thead><tr><th>${L('الأسبوع','Week')}</th><th>${L('الصف','Grade')}</th><th>${L('الاسم','Name')}</th><th>${L('الإيميل','Email')}</th><th>${L('وصل 500','Reached 500')}</th></tr></thead><tbody>${w.map(r=>`<tr><td>${esc(r.week_start)}</td><td>${esc(admGr(r.grade))}</td><td><b>${esc(r.name||'')}</b></td><td dir="ltr"><a href="mailto:${esc(r.email||'')}">${esc(r.email||'')}</a></td><td>${admDate(r.reached_at)}</td></tr>`).join('')}</tbody></table>`:`<p class="mut" style="padding:14px;margin:0">${L('ما في فايز للحين هالأسبوع.','No winner yet this week.')}</p>`}</div>`}
+   <div style="margin-top:12px">${w.length?`<div class="adm-cards">${w.map(r=>`<div class="adm-sc"><div class="adm-sh"><b>🏆 ${esc(r.name||'')}</b><span class="adm-pill">${esc(admGr(r.grade))}</span></div>
+     <div class="adm-em" dir="ltr"><a href="mailto:${esc(r.email||'')}">${esc(r.email||'')}</a></div>
+     <div class="mut" style="font-size:12.5px">${L('أسبوع','Week of')} ${esc(r.week_start)} · ${L('وصل 500:','Reached 500:')} ${admDate(r.reached_at)}</div></div>`).join('')}</div>`:`<p class="mut" style="margin:0">${L('ما في فايز للحين هالأسبوع.','No winner yet this week.')}</p>`}</div>`}
 function admSettings(b){
   b.innerHTML=`<div class="adm-grid" style="margin-top:0">
    <div class="adm-box"><h3>👩‍🏫 ${L('مفتاح المدرس الخصوصي (Anthropic)','Private tutor key (Anthropic)')}</h3>
