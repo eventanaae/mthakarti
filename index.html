@@ -243,6 +243,7 @@ a.ghost.btnlink{border:1.5px solid var(--line);color:var(--ink)}
   <div class="crumbs" id="crumbs"></div>
   <div class="hacts">
   <a id="stuChip" class="pill p-lav hidden" href="#welcome" title="تغيير الاسم أو الصف"></a>
+  <a href="#welcome" id="profBtn" class="hbtn" title="ملفك" aria-label="ملفك">👤</a>
   <a href="#compete" id="cmpLink" class="hbtn" title="المسابقة" aria-label="المسابقة">🏆</a>
   <button class="hbtn" id="bellBtn" title="التنبيهات" aria-label="التنبيهات">🔔<span id="bellDot" class="hidden"></span></button>
   <button class="hbtn" id="langBtn" title="English" aria-label="Switch to English" onclick="setLang(LANG==='en'?'ar':'en')">EN</button>
@@ -31954,6 +31955,7 @@ function applyLang(){
   set('#langBtn',L('English','عربي'),L('Switch to English','التبديل إلى العربية'));
   const lb=$('#langBtn');if(lb)lb.textContent=L('EN','ع');
   const sc=$('#stuChip');if(sc)sc.title=L('تغيير الاسم','Change name');
+  const pb=$('#profBtn');if(pb){pb.title=L('ملفك','Your profile');pb.setAttribute('aria-label',pb.title)}
   const f=$('#fab .fabfull');if(f)f.textContent=L('اسأل مدرسك الخصوصي','Ask your private tutor');const fs=$('#fab .fabshort');if(fs)fs.textContent=L('مدرس خصوصي','Tutor');
 }
 function setLang(l){l=l==='en'?'en':'ar';if(l!==LANG){LANG=l;store.set('lang',l)}applyLang();if(typeof Z!=='undefined'&&Z&&!Z.done)showQ();else render();if(store.get('pushOn',false))syncPush()}
@@ -32101,6 +32103,24 @@ async function accLogout(){if(!confirm(L('تبي تسجّل خروج من هذا
   COOKIE_KEYS.concat(['acct']).forEach(k=>{document.cookie='mth_'+k+'=;max-age=0;path=/';document.cookie='mth_'+k+'=;max-age=0;path=/;SameSite=Lax'+sec});
   try{localStorage.setItem('mthLoggedOut',String(Date.now()))}catch(e){}
   ACC=null;STU=null;location.hash='welcome';location.reload()}
+/* profile: total points, this week, ranks and achievements (daily top 3 in the grade, weekly prize wins) */
+async function profStats(){const b=$('#profStats');if(!b||!ACC)return;
+  try{const p=await rpc('acc_profile',{p_acc:ACC.id,p_secret:ACC.secret});if(!$('#profStats'))return;
+    const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Dubai'});
+    const fd=d=>new Date(d+'T12:00:00').toLocaleDateString(LANG==='en'?'en-GB':'ar-AE',{weekday:'long',day:'numeric',month:'long'});
+    const tile=(n,l,sub)=>`<div style="background:var(--surface2);border:1px solid var(--line);border-radius:14px;padding:12px;text-align:center;min-width:0"><div style="font-size:26px;font-weight:800">${n}</div><div style="font-size:13px">${l}</div>${sub?`<div class="mut" style="font-size:12px">${sub}</div>`:''}</div>`;
+    const medal=r=>r===1?'🥇':r===2?'🥈':'🥉';
+    const ach=[...(p.wins||[]).map(w=>`<li>🏆 <b>${L('فايز جائزة الأسبوع','Weekly prize winner')}</b> · ${L('أسبوع','week of')} ${fd(w.week)}</li>`),
+      ...(p.days||[]).map(d=>`<li>${medal(d.rank)} <b>${d.rank===1?L('الأول في صفك','1st in your grade'):d.rank===2?L('الثاني في صفك','2nd in your grade'):L('الثالث في صفك','3rd in your grade')}</b> · ${d.day===today?L('اليوم (للحين)','today (so far)'):fd(d.day)} · ${d.pts} ${L('نقطة','pts')}</li>`)];
+    b.innerHTML=`<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 12px">
+      ${tile(p.total,L('كل نقاطك','All your points'),L('من يوم سجّلت','since you joined'))}
+      ${tile(p.week,L('نقاط هالأسبوع','Points this week'),L(`${Math.max(0,500-p.week)} باقي للجائزة`,`${Math.max(0,500-p.week)} left for the prize`))}
+      ${tile(p.rank?'#'+p.rank:'—',L('ترتيبك في صفك','Your rank in your grade'),p.players?L(`من ${p.players}`,`of ${p.players}`):'')}
+      ${tile(p.week_rank?'#'+p.week_rank:'—',L('ترتيبك هالأسبوع','Your rank this week'),'')}</div>
+     <div style="background:var(--sun-soft);border:1px solid var(--sun);border-radius:14px;padding:10px 14px;margin:0 0 16px">
+      <b>🏅 ${L('إنجازاتك','Your achievements')}</b>
+      ${ach.length?`<ul style="margin:6px 0 0;padding-inline-start:18px;line-height:1.9">${ach.join('')}</ul>`:`<p class="mut" style="margin:4px 0 0;font-size:14px">${L('للحين ما في إنجازات. كن الأول في صفك يوم، أو أول واحد يوصل 500 نقطة بالأسبوع 💪','No achievements yet. Be 1st in your grade for a day, or the first to reach 500 points in a week 💪')}</p>`}</div>`}
+  catch(e){const x=$('#profStats');if(x)x.innerHTML=''}}
 function vWelcome(target){
   if(!target)crumbs([[L('أهلًا بك','Welcome')]]);
   const grades=[['10','العاشر'],['11','الحادي عشر'],['12','الثاني عشر']];
@@ -32151,6 +32171,7 @@ function vWelcome(target){
      <p style="text-align:center;margin-top:12px"><a href="#" onclick="welSwitch('new');return false">${L('ما عندي حساب؟ سجّل جديد','No account? Create one')}</a></p>`;
   }else if(mode==='edit'){
     body=`<h1 style="margin-top:0">${L('ملفك 👤','Your profile')}</h1>
+     ${STU&&STU.grade!=='ielts'?`<div id="profStats"><p class="mut">${L('جاري تحميل نقاطك…','Loading your points…')}</p></div>`:''}
      <label for="stuName" style="font-weight:800">${L('اسمك','Your name')}</label>
      <input id="stuName" maxlength="30" value="${esc(nameV)}" style="margin:6px 0 14px">
      ${gradeSel}${emailIn}
@@ -32181,6 +32202,7 @@ function vWelcome(target){
   }
   (target||$('#view')).innerHTML=`<div class="card" style="max-width:640px;margin:${target?'0':'20px'} auto">${langBar}${body}</div>`;
   const hasContent=id=>id==='ielts'||!!(GR[id]&&GR[id].S&&Object.keys(GR[id].S).length);
+  if(mode==='edit')profStats();
   if(mode==='new'&&!target){step('welcome_view');document.querySelectorAll('#stuName,#accEmail,#accPin,#gradeSel').forEach(x=>x.addEventListener('focus',()=>step('form_focus'),{once:true}))}
   let pick=sel;const gs=$('#gradeSel');
   const chk=()=>{if(!gs)return;const soon=!!pick&&!hasContent(pick);$('#gradeMsg').classList.toggle('hidden',!soon);if(!soon)$('#welErr').textContent=''};
@@ -32268,7 +32290,6 @@ function vHome(){
   ${Object.values(SUBJ).every(s=>s.noTerm)?NOTERM():`<div class="grid">
    ${Object.entries(SUBJ).filter(([k,s])=>!s.noTerm).map(([k,s])=>`<div class="tile" role="button" tabindex="0" onclick="go('${CUR}-${k}')"><span class="ic">${s.icon}</span><b>${nmH(k)}</b><small>${L(`${s.T.length} دروس`,`${s.T.length} lessons`)}</small></div>`).join('')}
   </div>`}
-  <p class="mut" style="text-align:center;margin-top:14px"><a href="#welcome">${L('👤 ملفك','👤 Your profile')}</a></p>
   <p class="foot">${L('مذاكرتي · mthakarti.com · محتوى تعليمي مساعد، ارجع دائمًا لكتابك ومعلمك 🌸','Mthakarti · mthakarti.com · Supporting study material — always check your textbook and teacher 🌸')}</p>`;
 }
 function subjProgress(k){const s=SUBJ[k],p=P(k);if(!s.T.length)return 0;const seen=p.done.filter(id=>s.T.some(t=>t.id===id)).length/s.T.length;const ex=p.exam?p.exam/100:0;return Math.round((seen*.5+ex*.5)*100)}
