@@ -31995,6 +31995,7 @@ function render(){
   if(!STU||(!ACC&&!STU.guest)||(!GR[STU.grade]&&!IEO)||h==='welcome'){$('#fab').classList.add('hidden');return vWelcome();}
   if(VER.need){$('#fab').classList.add('hidden');return vVerify();}
   if(isGuest()&&['compete','assistant','alef'].includes(h)){joinPrompt(h);return}
+  if(isGuest())store.set('guestLast',h); /* remember where the guest is, to bring them back after sign-up */
   if(IEO){$('#fab').classList.add('hidden');if(h!=='ielts'){location.hash='ielts';return}return vIelts();}
   setGrade(STU.grade); bellUpdate(); pushDue(false);
   $('#fab').classList.toggle('hidden',h==='assistant');
@@ -32191,9 +32192,11 @@ function vWelcome(){
     const prevStu=STU;
     try{STU={name,grade:pick};
       const r=await rpc('acc_register',{p_email:email,p_pin:pin,p_name:name,p_grade:pick,p_lang:LANG,p_data:accDump()});const a=Array.isArray(r)?r[0]:r;
-      store.set('student',STU);store.set('guest',null);GUEST=null;step('reg_ok');
+      const back=['compete','assistant','alef'].includes(dr.why)?dr.why:(store.get('guestLast',null)||'');
+      store.set('student',STU);store.set('guest',null);store.set('guestLast',null);GUEST=null;step('reg_ok');
       ACC={id:a.acc_id,secret:a.acc_secret,email};store.set('acct',ACC);accSave().then(compAuto);verCheck();
-      stuChip();location.hash=pick==='ielts'?'ielts':'home';render();if(store.get('pushOn',false))syncPush();setTimeout(notifOffer,4000);
+      if(back&&back!=='home')toast(L('أهلًا فيك! رجّعناك لنفس المكان اللي كنت فيه 👌','Welcome! We brought you back to where you were 👌'));
+      stuChip();location.hash=back||(pick==='ielts'?'ielts':'home');render();if(store.get('pushOn',false))syncPush();setTimeout(notifOffer,4000);
     }catch(e){STU=prevStu;go.disabled=false;const c=(String(e.message).match(/email_taken|bad_email|bad_pin|bad_grade|too_big|Failed to fetch|NetworkError|Load failed/)||['other'])[0];step('reg_err_'+c.toLowerCase().replace(/[^a-z_]/g,'_').slice(0,20));err(accErr(e.message))}
   };
 }
