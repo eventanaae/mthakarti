@@ -132,6 +132,20 @@ h3{font-size:19px;margin:0 0 6px}
 .tusubs::-webkit-scrollbar{display:none}
 .tusubs button{white-space:nowrap;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px}
 .tusubs button.on{background:var(--pink);color:#fff;border-color:var(--pink)}
+/* ===== motion: page entrance, reveal on scroll, press feedback, celebration ===== */
+@keyframes mthUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes mthPop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:scale(1)}}
+@keyframes mthFly{0%{transform:translate(0,0) scale(.6);opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1.1) rotate(var(--rot));opacity:0}}
+#view.vin>*{animation:mthUp .5s cubic-bezier(.2,.8,.2,1) both}
+#view.vin>*:nth-child(2){animation-delay:.06s}#view.vin>*:nth-child(3){animation-delay:.12s}#view.vin>*:nth-child(4){animation-delay:.18s}#view.vin>*:nth-child(n+5){animation-delay:.22s}
+.rv{opacity:0;transform:translateY(22px) scale(.98);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+.rv.on{opacity:1;transform:none}
+.tile{transition:transform .18s ease,box-shadow .2s ease}
+@media (hover:hover){.tile:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(214,51,132,.14)}}
+.tile:active,button:active,.hbtn:active{transform:scale(.96)}
+.fb.ok{animation:mthPop .45s ease both}
+.mth-p{position:fixed;z-index:10000;pointer-events:none;font-size:22px;animation:mthFly .9s ease-out forwards}
+@media (prefers-reduced-motion:reduce){#view.vin>*,.fb.ok,.mth-p{animation:none!important}.rv{opacity:1;transform:none;transition:none}.tile,.tile:hover{transition:none;transform:none}}
 .tutor .msgs{min-height:240px;flex:1 1 auto}
 /* chat fills the screen so the message box sits at the bottom, even with few messages */
 .tutor{min-height:calc(100vh - 120px);min-height:calc(100dvh - 120px)}
@@ -31995,7 +32009,7 @@ function crumbs(list){$('#crumbs').innerHTML=list.map(([t,h])=>h?`<a href="#${h}
 function render(){
   stopSpeak(); speakingBtn=null; clearInterval(quizTimer);
   const h=(location.hash||'#home').slice(1)||'home';
-  route=h; window.scrollTo(0,0);
+  const sameRoute=route===h; route=h; if(!sameRoute)window.scrollTo(0,0); /* re-rendering the same page (term switch, language) keeps your place */
   stuChip();
   { const p=$('#notifPanel'); if(p) p.remove(); }
   if(h==='admin'){$('#fab').classList.add('hidden');return vAdmin();}
@@ -32133,6 +32147,8 @@ function vWelcome(target){
   const nameV=dr.name!=null?dr.name:(STU?(STU.guest?(GUEST&&GUEST.name||''):STU.name):'');
   const WHY={compete:L('🏆 سجّل عشان تدخل المسابقة وتجمع نقاط وتفوز بالجوائز!','🏆 Sign up to join the competition, earn points and win prizes!'),assistant:L('👩‍🏫 سجّل عشان تكلم مدرسك الخصوصي!','👩‍🏫 Sign up to talk to your private tutor!'),alef:L('📝 سجّل عشان تنحسب لك واجبات ألف نقاط!','📝 Sign up so your Alef homework earns points!')};
   WHY.time=L('⏰ خلصت دقايق التجربة! سجّل عشان تكمل مذاكرتك','⏰ Your trial minutes are up! Sign up to keep studying');
+  WHY.quiz=L('🎯 سجّل عشان تحل الأسئلة والكويزات وتجمع نقاط!','🎯 Sign up to answer questions and quizzes and earn points!');
+  WHY.exam=L('📝 سجّل عشان تحل الامتحانات وتجمع نقاط!','📝 Sign up to take exams and earn points!');
   WHY.home=L('✏️ سجّل عشان تنحفظ مذاكرتك وتدخل المسابقة','✏️ Sign up to save your progress and join the competition');
   const whyBox=dr.why&&WHY[dr.why]?`<div class="card" style="background:var(--sun-soft);border-color:var(--sun);margin:0 0 14px"><b>${WHY[dr.why]}</b><div class="mut" style="font-size:13.5px;margin-top:4px">${L('دقيقة وحدة بس، وكل اللي ذاكرته كزائر ينحفظ في حسابك 👍','Takes a minute, and everything you studied as a guest is kept 👍')}</div></div>`:'';
   /* first visit: only name + grade, then straight into the site (sign-up comes after 5 minutes) */
@@ -32346,7 +32362,7 @@ function vSubject(k,tab){
 let Z=null, quizTimer=null;
 function pickExam(s){const byT={};s.Q.forEach(q=>(byT[q[0]]=byT[q[0]]||[]).push(q));let out=s.T.map(t=>shuffle(byT[t.id]||[])[0]).filter(Boolean);const rest=shuffle(s.Q.filter(q=>!out.includes(q)));while(out.length<s.exam.n&&rest.length)out.push(rest.pop());return shuffle(out).slice(0,s.exam.n)}
 function startQuiz(k,mode,topic){
-  if(isGuest())step('guest_quiz');
+  if(isGuest()){step('guest_quiz');joinPrompt(mode==='exam'?'exam':'quiz');return}
   const s=SUBJ[k];let qs;
   if(mode==='practice')qs=shuffle(s.Q.filter(q=>q[0]===topic));
   else if(mode==='mix')qs=shuffle(s.Q).slice(0,10);
@@ -32389,9 +32405,9 @@ function pick(o,btn){
   document.querySelectorAll('.opts button').forEach(b=>{b.disabled=true;if(+b.dataset.o===0)b.classList.add('right');else if(+b.dataset.o===o)b.classList.add('wrong')});
   Z.ans[Z.i]=o;
   const fb=$('#fb');
-  if(o===0){Z.combo++;Z.right++;earnQ(Z.k,q);const pts=Math.round(100*(1+Math.min(Z.combo-1,4)*.25));Z.score+=pts;fb.className='fb ok';fb.innerHTML=`✅ ${L(['ممتاز!','كفو!','صح عليك!','بطل!'],['Excellent!','Nailed it!','Spot on!','Champion!'])[Math.random()*4|0]} +${pts}<br>${q[6]}`}
+  if(o===0){Z.combo++;Z.right++;earnQ(Z.k,q);if(typeof burst==='function')burst(btn);const pts=Math.round(100*(1+Math.min(Z.combo-1,4)*.25));Z.score+=pts;fb.className='fb ok';fb.innerHTML=`✅ ${L(['ممتاز!','كفو!','صح عليك!','بطل!'],['Excellent!','Nailed it!','Spot on!','Champion!'])[Math.random()*4|0]} +${pts}<br>${q[6]}`}
   else{Z.combo=0;if(Z.hearts!==Infinity)Z.hearts--;fb.className='fb no';fb.innerHTML=`${o===-1?L('⏰ خلص الوقت.','⏰ Time’s up.'):L('❌ مب صح.','❌ Not quite.')} ${L('الجواب:','Answer:')} <b>${q[2]}</b><br>💡 ${q[6]} <button class="ghost" style="padding:4px 10px;font-size:14px" onclick="askQ()">${L('👩‍🏫 ما فهمت','👩‍🏫 I don’t get it')}</button>`;$('.quiz .card').classList.add('shake')}
-  const nb=$('#nextB');nb.classList.remove('hidden');if(Z.hearts<=0)nb.textContent=L('النتيجة 🏁','Results 🏁');
+  const nb=$('#nextB');nb.classList.remove('hidden');try{fb.scrollIntoView({behavior:'smooth',block:'nearest'})}catch(e){}if(Z.hearts<=0)nb.textContent=L('النتيجة 🏁','Results 🏁');
 }
 function nextQ(){if(Z.hearts<=0||Z.i>=Z.qs.length-1)return finishQuiz();Z.i++;showQ()}
 function quitQuiz(){clearInterval(quizTimer);const k=(Z&&Z.k)||(ctx&&ctx.subj);Z=null;if(!k||!SUBJ[k]){go(CUR);return}go(CUR+'-'+k);vSubject(k)}
@@ -32512,11 +32528,12 @@ function lessonSteps(k,t,root,html,opt){
       card.classList.add('lsq');card.innerHTML=`<div class="mut" style="font-size:13px;margin-bottom:4px">${L('⚡ سؤال سريع قبل لا تكمل','⚡ Quick check before you continue')}</div><b>${q[1]}</b><div class="lsopts"></div><div class="lsfb"></div>`;
       const box=card.querySelector('.lsopts');
       opts.forEach(o=>{const b=document.createElement('button');b.type='button';b.className='ghost lsopt';b.innerHTML=o;b.onclick=()=>{
+        if(isGuest()){joinPrompt('quiz');return}
         if(!locked)return;const ok=o===q[2];b.classList.add(ok?'ok':'no');
-        if(ok){locked=false;btn.disabled=false;box.querySelectorAll('button').forEach(x=>x.disabled=true);earnQ(k,q);card.querySelector('.lsfb').innerHTML=`✅ ${L('صح! ','Correct! ')}${q[6]||''}`;btn.textContent=pos>=plan.length?L('خلّصت ✓','Finish ✓'):L('كمّل ⬇','Continue ⬇')}
+        if(ok){locked=false;btn.disabled=false;box.querySelectorAll('button').forEach(x=>x.disabled=true);earnQ(k,q);if(typeof burst==='function')burst(b);card.querySelector('.lsfb').innerHTML=`✅ ${L('صح! ','Correct! ')}${q[6]||''}`;btn.textContent=pos>=plan.length?L('خلّصت ✓','Finish ✓'):L('كمّل ⬇','Continue ⬇')}
         else{b.disabled=true;card.querySelector('.lsfb').innerHTML=`❌ ${L('مب هذا… فكّر مرة ثانية 💭','Not quite… try again 💭')}`}};box.appendChild(b)})}
     list.appendChild(card);void card.offsetWidth;card.classList.add('in');
-    if(pos>1)card.scrollIntoView({behavior:'smooth',block:'start'});
+    if(pos>1)card.scrollIntoView({behavior:'smooth',block:'nearest'});
   };
   btn.onclick=step;
   root.querySelector('.lsall').onclick=()=>{list.innerHTML='';const all=document.createElement('div');all.className='card body';all.setAttribute('dir',cd);all.innerHTML=html;list.appendChild(all);btn.parentNode.remove();bar.style.width='100%'};
@@ -32657,6 +32674,10 @@ function askQ(){const q=Z.qs[Z.i];const s=SUBJ[Z.k];chat.k=Z.k;chat.prefill=L(`�
 function md(t){let h=esc(t);h=h.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/^#{1,4}\s*(.+)$/gm,'<b>$1</b>').replace(/^\s*[-•]\s+(.+)$/gm,'<li>$1</li>').replace(/(<li>.*<\/li>\n?)+/g,m=>'<ul>'+m+'</ul>').replace(/\n/g,'<br>').replace(/<\/li><br>/g,'</li>').replace(/<ul><br>/g,'<ul>');return h}
 /* ===== Private tutor (مدرسك الخصوصي): artifact `sample` if present, else our Supabase `tutor` function ===== */
 async function tutorShrink(file){try{const bmp=await createImageBitmap(file);const m=1280,sc=Math.min(1,m/Math.max(bmp.width,bmp.height));const c=document.createElement('canvas');c.width=Math.round(bmp.width*sc);c.height=Math.round(bmp.height*sc);c.getContext('2d').drawImage(bmp,0,0,c.width,c.height);const u=c.toDataURL('image/jpeg',0.82);return {media_type:'image/jpeg',data:u.split(',')[1]}}catch(e){return null}}
+/* tutor: 15 questions per student per day (owner's rule) */
+let TUT_LEFT=null;
+function tutLeftUI(){const b=document.getElementById('tutLeft');if(!b)return;b.textContent=TUT_LEFT==null?L('تقدر تسألني 15 سؤال كل يوم','You can ask me 15 questions a day'):TUT_LEFT>0?L('باقي لك اليوم '+TUT_LEFT+' من 15 سؤال','You have '+TUT_LEFT+' of 15 questions left today'):L('خلصت أسئلتك لليوم، ارجع بكرة 🌙','No questions left today, come back tomorrow 🌙')}
+async function tutLeftLoad(){try{if(!ACC)return;const v=await rpc('tutor_left',{p_acc:ACC.id,p_secret:ACC.secret});if(typeof v==='number'){TUT_LEFT=v;tutLeftUI()}}catch(e){}}
 async function tutorAsk(turns,img){
   const s=await sampleReady;
   if(s){const r=await s(turns,{cache:false,images:img?[img]:undefined});return r.text}
@@ -32665,11 +32686,14 @@ async function tutorAsk(turns,img){
   const body={acc_id:ACC.id,acc_secret:ACC.secret,system:sys,messages:msgs,image:img?await tutorShrink(img):null};
   const r=await fetch(SB_URL+'/functions/v1/tutor',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify(body)});
   const j=await r.json().catch(()=>({}));
+  if(typeof j.left==='number'){TUT_LEFT=j.left;tutLeftUI()}
   if(!r.ok||!j.text)throw {code:j.error||'upstream'};
   return j.text;
 }
 function tutorErr(e){const c=e&&e.code;
   if(c==='not_configured')return L('المدرس الخصوصي بيكون جاهز قريب جدًا إن شاء الله 🛠️','Your private tutor will be ready very soon 🛠️');
+  if(c==='daily_limit'){TUT_LEFT=0;tutLeftUI();return L('خلصت أسئلتك لليوم (15 سؤال) 🌙 ارجع بكرة وأنا موجود!','You have used today’s 15 questions 🌙 come back tomorrow!')}
+  if(c==='site_limit')return L('المدرس مشغول وايد اليوم 😅 جرّب بكرة.','The tutor is very busy today 😅 try tomorrow.');
   if(c==='rate_limited')return L('سألت وايد هالساعة 😅 ارتاح شوي وارجع بعد شوي.','You’ve asked a lot this hour 😅 take a short break and come back.');
   if(c==='no_account')return L('سجّل دخول أول عشان تكلم مدرسك.','Sign in first to talk to your tutor.');
   if(c==='daily_limit')return L('خلصت أسئلتك لليوم (60 سؤال) 💪 ارجع بكرة، ولين ذاك الوقت راجع الدروس وحل الكويزات.','You’ve used today’s 60 questions 💪 Come back tomorrow — meanwhile review the lessons and quizzes.');
@@ -32684,7 +32708,7 @@ async function vAssistant(){
     :[L('شو أذاكر اليوم؟','What should I study today?'),L('اختبرني بأسئلة سريعة','Quiz me quickly'),L('كيف أذاكر للامتحان صح؟','How do I study for exams properly?')];
   $('#view').innerHTML=`<div class="tutor">
    <div class="tuhead"><div class="tuav">👩‍🏫</div><div style="min-width:0"><h1>${L('مدرسك الخصوصي','Your private tutor')}</h1>
-     <div class="mut" style="font-size:14px">${L(`هلا ${esc(STU.name)}! أشرح لك من دروس مذاكرتي نفسها، وتقدر تصوّر لي سؤالك 📷`,`Hi ${esc(STU.name)}! I explain from your Mthakarti lessons, and you can send me a photo of a question 📷`)}</div></div>
+     <div class="mut" style="font-size:14px">${L(`هلا ${esc(STU.name)}! أشرح لك من دروس مذاكرتي نفسها، وتقدر تصوّر لي سؤالك 📷`,`Hi ${esc(STU.name)}! I explain from your Mthakarti lessons, and you can send me a photo of a question 📷`)}</div><div id="tutLeft" class="pill p-lav" style="margin-top:6px;display:inline-block;font-size:13px">${L('تقدر تسألني 15 سؤال كل يوم','You can ask me 15 questions a day')}</div></div>
      <button class="hbtn" title="${L('محادثة جديدة','New chat')}" onclick="chat.turns=[];vAssistant()">🧹</button></div>
    <div class="tusubs" role="tablist">${subs.map(([k,n,i])=>`<button class="${(chat.k||'all')===k?'on':''}" onclick="chat.k='${k}';chat.turns=[];vAssistant()">${i} ${n}</button>`).join('')}</div>
    <div class="msgs" id="msgs">${chat.turns.length?'':`<div class="msg a">${L('شو تبي نذاكر اليوم؟ اختار وحدة من هذي أو اكتب سؤالك 👇','What shall we study today? Pick one or type your question 👇')}<div class="chips" style="margin-top:8px">${starters.map(c=>`<button onclick="$('#aiIn').value=this.textContent.replace('📷 ','');$('#aiIn').focus()">${c}</button>`).join('')}</div></div>`}</div>
@@ -32695,6 +32719,7 @@ async function vAssistant(){
     <button class="pri" id="aiSend">${L('إرسال','Send')}</button>
    </div></div>`;
   chat.turns.forEach(t=>addBubble(t.role==='user'?'u':'a',t.role==='user'?esc(t.show||t.content):md(t.content)));
+  tutLeftUI();tutLeftLoad();
   let img=null;
   $('#aiImg').onchange=e=>{img=e.target.files[0]||null;$('#imgPrev').innerHTML=img?`<span class="pill p-lav">📎 ${esc(img.name)} <a href="#" onclick="event.preventDefault();document.getElementById('aiImg').value='';this.parentNode.remove();window._clrImg&&window._clrImg()">✕</a></span>`:''};
   window._clrImg=()=>{img=null};
@@ -32726,7 +32751,7 @@ async function vAssistant(){
       bub.appendChild(fu);
 
     }catch(e){bub.innerHTML=`<span class="mut">${tutorErr(e)}</span>`;chat.turns.pop()}
-    finally{chat.busy=false;send.disabled=false;bub.scrollIntoView({block:'end'})}
+    finally{chat.busy=false;send.disabled=false;bub.scrollIntoView({block:'start',behavior:'smooth'})}
   };
 }
 
@@ -37886,6 +37911,21 @@ function iebBand(r){var v=+r.value,t=JSON.parse(r.dataset.b),lab='';t.forEach(fu
 function iebPlan(i,cb){var d=store.get('iePlan',[])||[];d=d.filter(function(x){return x!==i});if(cb.checked)d.push(i);store.set('iePlan',d);cb.parentNode.classList.toggle('ok',cb.checked);if(cb.checked&&d.length===4&&typeof toast==='function')toast(L('🎉 خلصت الخطة كاملة! أنت جاهز','🎉 Plan complete! You’re ready'))}
 
 
+/* ===== motion: every time a page is drawn it slides in, and cards further down appear as you scroll to them ===== */
+const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+let rvIO=null;
+function animateView(){const v=$('#view');if(!v||RM)return;v.classList.remove('vin');void v.offsetWidth;v.classList.add('vin');
+  if(!('IntersectionObserver' in window))return;
+  rvIO=rvIO||new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');rvIO.unobserve(e.target)}}),{rootMargin:'0px 0px -6% 0px'});
+  const vh=innerHeight;let n=0;
+  v.querySelectorAll('.tile,.grid>.card,.adm-sc,.adm-kpi,.adm-box,.exrow,.lrow').forEach(el=>{if(el.classList.contains('rv'))return;const r=el.getBoundingClientRect();if(r.top>vh*0.92){el.classList.add('rv');el.style.transitionDelay=((n++)%4)*70+'ms';rvIO.observe(el)}})}
+(function(){const v=$('#view');if(!v||!('MutationObserver' in window))return;let t=null;
+  new MutationObserver(ms=>{if(ms.some(m=>[...m.addedNodes].some(x=>x.nodeType===1))){clearTimeout(t);t=setTimeout(animateView,0)}}).observe(v,{childList:true})})();
+/* small celebration burst on a correct answer */
+function burst(el){if(RM||!el)return;try{const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,E=['⭐','✨','🎉','💖','🌟'];
+  for(let i=0;i<10;i++){const s=document.createElement('span');s.className='mth-p';s.textContent=E[i%E.length];const a=Math.random()*Math.PI*2,d=60+Math.random()*70;
+    s.style.left=cx+'px';s.style.top=cy+'px';s.style.setProperty('--dx',Math.cos(a)*d+'px');s.style.setProperty('--dy',Math.sin(a)*d-30+'px');s.style.setProperty('--rot',(Math.random()*120-60)+'deg');
+    document.body.appendChild(s);setTimeout(()=>s.remove(),950)}}catch(e){}}
 render();
 </script>
 
