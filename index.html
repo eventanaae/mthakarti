@@ -32726,6 +32726,9 @@ const ADM_CSS=`<style>
 .adm-st{background:var(--surface2);border-radius:10px;padding:6px 4px;text-align:center;min-width:0}
 .adm-st b{display:block;font-size:13.5px}
 .adm-st span{font-size:11px;color:var(--mut)}
+.adm-pts{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-top:8px;font-size:14px;background:var(--sun-soft);border:1px solid var(--sun);border-radius:10px;padding:6px 10px}
+.adm-pb{display:block;height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}
+.adm-pb em{display:block;height:100%;background:var(--pink);border-radius:99px}
 .adm-login input{margin:6px 0 12px}
 </style>`;
 const admDate=d=>d?new Date(d).toLocaleString(LANG==='en'?'en-GB':'ar-AE',{timeZone:'Asia/Dubai',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
@@ -32742,7 +32745,9 @@ async function vAdmin(){
   if(ADM.s)admShow();
   admLoad();
 }
-async function admLoad(){try{const [s,w]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[])]);ADM.s=s;ADM.w=w||[];admShow()}
+async function admLoad(){try{const [s,w,pt]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[])]);
+  const pm={};(pt||[]).forEach(r=>{pm[(r.email||'').toLowerCase()]=r});(s.students||[]).forEach(r=>{const p=pm[(r.email||'').toLowerCase()];r.pts=p?p.points:0;r.wk=p?p.week:0});
+  ADM.s=s;ADM.w=w||[];admShow()}
   catch(e){if(/bad_code/.test(e.message)){admSetTok('');return admLoginView(L('انتهت الجلسة، سجّلي دخول مرة ثانية','Session expired, please sign in again'))}const b=$('#admBody');if(b)b.innerHTML=`<p style="color:var(--bad)">${admErr(e)}</p>`}}
 function admShow(){const b=$('#admBody');if(!b)return;document.querySelectorAll('.adm-tabs button').forEach((x,i)=>x.classList.toggle('on',['over','stu','prize','set'][i]===ADM.tab));
   if(ADM.tab==='set')return admSettings(b);
@@ -32766,10 +32771,10 @@ function admShow(){const b=$('#admBody');if(!b)return;document.querySelectorAll(
      <div class="adm-box"><h3>🏫 ${L('الحسابات حسب الصف','Accounts by grade')}</h3>${bars(s.acc_grades)}</div>
      <div class="adm-box"><h3>🏫 ${L('الزوار حسب الصف (7 أيام)','Visitors by grade (7 days)')}</h3>${bars(s.visit_grades_7d)}</div>
     </div>`}
-function admStudents(b,s){const rows=(s.students||[]).slice();const k=ADM.sort||'last';
-  const val={name:r=>(r.name||'').toLowerCase(),grade:r=>r.grade||'',last:r=>r.last?-new Date(r.last):0,m_today:r=>-r.m_today,m_7d:r=>-r.m_7d,m_all:r=>-r.m_all,tutor:r=>-r.tutor_all};
+function admStudents(b,s){const rows=(s.students||[]).slice();const k=ADM.sort||'wk';
+  const val={wk:r=>-(r.wk||0),pts:r=>-(r.pts||0),name:r=>(r.name||'').toLowerCase(),grade:r=>r.grade||'',last:r=>r.last?-new Date(r.last):0,m_today:r=>-r.m_today,m_7d:r=>-r.m_7d,m_all:r=>-r.m_all,tutor:r=>-r.tutor_all};
   rows.sort((a,c)=>{const x=val[k](a),y=val[k](c);return x<y?-1:x>y?1:0});
-  const opts=[['last',L('آخر دخول','Last seen')],['m_today',L('الأكثر مذاكرة اليوم','Most study today')],['m_7d',L('الأكثر مذاكرة هالأسبوع','Most study this week')],['m_all',L('الأكثر مذاكرة بالمجموع','Most study overall')],['tutor',L('الأكثر استخدام للمدرس','Most tutor use')],['name',L('الاسم','Name')],['grade',L('الصف','Grade')]];
+  const opts=[['wk',L('الأكثر نقاط هالأسبوع','Most points this week')],['pts',L('الأكثر نقاط بالمجموع','Most points overall')],['last',L('آخر دخول','Last seen')],['m_today',L('الأكثر مذاكرة اليوم','Most study today')],['m_7d',L('الأكثر مذاكرة هالأسبوع','Most study this week')],['m_all',L('الأكثر مذاكرة بالمجموع','Most study overall')],['tutor',L('الأكثر استخدام للمدرس','Most tutor use')],['name',L('الاسم','Name')],['grade',L('الصف','Grade')]];
   const st=(n,l)=>`<div class="adm-st"><b>${n}</b><span>${l}</span></div>`;
   b.innerHTML=`<b style="font-size:18px">${L(`الطالبات (${rows.length})`,`Students (${rows.length})`)}</b>
    <div class="adm-tools"><input id="admQ" placeholder="${L('🔎 بحث بالاسم أو الإيميل','🔎 Search name or email')}" oninput="admFilter()">
@@ -32778,6 +32783,8 @@ function admStudents(b,s){const rows=(s.students||[]).slice();const k=ADM.sort||
      <div class="adm-sh"><b>${esc(r.name||'—')}</b><span class="adm-pill">${esc(admGr(r.grade))}</span></div>
      <div class="adm-em" dir="ltr">${esc(r.email||'')}</div>
      <div class="mut" style="font-size:12.5px">🕒 ${L('آخر دخول:','Last seen:')} ${admDate(r.last)}</div>
+     <div class="adm-pts"><span>🏆 ${L('هالأسبوع:','This week:')} <b>${r.wk||0}</b> / 500</span><span>${L('المجموع:','Total:')} <b>${r.pts||0}</b></span></div>
+     <i class="adm-pb"><em style="width:${Math.min(100,(r.wk||0)/5)}%"></em></i>
      <div class="adm-sts">${st(admMin(r.m_today),L('اليوم','Today'))}${st(admMin(r.m_7d),L('7 أيام','7 days'))}${st(admMin(r.m_all),L('المجموع','Total'))}${st(r.tutor_all,L('أسئلة المدرس','Tutor Qs'))}</div></div>`).join('')}</div>
    <p class="mut" style="font-size:12px">${L('الوقت ينحسب بس لما الصفحة مفتوحة والطالبة تستخدمها (بدأ العد 15 نوفمبر).','Time counts only while the page is open and in use (tracking began 15 Nov).')}</p>`}
 function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl .adm-sc').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q)?'':'none'})}
