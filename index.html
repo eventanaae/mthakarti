@@ -31910,12 +31910,15 @@ const idb={db:null,open(){if(this.p)return this.p;this.p=new Promise(res=>{try{c
   async set(k,s){const db=await this.open();if(!db)return;try{db.transaction('kv','readwrite').objectStore('kv').put(s,k)}catch(e){}},
   async all(){const db=await this.open();if(!db)return {};return new Promise(res=>{try{const out={};const c=db.transaction('kv').objectStore('kv').openCursor();c.onsuccess=()=>{const x=c.result;if(x){out[x.key]=x.value;x.continue()}else res(out)};c.onerror=()=>res(out)}catch(e){res({})}})}};
 const store={get(k,d){let v=null;try{v=localStorage.getItem('mth_'+k)}catch(e){}
-    if(v==null&&COOKIE_KEYS.includes(k)){v=ck.get(k);if(v!=null){try{localStorage.setItem('mth_'+k,v)}catch(e){}}}
+    if(v==null&&COOKIE_KEYS.includes(k)&&!((k==='acct'||k==='student'||k==='compMe')&&(()=>{try{return localStorage.getItem('mthLoggedOut')}catch(e){return null}})())){v=ck.get(k);if(v!=null){try{localStorage.setItem('mth_'+k,v)}catch(e){}}}
     if(v==null)return d;try{return JSON.parse(v)}catch(e){return d}},
-  set(k,v){const s=JSON.stringify(v);try{localStorage.setItem('mth_'+k,s)}catch(e){}if(COOKIE_KEYS.includes(k))ck.set(k,s);idb.set(k,s)}};
+  set(k,v){const s=JSON.stringify(v);try{localStorage.setItem('mth_'+k,s);if(k==='acct'&&v)localStorage.removeItem('mthLoggedOut')}catch(e){}if(COOKIE_KEYS.includes(k))ck.set(k,s);idb.set(k,s)}};
 try{if(navigator.storage&&navigator.storage.persist)navigator.storage.persist()}catch(e){}
 /* On start: put back anything the phone wiped from localStorage, and back up what exists */
 (async function(){const all=await idb.all();let restoredStudent=false;
+  /* after a sign-out never bring the account back from the backup */
+  let out=null;try{out=localStorage.getItem('mthLoggedOut')}catch(e){}
+  if(out&&!localStorage.getItem('mth_acct')){['acct','student','compMe','compQ','ptsGot'].forEach(k=>{delete all[k];idb.set(k,'null')})}
   Object.keys(all).forEach(k=>{let cur=null;try{cur=localStorage.getItem('mth_'+k)}catch(e){}if(cur==null){try{localStorage.setItem('mth_'+k,all[k])}catch(e){}if(k==='student')restoredStudent=true}});
   try{for(let i=0;i<localStorage.length;i++){const key=localStorage.key(i);if(key&&key.indexOf('mth_')===0){const k=key.slice(4);if(all[k]==null)idb.set(k,localStorage.getItem(key))}}}catch(e){}
   if(restoredStudent&&typeof STU!=='undefined'&&!STU){STU=store.get('student',null);if(typeof render==='function'){if(location.hash==='#welcome'||!location.hash)location.hash='home';render()}}
@@ -31995,7 +31998,8 @@ function render(){
   if(!STU||(!ACC&&!STU.guest)||(!GR[STU.grade]&&!IEO)||h==='welcome'){$('#fab').classList.add('hidden');return vWelcome();}
   if(VER.need){$('#fab').classList.add('hidden');return vVerify();}
   if(isGuest()&&['compete','assistant','alef'].includes(h)){joinPrompt(h);return}
-  if(isGuest())store.set('guestLast',h); /* remember where the guest is, to bring them back after sign-up */
+  if(isGuest()){store.set('guestLast',h); /* remember where the guest is, to bring them back after sign-up */
+    if(guestSecs()>=GUEST_LIMIT)setTimeout(regGate,0)}
   if(IEO){$('#fab').classList.add('hidden');if(h!=='ielts'){location.hash='ielts';return}return vIelts();}
   setGrade(STU.grade); bellUpdate(); pushDue(false);
   $('#fab').classList.toggle('hidden',h==='assistant');
@@ -32019,18 +32023,28 @@ function render(){
 let STU=store.get('student',null);
 /* Guest mode: visitors can try lessons and quizzes before signing up; sign-up is asked for the competition, tutor and Alef */
 let GUEST=store.get('guest',null);
-function guestStu(g){return {name:L('زائر','Guest'),grade:g,guest:true}}
-if(!STU&&GUEST&&GUEST.grade)STU=guestStu(GUEST.grade);
+function guestStu(g,n){return {name:n||L('زائر','Guest'),grade:g,guest:true}}
+if(!STU&&GUEST&&GUEST.grade)STU=guestStu(GUEST.grade,GUEST.name);
+const GUEST_LIMIT=300; /* 5 minutes of total use before sign-up is required */
+function guestSecs(){return +store.get('guestSecs',0)||0}
+function devId(){let d=store.get('devId',null);if(!d){d=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12));store.set('devId',d)}return d}
+function guestHello(){try{if(!location.protocol.startsWith('http')||!GUEST)return;rpc('guest_hello',{p_dev:devId(),p_name:GUEST.name||null,p_grade:GUEST.grade||null,p_secs:guestSecs()}).catch(()=>{})}catch(e){}}
+/* sign-up pop-up after 5 minutes: cannot be closed; name and grade are already filled in */
+function regGate(){if(!isGuest()||guestSecs()<GUEST_LIMIT||$('#regModal'))return;step('reg_gate');guestHello();
+  const m=document.createElement('div');m.id='regModal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
+  m.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(40,20,32,.55);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px';
+  m.innerHTML='<div id="regBox" style="width:100%;max-width:560px"></div>';document.body.appendChild(m);document.body.style.overflow='hidden';
+  welDraft={mode:'new',why:'time',pick:STU.grade,name:STU.name};vWelcome($('#regBox'))}
 function isGuest(){return !!(STU&&STU.guest&&!ACC)}
 /* visitor funnel: each step counted once per device per day */
 function step(s){try{if(!location.protocol.startsWith('http'))return;let d=store.get('devId',null);if(!d){d=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12));store.set('devId',d)}
   const k='mth_st|'+new Date().toDateString()+'|'+s;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}
   rpc('log_step',{p_dev:d,p_step:s}).catch(()=>{})}catch(e){}}
-function guestStart(g){GUEST={grade:g};store.set('guest',GUEST);STU=guestStu(g);step('guest_start');const h=g==='ielts'?'ielts':'home';if(location.hash==='#'+h)render();else location.hash=h}
+function guestStart(g,n){GUEST={grade:g,name:n||''};store.set('guest',GUEST);STU=guestStu(g,n);step('guest_start');guestHello();const h=g==='ielts'?'ielts':'home';if(location.hash==='#'+h)render();else location.hash=h}
 function joinPrompt(why){step('join_prompt');welDraft={mode:'new',pick:STU&&STU.grade,why};if(location.hash==='#welcome')render();else location.hash='welcome'}
 /* IELTS is for Grade 12 students and IELTS-only accounts */
 function IEOK(){return !!(STU&&(/^g12/.test(STU.grade)||STU.grade==='ielts'))}
-function stuChip(){const c=$('#stuChip');if(!c)return;if(STU&&STU.guest&&!ACC){c.classList.remove('hidden');c.textContent='👤 '+L('زائر · سجّل الحين','Guest · Sign up');return}if(STU&&STU.grade==='ielts'){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+L('آيلتس','IELTS');return}if(STU&&GR[STU.grade]){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+GR[STU.grade].short}else c.classList.add('hidden')}
+function stuChip(){const c=$('#stuChip');if(!c)return;if(STU&&STU.guest&&!ACC){c.classList.remove('hidden');c.textContent='👤 '+(GUEST&&GUEST.name?GUEST.name+' · ':'')+L('زائر · سجّل','Guest · Sign up');return}if(STU&&STU.grade==='ielts'){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+L('آيلتس','IELTS');return}if(STU&&GR[STU.grade]){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+GR[STU.grade].short}else c.classList.add('hidden')}
 let welDraft=null; // keeps typed fields when switching language on the welcome view
 /* ===== Cloud account (required): email + PIN; progress syncs to Supabase so it follows the student to any device ===== */
 let ACC=store.get('acct',null);
@@ -32078,26 +32092,28 @@ function accErr(m){m=String(m||'');
   return L('صار خطأ، جرّب مرة ثانية','Something went wrong, try again')}
 async function accLogout(){if(!confirm(L('تبي تسجّل خروج من هذا الجهاز؟ (حسابك ومذاكرتك محفوظين في السحابة)','Sign out on this device? (Your account and progress stay saved in the cloud)')))return;
   try{await Promise.race([Promise.all([accSave(),typeof flushPts==='function'?flushPts():0]),new Promise(r=>setTimeout(r,3000))])}catch(e){}
+  /* empty the backup database first: deleting it can stay "blocked" while another tab is open, and the backup would sign the user back in */
+  try{const db=await idb.open();if(db)await new Promise(r=>{try{const tx=db.transaction('kv','readwrite');tx.objectStore('kv').clear();tx.oncomplete=tx.onerror=tx.onabort=()=>r();setTimeout(r,1500)}catch(e){r()}})}catch(e){}
   try{if(idb.db)idb.db.close();idb.db=null;idb.p=Promise.resolve(null)}catch(e){}
   await new Promise(res=>{try{const q=indexedDB.deleteDatabase('mthakarti');q.onsuccess=q.onerror=q.onblocked=()=>res();setTimeout(res,1500)}catch(e){res()}});
   try{const ks=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.indexOf('mth_')===0)ks.push(k)}ks.forEach(k=>localStorage.removeItem(k))}catch(e){}
-  COOKIE_KEYS.concat(['acct']).forEach(k=>{document.cookie='mth_'+k+'=;max-age=0;path=/'});
+  const sec=location.protocol==='https:'?';Secure':'';
+  COOKIE_KEYS.concat(['acct']).forEach(k=>{document.cookie='mth_'+k+'=;max-age=0;path=/';document.cookie='mth_'+k+'=;max-age=0;path=/;SameSite=Lax'+sec});
+  try{localStorage.setItem('mthLoggedOut',String(Date.now()))}catch(e){}
   ACC=null;STU=null;location.hash='welcome';location.reload()}
-function vWelcome(){
-  crumbs([[L('أهلًا بك','Welcome')]]);
+function vWelcome(target){
+  if(!target)crumbs([[L('أهلًا بك','Welcome')]]);
   const grades=[['10','العاشر'],['11','الحادي عشر'],['12','الثاني عشر']];
   const dr=welDraft||{};welDraft=null;
   const mode=dr.mode||(ACC?'edit':'new');
   const sel=dr.pick!=null?dr.pick:(STU?STU.grade:'');
-  const nameV=dr.name!=null?dr.name:(STU&&!STU.guest?STU.name:'');
+  const nameV=dr.name!=null?dr.name:(STU?(STU.guest?(GUEST&&GUEST.name||''):STU.name):'');
   const WHY={compete:L('🏆 سجّل عشان تدخل المسابقة وتجمع نقاط وتفوز بالجوائز!','🏆 Sign up to join the competition, earn points and win prizes!'),assistant:L('👩‍🏫 سجّل عشان تكلم مدرسك الخصوصي!','👩‍🏫 Sign up to talk to your private tutor!'),alef:L('📝 سجّل عشان تنحسب لك واجبات ألف نقاط!','📝 Sign up so your Alef homework earns points!')};
+  WHY.time=L('⏰ خلصت دقايق التجربة! سجّل عشان تكمل مذاكرتك','⏰ Your trial minutes are up! Sign up to keep studying');
+  WHY.home=L('✏️ سجّل عشان تنحفظ مذاكرتك وتدخل المسابقة','✏️ Sign up to save your progress and join the competition');
   const whyBox=dr.why&&WHY[dr.why]?`<div class="card" style="background:var(--sun-soft);border-color:var(--sun);margin:0 0 14px"><b>${WHY[dr.why]}</b><div class="mut" style="font-size:13.5px;margin-top:4px">${L('دقيقة وحدة بس، وكل اللي ذاكرته كزائر ينحفظ في حسابك 👍','Takes a minute, and everything you studied as a guest is kept 👍')}</div></div>`:'';
-  const gIds=['g10g','g10a','g11g','g11a','g12g','g12a'].filter(id=>GR[id]&&GR[id].S&&Object.keys(GR[id].S).length);
-  const guestBox=(mode==='new'&&!(STU&&STU.guest))?`<div class="card" style="background:var(--mint-soft);border-color:var(--mint);margin:0 0 16px">
-    <b style="font-size:17px">👀 ${L('تبي تشوف الموقع أول؟','Want to look around first?')}</b>
-    <p class="mut" style="margin:4px 0 10px;font-size:14px">${L('جرّب الدروس والأسئلة بدون تسجيل. اختر صفك:','Try lessons and quizzes without signing up. Pick your grade:')}</p>
-    <div class="row" style="flex-wrap:wrap;gap:6px">${gIds.map(id=>`<button type="button" class="sec" onclick="guestStart('${id}')">${esc(GRN[id]||id)}</button>`).join('')}<button type="button" class="sec" onclick="guestStart('ielts')">✈️ ${L('آيلتس','IELTS')}</button></div></div>
-    <div class="mut" style="text-align:center;margin:0 0 12px;font-size:14px">${L('— أو سجّل الحين عشان تنحفظ مذاكرتك وتدخل المسابقة —','— or sign up now to save your progress and join the competition —')}</div>`:'';
+  /* first visit: only name + grade, then straight into the site (sign-up comes after 5 minutes) */
+  const quick=mode==='new'&&!STU&&!dr.full&&!dr.why;
   const emailV=dr.email!=null?dr.email:(ACC?ACC.email:'');
   const langBar=`<div class="row" role="group" aria-label="Language / اللغة" style="justify-content:flex-end;gap:6px"><span class="mut" style="font-size:14px">🌐</span>
     <button type="button" class="${LANG==='ar'?'pri':'ghost'}" lang="ar" style="padding:6px 14px" onclick="welLang('ar')">عربي</button>
@@ -32110,7 +32126,7 @@ function vWelcome(){
     .kseg button[aria-checked="true"]{background:var(--pink);color:#fff}</style>
    <div class="kseg" role="radiogroup" aria-label="${L('تسجّل كـ','Sign up as')}">
     <button type="button" id="kSchool" role="radio" aria-checked="${!ieSel}" onclick="welKind('school')">🏫 ${L('طالب مدرسة','School student')}</button>
-    <button type="button" id="kIelts" role="radio" aria-checked="${ieSel}" onclick="welKind('ielts')">✈️ ${L('آيلتس بس','IELTS only')}</button></div>`:'';
+    <button type="button" id="kIelts" role="radio" aria-checked="${ieSel}" onclick="welKind('ielts')">✈️ ${L('تدريب آيلتس','IELTS practice')}</button></div>`:'';
   const gradeSel=(mode==='edit'&&ieSel)?`<p style="margin:0 0 14px"><b>✈️ ${L('حسابك: تدريب آيلتس بس','Your account: IELTS practice only')}</b> 🔒</p>`
    :`${kindSel}<div id="gradeWrap" style="${ieSel?'display:none':''}"><label for="gradeSel" style="font-weight:800;display:block;margin-bottom:6px">${L('في أي صف ومسار؟','Which grade and stream?')}</label>
    <select id="gradeSel" style="margin:0 0 6px;cursor:pointer" ${mode==='edit'?'disabled':''}>
@@ -32141,9 +32157,18 @@ function vWelcome(){
      <p id="welErr" class="mut" style="color:var(--bad);min-height:1.5em"></p>
      <button class="pri" id="welGo" style="width:100%">${L('حفظ ✓','Save ✓')}</button>
      <p style="text-align:center;margin-top:12px"><a href="#" onclick="accLogout();return false">${L('تسجيل خروج من هذا الجهاز','Sign out on this device')}</a></p>`;
+  }else if(quick){
+    body=`<h1 style="margin-top:0">${L('أهلًا في مذاكرتي 🌸','Welcome to Mthakarti 🌸')}</h1>
+     <p class="mut" style="margin-top:0">${L('دروس منهجك، أسئلة وامتحانات، مدرس خصوصي، وجوائز كل أسبوع 🏆','Your curriculum lessons, quizzes and exams, a private tutor, and weekly prizes 🏆')}</p>
+     <label for="stuName" style="font-weight:800">${L('شو اسمك؟','What’s your name?')}</label>
+     <input id="stuName" autocomplete="given-name" maxlength="30" placeholder="${L('اكتب اسمك','Type your name')}" value="${esc(nameV)}" style="margin:6px 0 14px">
+     ${gradeSel}
+     <p id="welErr" class="mut" style="color:var(--bad);min-height:1.5em"></p>
+     <button class="pri" id="welGo" style="width:100%">${L('يلا نبدأ 🚀','Let’s start 🚀')}</button>
+     <p style="text-align:center;margin-top:12px"><a href="#" onclick="welSwitch('login');return false">${L('عندي حساب؟ سجّل دخول','I have an account — sign in')}</a></p>`;
   }else{
     body=`<h1 style="margin-top:0">${L('أهلًا في مذاكرتي 🌸','Welcome to Mthakarti 🌸')}</h1>
-     ${whyBox}${guestBox}
+     ${whyBox}
      ${LANG==='en'?'<p class="mut" style="margin-top:0;font-size:14px">Arabic Language, Islamic Education and Social Studies always stay in Arabic.</p>':''}
      <label for="stuName" style="font-weight:800">${L('شو اسمك؟','What’s your name?')}</label>
      <input id="stuName" autocomplete="given-name" maxlength="30" placeholder="${L('اكتب اسمك','Type your name')}" value="${esc(nameV)}" style="margin:6px 0 14px">
@@ -32154,9 +32179,9 @@ function vWelcome(){
      <button class="pri" id="welGo" style="width:100%">${L('سجّل وابدأ المذاكرة ✏️','Register and start ✏️')}</button>
      <p style="text-align:center;margin-top:12px"><a href="#" onclick="welSwitch('login');return false">${L('عندي حساب؟ سجّل دخول','I have an account — sign in')}</a></p>`;
   }
-  $('#view').innerHTML=`<div class="card" style="max-width:640px;margin:20px auto">${langBar}${body}</div>`;
+  (target||$('#view')).innerHTML=`<div class="card" style="max-width:640px;margin:${target?'0':'20px'} auto">${langBar}${body}</div>`;
   const hasContent=id=>id==='ielts'||!!(GR[id]&&GR[id].S&&Object.keys(GR[id].S).length);
-  if(mode==='new'){step('welcome_view');document.querySelectorAll('#stuName,#accEmail,#accPin,#gradeSel').forEach(x=>x.addEventListener('focus',()=>step('form_focus'),{once:true}))}
+  if(mode==='new'&&!target){step('welcome_view');document.querySelectorAll('#stuName,#accEmail,#accPin,#gradeSel').forEach(x=>x.addEventListener('focus',()=>step('form_focus'),{once:true}))}
   let pick=sel;const gs=$('#gradeSel');
   const chk=()=>{if(!gs)return;const soon=!!pick&&!hasContent(pick);$('#gradeMsg').classList.toggle('hidden',!soon);if(!soon)$('#welErr').textContent=''};
   if(gs){gs.onchange=()=>{pick=gs.value;chk()};chk()}
@@ -32166,10 +32191,15 @@ function vWelcome(){
     $('#welErr').textContent='';chk()};
   const draft=m=>({mode:m,name:$('#stuName')?$('#stuName').value:nameV,pick,email:$('#accEmail')?$('#accEmail').value:emailV});
   window.welLang=l=>{welDraft=draft(mode);setLang(l)};
-  window.welSwitch=m=>{welDraft=draft(m);vWelcome()};
+  window.welSwitch=m=>{welDraft=Object.assign(draft(m),{why:dr.why,full:true});vWelcome(target)};
   const err=t=>{$('#welErr').textContent=t};
   const go=$('#welGo');
   go.onclick=async()=>{
+    if(quick){const name=$('#stuName').value.trim();
+      if(!name){err(L('اكتب اسمك أول 🙂','Type your name first 🙂'));$('#stuName').focus();return}
+      if(!pick){err(L('اختر صفك ومسارك','Choose your grade and stream'));gs&&gs.focus();return}
+      if(!hasContent(pick)){err(L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!'));return}
+      guestStart(pick,name);return}
     const email=($('#accEmail').value||'').trim().toLowerCase(), pin=$('#accPin')?$('#accPin').value.trim():'';
     if(mode==='login'){
       if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return err(L('اكتب إيميل صحيح','Enter a valid email'));
@@ -32196,8 +32226,10 @@ function vWelcome(){
     try{STU={name,grade:pick};
       const r=await rpc('acc_register',{p_email:email,p_pin:pin,p_name:name,p_grade:pick,p_lang:LANG,p_data:accDump()});const a=Array.isArray(r)?r[0]:r;
       const back=['compete','assistant','alef'].includes(dr.why)?dr.why:(store.get('guestLast',null)||'');
-      store.set('student',STU);store.set('guest',null);store.set('guestLast',null);GUEST=null;step('reg_ok');
+      store.set('student',STU);store.set('guest',null);store.set('guestLast',null);store.set('guestSecs',0);GUEST=null;step('reg_ok');
       ACC={id:a.acc_id,secret:a.acc_secret,email};store.set('acct',ACC);accSave().then(compAuto);verCheck();
+      rpc('guest_link',{p_dev:devId(),p_acc:ACC.id,p_secret:ACC.secret}).catch(()=>{});
+      {const rm=$('#regModal');if(rm){rm.remove();document.body.style.overflow=''}}
       if(back&&back!=='home')toast(L('أهلًا فيك! رجّعناك لنفس المكان اللي كنت فيه 👌','Welcome! We brought you back to where you were 👌'));
       stuChip();location.hash=back||(pick==='ielts'?'ielts':'home');render();if(store.get('pushOn',false))syncPush();setTimeout(notifOffer,4000);
     }catch(e){STU=prevStu;go.disabled=false;const c=(String(e.message).match(/email_taken|bad_email|bad_pin|bad_grade|too_big|Failed to fetch|NetworkError|Load failed/)||['other'])[0];step('reg_err_'+c.toLowerCase().replace(/[^a-z_]/g,'_').slice(0,20));err(accErr(e.message))}
@@ -32734,7 +32766,8 @@ setTimeout(logVisit,4000);document.addEventListener('visibilitychange',()=>{if(d
 (function(){let acc=0,lastAct=Date.now();['pointerdown','keydown','scroll','touchstart'].forEach(e=>addEventListener(e,()=>{lastAct=Date.now()},{passive:true}));
   const send=()=>{if(acc<5||!location.protocol.startsWith('http'))return;const d=store.get('devId',null);if(!d)return;const s=Math.min(acc,120);acc=0;
     rpc('log_time',{p_dev:d,p_acc:ACC&&ACC.id||null,p_secret:ACC&&ACC.secret||null,p_secs:s,p_grade:STU&&STU.grade||null,p_lang:LANG}).catch(()=>{})};
-  setInterval(()=>{if(document.visibilityState==='visible'&&Date.now()-lastAct<120000)acc+=10},10000);
+  setInterval(()=>{if(document.visibilityState==='visible'&&Date.now()-lastAct<120000){acc+=10;
+    if(isGuest()){const g=guestSecs()+10;store.set('guestSecs',g);if(g%60===0)guestHello();if(g>=GUEST_LIMIT)regGate()}}},10000);
   setInterval(send,60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')send()})})();
 const GRN={g10g:L('عاشر عام','G10 General'),g10a:L('عاشر متقدم','G10 Advanced'),g12a:L('ثاني عشر متقدم','G12 Advanced'),g11g:L('حادي عشر عام','G11 General'),g11a:L('حادي عشر متقدم','G11 Advanced'),g12g:L('ثاني عشر عام','G12 General'),ielts:L('آيلتس بس','IELTS only')};
 /* ===== Owner dashboard (#admin): email + password login, session kept on this device for 30 days ===== */
@@ -32801,7 +32834,7 @@ async function vAdmin(){
   if(ADM.s)admShow();
   admLoad();
 }
-async function admLoad(){try{const [s,w,pt,fn]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_funnel',{p_code:ADM.tok}).catch(()=>null)]);ADM.fn=fn;
+async function admLoad(){try{const [s,w,pt,fn]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_funnel',{p_code:ADM.tok}).catch(()=>null)]);ADM.fn=fn;ADM.g=await rpc('admin_guests',{p_code:ADM.tok}).catch(()=>[]);
   const pm={};(pt||[]).forEach(r=>{pm[(r.email||'').toLowerCase()]=r});(s.students||[]).forEach(r=>{const p=pm[(r.email||'').toLowerCase()];r.pts=p?p.points:0;r.wk=p?p.week:0});
   ADM.s=s;ADM.w=w||[];admShow()}
   catch(e){if(/bad_code/.test(e.message)){admSetTok('');return admLoginView(L('انتهت الجلسة، سجّلي دخول مرة ثانية','Session expired, please sign in again'))}const b=$('#admBody');if(b)b.innerHTML=`<p style="color:var(--bad)">${admErr(e)}</p>`}}
@@ -32853,7 +32886,10 @@ function admStudents(b,s){const rows=(s.students||[]).slice();const k=ADM.sort||
      <div class="adm-pts"><span>🏆 ${L('هالأسبوع:','This week:')} <b>${r.wk||0}</b> / 500</span><span>${L('المجموع:','Total:')} <b>${r.pts||0}</b></span></div>
      <i class="adm-pb"><em style="width:${Math.min(100,(r.wk||0)/5)}%"></em></i>
      <div class="adm-sts">${st(admMin(r.m_today),L('اليوم','Today'))}${st(admMin(r.m_7d),L('7 أيام','7 days'))}${st(admMin(r.m_all),L('المجموع','Total'))}${st(r.tutor_all,L('أسئلة المدرس','Tutor Qs'))}</div></div>`).join('')}</div>
-   <p class="mut" style="font-size:12px">${L('الوقت ينحسب بس لما الصفحة مفتوحة والطالبة تستخدمها (بدأ العد 15 نوفمبر).','Time counts only while the page is open and in use (tracking began 15 Nov).')}</p>`}
+   <p class="mut" style="font-size:12px">${L('الوقت ينحسب بس لما الصفحة مفتوحة والطالبة تستخدمها (بدأ العد 15 نوفمبر).','Time counts only while the page is open and in use (tracking began 15 Nov).')}</p>
+   ${(()=>{const g=(ADM.g||[]).filter(x=>!x.signed_up);return `<b style="font-size:18px;display:block;margin-top:18px">👀 ${L(`زوار ما سجّلوا للحين (${g.length})`,`Guests not signed up yet (${g.length})`)}</b>
+    <p class="mut" style="font-size:13px;margin:4px 0 10px">${L('كتبوا اسمهم وصفهم بس. بعد 5 دقايق يطلع لهم التسجيل.','They only gave a name and grade. Sign-up appears after 5 minutes.')}</p>
+    ${g.length?`<div class="adm-cards">${g.map(x=>`<div class="adm-sc"><div class="adm-sh"><b>${esc(x.name||'—')}</b><span class="adm-pill">${esc(admGr(x.grade))}</span></div><div class="mut" style="font-size:12.5px;margin-top:6px">🕒 ${L('أول دخول:','First visit:')} ${admDate(x.first_at)} · ${L('آخر دخول:','Last:')} ${admDate(x.last_at)}</div><div class="mut" style="font-size:12.5px">⏱️ ${admMin(x.mins)}</div></div>`).join('')}</div>`:`<p class="mut">${L('ما في زوار للحين.','No guests yet.')}</p>`}`})()}`}
 function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl .adm-sc').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q)?'':'none'})}
 function admPrize(b){const w=ADM.w||[];
   b.innerHTML=`<div class="adm-box" style="background:var(--sun-soft);border-color:var(--sun)"><b>🎁 ${L('القاعدة:','Rule:')}</b> ${L('أول طالب في كل صف يجمع 500 نقطة خلال الأسبوع (من السبت لين الجمعة) يفوز بنقاط بينز. تواصلي وياه على إيميله.','The first student in each grade to collect 500 points in the week (Saturday to Friday) wins Penz points. Contact them by email.')}</div>
