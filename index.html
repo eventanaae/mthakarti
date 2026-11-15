@@ -132,7 +132,10 @@ h3{font-size:19px;margin:0 0 6px}
 .tusubs::-webkit-scrollbar{display:none}
 .tusubs button{white-space:nowrap;background:var(--surface);border:1.5px solid var(--line);border-radius:999px;padding:6px 12px;font-size:14px}
 .tusubs button.on{background:var(--pink);color:#fff;border-color:var(--pink)}
-.tutor .msgs{min-height:240px}
+.tutor .msgs{min-height:240px;flex:1 1 auto}
+/* chat fills the screen so the message box sits at the bottom, even with few messages */
+.tutor{min-height:calc(100vh - 120px);min-height:calc(100dvh - 120px)}
+.tutor .composer{margin-top:auto;z-index:5}
 .typing{display:inline-flex;gap:4px;padding:4px 0}
 .typing i{width:8px;height:8px;border-radius:50%;background:var(--mut);animation:tyB 1s infinite}
 .typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
