@@ -31990,6 +31990,7 @@ function render(){
   route=h; window.scrollTo(0,0);
   stuChip();
   { const p=$('#notifPanel'); if(p) p.remove(); }
+  if(h==='admin'){$('#fab').classList.add('hidden');return vAdmin();}
   if(!STU||!ACC||!GR[STU.grade]||h==='welcome'){$('#fab').classList.add('hidden');return vWelcome();}
   if(VER.need){$('#fab').classList.add('hidden');return vVerify();}
   setGrade(STU.grade); bellUpdate(); pushDue(false);
@@ -32680,68 +32681,127 @@ setTimeout(logVisit,4000);document.addEventListener('visibilitychange',()=>{if(d
   setInterval(()=>{if(document.visibilityState==='visible'&&Date.now()-lastAct<120000)acc+=10},10000);
   setInterval(send,60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')send()})})();
 const GRN={g10g:L('عاشر عام','G10 General'),g10a:L('عاشر متقدم','G10 Advanced'),g12a:L('ثاني عشر متقدم','G12 Advanced'),g11g:L('حادي عشر عام','G11 General'),g11a:L('حادي عشر متقدم','G11 Advanced'),g12g:L('ثاني عشر عام','G12 General')};
-async function admStats(){const box=$('#admDash'),code=$('#admCode').value.trim();if(!code){box.innerHTML=`<p class="mut">${L('اكتبي الكود السري فوق أول','Enter the admin code above first')}</p>`;return}
-  box.innerHTML=`<p class="mut">${L('جاري التحميل…','Loading…')}</p>`;
-  try{const s=await rpc('admin_stats',{p_code:code});try{sessionStorage.setItem('admC',code)}catch(e){}
-    const tile=(n,l,c)=>`<div class="card" style="text-align:center;padding:12px;background:var(--${c}-soft);border-color:var(--${c})"><div style="font-size:28px;font-weight:800">${n}</div><div style="font-size:13px">${l}</div></div>`;
-    const bars=(o)=>{const e=Object.entries(o||{}).sort((a,b)=>b[1]-a[1]),m=Math.max(1,...e.map(x=>x[1]));return e.length?e.map(([k,v])=>`<div style="display:flex;gap:8px;align-items:center;margin:6px 0"><span style="min-width:110px;font-size:14px">${esc(GRN[k]||k)}</span><div style="flex:1;background:var(--line);border-radius:8px;height:18px;overflow:hidden"><i style="display:block;height:100%;width:${v/m*100}%;background:var(--pink)"></i></div><b>${v}</b></div>`).join(''):`<p class="mut">${L('ما في بيانات للحين','No data yet')}</p>`};
-    const dm=Math.max(1,...s.daily.map(x=>x.v));
-    box.innerHTML=`<h3 style="margin:16px 0 8px">👀 ${L('الزوار','Visitors')}</h3>
-     <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">${tile(s.visitors_today,L('اليوم','Today'),'lav')}${tile(s.visitors_7d,L('آخر 7 أيام','Last 7 days'),'lav')}${tile(s.visitors_30d,L('آخر 30 يوم','Last 30 days'),'lav')}</div>
-     <div style="display:flex;align-items:flex-end;gap:4px;height:90px;margin-top:10px" dir="ltr">${s.daily.map(x=>`<div title="${x.d}: ${x.v}" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%"><small style="font-size:10px">${x.v||''}</small><i style="display:block;width:100%;border-radius:4px 4px 0 0;background:var(--lav);height:${x.v/dm*70}px;min-height:2px"></i></div>`).join('')}</div>
-     <p class="mut" style="font-size:12px;margin:2px 0 0">${L('آخر 14 يوم (كل جهاز ينحسب مرة باليوم)','Last 14 days (each device counted once a day)')}</p>
-     <h3 style="margin:16px 0 8px">👩‍🎓 ${L('الحسابات','Accounts')}</h3>
-     <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">${tile(s.accounts,L('كل الحسابات','All accounts'),'mint')}${tile(s.accounts_today,L('سجّلوا اليوم','Joined today'),'mint')}${tile(s.active_today,L('نشيطين اليوم','Active today'),'mint')}</div>
-     <h3 style="margin:16px 0 8px">🏫 ${L('الحسابات حسب الصف','Accounts by grade')}</h3>${bars(s.acc_grades)}
-     <h3 style="margin:16px 0 8px">🏫 ${L('الزوار حسب الصف (7 أيام)','Visitors by grade (7 days)')}</h3>${bars(s.visit_grades_7d)}
-     <h3 style="margin:16px 0 8px">⚙️ ${L('الاستخدام','Usage')}</h3>
-     <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">${tile(s.tutor_today,L('أسئلة المدرس اليوم','Tutor questions today'),'sun')}${tile(s.tutor_7d,L('أسئلة المدرس 7 أيام','Tutor questions 7d'),'sun')}${tile('~$'+(s.tutor_7d*0.05).toFixed(2),L('تكلفة تقريبية 7 أيام','Approx. cost 7d'),'sun')}${tile(s.push,L('مفعّلين التنبيهات','Notifications on'),'lav')}${tile(s.comp_players,L('في المسابقة','In competition'),'lav')}${tile(s.comp_today,L('جمعوا نقاط اليوم','Earned points today'),'lav')}</div>
-     <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px">${tile(s.tutor_all||0,L('أسئلة المدرس من البداية','Tutor questions all-time'),'sun')}${tile(s.tutor_users_all||0,L('طالبات استخدمن المدرس','Students who used the tutor'),'sun')}${tile((s.mins_today||0)+L(' د',' min'),L('وقت المذاكرة اليوم (الكل)','Study time today (all)'),'mint')}</div>
-     <h3 style="margin:16px 0 8px">👩‍🎓 ${L('الطالبات','Students')} (${(s.students||[]).length})</h3>
-     <input id="admQ" placeholder="${L('🔎 بحث بالاسم أو الإيميل','🔎 Search name or email')}" oninput="admFilter()" style="margin-bottom:8px">
-     <div style="overflow-x:auto"><table class="tbl" id="admTbl" style="font-size:13px;min-width:640px"><tr><th>${L('الاسم','Name')}</th><th>${L('الإيميل','Email')}</th><th>${L('الصف','Grade')}</th><th>${L('آخر دخول','Last seen')}</th><th>${L('دقايق اليوم','Min today')}</th><th>${L('دقايق 7 أيام','Min 7d')}</th><th>${L('كل الوقت','All time')}</th><th>${L('أسئلة المدرس','Tutor Qs')}</th></tr>
-     ${(s.students||[]).map(r=>`<tr><td>${esc(r.name||'—')}</td><td dir="ltr">${esc(r.email||'')}</td><td>${esc(GRN[r.grade]||r.grade||'')}</td><td dir="ltr">${r.last?new Date(r.last).toLocaleString('en-GB',{timeZone:'Asia/Dubai',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'—'}</td><td>${r.m_today}</td><td>${r.m_7d}</td><td>${r.m_all>=60?(r.m_all/60).toFixed(1)+L(' س',' h'):r.m_all+L(' د',' m')}</td><td>${r.tutor_today} / ${r.tutor_all}</td></tr>`).join('')}</table></div>
-     <p class="mut" style="font-size:12px">${L('أسئلة المدرس: اليوم / من البداية. الوقت ينحسب بس لما الصفحة مفتوحة والطالبة تستخدمها (بدأ العد 15 نوفمبر).','Tutor Qs: today / all-time. Time counts only while the page is open and in use (tracking began 15 Nov).')}</p>
-     <div id="admWin"></div>
-     <div class="row" style="justify-content:center;margin-top:12px"><button class="ghost" onclick="admStats()">🔄 ${L('تحديث','Refresh')}</button></div>`;
-    try{const w=await rpc('admin_winners',{p_code:code});const el=$('#admWin');
-      if(el)el.innerHTML=`<h3 style="margin:16px 0 8px">🎁 ${L('فائزين جائزة الأسبوع (أول واحد يوصل 500)','Weekly prize winners (first to 500)')}</h3>`+(w&&w.length?`<div style="overflow-x:auto"><table class="tbl" style="font-size:13px"><tr><th>${L('الأسبوع','Week')}</th><th>${L('الصف','Grade')}</th><th>${L('الاسم','Name')}</th><th>${L('الإيميل','Email')}</th><th>${L('وصل','Reached')}</th></tr>${w.map(r=>`<tr><td dir="ltr">${esc(r.week_start)}</td><td>${esc(GRN[r.grade]||r.grade)}</td><td>${esc(r.name||'')}</td><td dir="ltr">${esc(r.email||'')}</td><td dir="ltr">${new Date(r.reached_at).toLocaleString('en-GB',{timeZone:'Asia/Dubai',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}</td></tr>`).join('')}</table></div>`:`<p class="mut">${L('ما في فايز للحين هالأسبوع.','No winner yet this week.')}</p>`)}catch(e){}}
-  catch(e){box.innerHTML=`<p style="color:var(--bad)">${/bad_code/.test(e.message)?L('الكود السري غلط','Wrong admin code'):/too_many/.test(e.message)?L('محاولات كثيرة، جرّبي بعد 10 دقايق','Too many tries, wait 10 minutes'):L('صار خطأ، جرّبي مرة ثانية','Something went wrong')}</p>`}}
-function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl tr').forEach((tr,i)=>{if(i)tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none'})}
-function vAdmin(){
-  crumbs([[L('الرئيسية','Home'),'home'],['🔐 Admin']]);
-  $('#view').innerHTML=`<div class="card" style="max-width:640px;margin:20px auto"><h2 style="margin-top:0">📊 ${L('لوحة الموقع','Site dashboard')}</h2>
-   <label for="admCode" style="font-weight:800">${L('الكود السري','Admin code')}</label>
-   <div class="row"><input id="admCode" dir="ltr" autocomplete="off" style="flex:1"><button class="pri" onclick="admStats()">${L('عرض','Show')}</button></div>
-   <div id="admDash"></div></div>
-  <div class="card" style="max-width:640px;margin:20px auto">
-   <h2 style="margin-top:0">🔐 ${L('تشغيل المدرس الخصوصي','Turn on the private tutor')}</h2>
-   <p class="mut">${L('هذي الصفحة لصاحبة الموقع بس.','This page is for the site owner only.')}</p>
-   <label for="admCode" style="font-weight:800">${L('الكود السري','Admin code')}</label>
-   <input id="admCode" dir="ltr" autocomplete="off" style="margin:6px 0 12px">
-   <label for="admKey" style="font-weight:800">${L('مفتاح Anthropic (يبدأ بـ sk-ant-)','Anthropic key (starts with sk-ant-)')}</label>
-   <input id="admKey" type="password" dir="ltr" autocomplete="off" placeholder="sk-ant-..." style="margin:6px 0 12px">
-   <p id="admMsg" style="min-height:1.5em"></p>
-   <button class="pri" id="admGo" style="width:100%">${L('حفظ وتشغيل ✅','Save and turn on ✅')}</button></div>`;
-  $('#admGo').onclick=async()=>{const m=$('#admMsg');m.style.color='';m.textContent=L('جاري الحفظ…','Saving…');
-    try{await rpc('admin_set_ai_key',{p_code:$('#admCode').value.trim(),p_key:$('#admKey').value.trim()});$('#admKey').value='';
-      m.textContent=L('✅ انحفظ! جاري تجربة المدرس…','✅ Saved! Testing the tutor…');
-      try{const a=await tutorAsk([{role:'user',content:'Reply with one short friendly Arabic sentence.'},{role:'user',content:'هلا'}],null);m.style.color='var(--mint)';m.textContent='✅ '+L('المدرس الخصوصي شغّال: ','The tutor works: ')+a.slice(0,80)}
-      catch(e){m.style.color='var(--bad)';m.textContent=L('انحفظ، بس المدرس ما رد: ','Saved, but the tutor did not answer: ')+(e&&e.code||'')+L(' (تأكدي إن في رصيد في حساب Anthropic)',' (check your Anthropic credit)')}}
-    catch(e){m.style.color='var(--bad)';m.textContent=/bad_code/.test(e.message)?L('الكود السري غلط','Wrong admin code'):/bad_key/.test(e.message)?L('المفتاح لازم يبدأ بـ sk-ant-','The key must start with sk-ant-'):L('صار خطأ، جرّبي مرة ثانية','Something went wrong, try again')}};
-  $('#view').insertAdjacentHTML('beforeend',`<div class="card" style="max-width:640px;margin:20px auto">
-   <h2 style="margin-top:0">📧 ${L('تشغيل تأكيد الإيميل','Turn on email verification')}</h2>
-   <p class="mut">${L('أول ما تحفظين مفتاح Resend، كل طالبة لازم تأكد إيميلها برمز قبل ما تستخدم الموقع أو تاخذ نقاط.','Once a Resend key is saved, every student must confirm her email with a code before using the site or earning points.')}</p>
-   <label for="admMailKey" style="font-weight:800">${L('مفتاح Resend (يبدأ بـ re_)','Resend key (starts with re_)')}</label>
-   <input id="admMailKey" type="password" dir="ltr" autocomplete="off" placeholder="re_..." style="margin:6px 0 12px">
-   <label for="admMailFrom" style="font-weight:800">${L('المرسل','Sender')}</label>
-   <input id="admMailFrom" dir="ltr" autocomplete="off" value="مذاكرتي <noreply@mthakarti.com>" style="margin:6px 0 12px">
-   <p id="admMailMsg" style="min-height:1.5em"></p>
-   <button class="pri" id="admMailGo" style="width:100%">${L('حفظ وتشغيل ✅','Save and turn on ✅')}</button></div>`);
-  $('#admMailGo').onclick=async()=>{const m=$('#admMailMsg');m.style.color='';m.textContent=L('جاري الحفظ…','Saving…');
-    try{await rpc('admin_set_mail',{p_code:$('#admCode').value.trim(),p_key:$('#admMailKey').value.trim(),p_from:$('#admMailFrom').value.trim()});$('#admMailKey').value='';m.style.color='var(--mint)';m.textContent=L('✅ انحفظ! تأكيد الإيميل صار شغّال.','✅ Saved! Email verification is on.')}
-    catch(e){m.style.color='var(--bad)';m.textContent=/bad_code/.test(e.message)?L('الكود السري غلط (اكتبيه في أول خانة فوق)','Wrong admin code (type it in the first box above)'):/bad_key/.test(e.message)?L('المفتاح لازم يبدأ بـ re_','The key must start with re_'):L('صار خطأ، جرّبي مرة ثانية','Something went wrong, try again')}};
+/* ===== Owner dashboard (#admin): email + password login, session kept on this device for 30 days ===== */
+const ADM={tok:(()=>{try{return localStorage.getItem('mthAdmTok')||''}catch(e){return ''}})(),tab:'over',s:null,w:null};
+function admSetTok(t){ADM.tok=t||'';try{t?localStorage.setItem('mthAdmTok',t):localStorage.removeItem('mthAdmTok')}catch(e){}}
+const ADM_CSS=`<style>
+.adm{max-width:1100px;margin:0 auto}
+.adm-top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 14px}
+.adm-top h1{margin:0;font-size:26px}
+.adm-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.adm-tabs button{padding:8px 16px;border-radius:99px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-weight:700;cursor:pointer}
+.adm-tabs button.on{background:var(--pink);border-color:var(--pink);color:#fff}
+.adm-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+.adm-kpi{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-width:0}
+.adm-kpi b{display:block;font-size:30px;line-height:1.1}
+.adm-kpi span{font-size:13px;color:var(--mut)}
+.adm-kpi small{display:block;font-size:12px;color:var(--mut);margin-top:4px}
+.adm-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;margin-top:12px}
+.adm-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;min-width:0}
+.adm-box h3{margin:0 0 10px;font-size:17px}
+.adm-bar{display:grid;grid-template-columns:120px 1fr 36px;gap:8px;align-items:center;margin:7px 0;font-size:14px}
+.adm-bar i{display:block;height:14px;border-radius:99px;background:var(--line);overflow:hidden}
+.adm-bar i em{display:block;height:100%;background:var(--pink);border-radius:99px}
+.adm-chart{display:flex;align-items:flex-end;gap:4px;height:120px;direction:ltr}
+.adm-chart div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.adm-chart em{display:block;width:100%;border-radius:5px 5px 0 0;background:var(--lav);min-height:3px}
+.adm-chart small{font-size:10px;color:var(--mut)}
+.adm-tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surface)}
+.adm-t{width:100%;border-collapse:collapse;font-size:14px}
+.adm-t th,.adm-t td{padding:9px 12px;white-space:nowrap;text-align:start;border-bottom:1px solid var(--line)}
+.adm-t th{background:var(--surface2);font-size:13px;position:sticky;top:0;cursor:pointer}
+.adm-t tr:last-child td{border-bottom:0}
+.adm-t td.num{text-align:center}
+.adm-login{max-width:420px;margin:30px auto}
+.adm-login input{margin:6px 0 12px}
+</style>`;
+const admDate=d=>d?new Date(d).toLocaleString(LANG==='en'?'en-GB':'ar-AE',{timeZone:'Asia/Dubai',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'—';
+const admMin=m=>m>=60?(m/60).toFixed(1)+L(' ساعة',' h'):(m||0)+L(' دقيقة',' min');
+const admGr=k=>k&&GRN[k]?GRN[k]:L('بدون صف (ما سجّل)','No grade (not signed up)');
+function admErr(e){const m=String(e&&e.message||e);return /bad_login/.test(m)?L('الإيميل أو الرقم السري غلط','Wrong email or password'):/bad_code/.test(m)?L('الكود السري غلط','Wrong admin code'):/weak_pass/.test(m)?L('الرقم السري لازم 8 حروف أو أرقام على الأقل','Password must be at least 8 characters'):/bad_email/.test(m)?L('اكتبي إيميل صحيح','Enter a valid email'):/too_many/.test(m)?L('محاولات كثيرة، جرّبي بعد 10 دقايق','Too many tries, wait 10 minutes'):/Failed to fetch|NetworkError|Load failed/i.test(m)?L('تأكدي من الإنترنت','Check your internet'):L('صار خطأ، جرّبي مرة ثانية','Something went wrong, try again')}
+async function vAdmin(){
+  crumbs([[L('الرئيسية','Home'),'home'],[L('لوحة الإدارة','Admin')]]);
+  if(!ADM.tok)return admLoginView();
+  $('#view').innerHTML=ADM_CSS+`<div class="adm"><div class="adm-top"><h1>📊 ${L('لوحة مذاكرتي','Mthakarti dashboard')}</h1>
+    <div class="row"><button class="ghost" onclick="admLoad()">🔄 ${L('تحديث','Refresh')}</button><button class="ghost" onclick="admLogout()">${L('تسجيل خروج','Sign out')}</button></div></div>
+    <div class="adm-tabs" role="tablist">${[['over',L('📈 نظرة عامة','📈 Overview')],['stu',L('👩‍🎓 الطالبات','👩‍🎓 Students')],['prize',L('🎁 جائزة الأسبوع','🎁 Weekly prize')],['set',L('⚙️ الإعدادات','⚙️ Settings')]].map(([k,n])=>`<button class="${ADM.tab===k?'on':''}" onclick="ADM.tab='${k}';admShow()">${n}</button>`).join('')}</div>
+    <div id="admBody"><p class="mut">${L('جاري التحميل…','Loading…')}</p></div></div>`;
+  if(ADM.s)admShow();
+  admLoad();
 }
+async function admLoad(){try{const [s,w]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[])]);ADM.s=s;ADM.w=w||[];admShow()}
+  catch(e){if(/bad_code/.test(e.message)){admSetTok('');return admLoginView(L('انتهت الجلسة، سجّلي دخول مرة ثانية','Session expired, please sign in again'))}const b=$('#admBody');if(b)b.innerHTML=`<p style="color:var(--bad)">${admErr(e)}</p>`}}
+function admShow(){const b=$('#admBody');if(!b)return;document.querySelectorAll('.adm-tabs button').forEach((x,i)=>x.classList.toggle('on',['over','stu','prize','set'][i]===ADM.tab));
+  if(ADM.tab==='set')return admSettings(b);
+  const s=ADM.s;if(!s){b.innerHTML=`<p class="mut">${L('جاري التحميل…','Loading…')}</p>`;return}
+  if(ADM.tab==='stu')return admStudents(b,s);
+  if(ADM.tab==='prize')return admPrize(b);
+  const kpi=(n,l,sub)=>`<div class="adm-kpi"><b>${n}</b><span>${l}</span>${sub?`<small>${sub}</small>`:''}</div>`;
+  const bars=o=>{const e=Object.entries(o||{}).sort((a,b)=>b[1]-a[1]),m=Math.max(1,...e.map(x=>x[1]));return e.length?e.map(([k,v])=>`<div class="adm-bar"><span>${esc(admGr(k==='?'?'':k))}</span><i><em style="width:${v/m*100}%"></em></i><b>${v}</b></div>`).join(''):`<p class="mut">${L('ما في بيانات للحين','No data yet')}</p>`};
+  const daily=s.daily||[],dm=Math.max(1,...daily.map(x=>x.v));
+  b.innerHTML=`<div class="adm-kpis">
+     ${kpi(s.visitors_today,L('زوار اليوم','Visitors today'),L(`${s.visitors_7d} آخر 7 أيام · ${s.visitors_30d} آخر 30 يوم`,`${s.visitors_7d} last 7 days · ${s.visitors_30d} last 30 days`))}
+     ${kpi(s.accounts,L('حسابات','Accounts'),L(`${s.accounts_today} سجّلوا اليوم`,`${s.accounts_today} joined today`))}
+     ${kpi(s.active_today,L('نشيطين اليوم','Active today'),L(`وقت المذاكرة اليوم: ${admMin(s.mins_today||0)}`,`Study time today: ${admMin(s.mins_today||0)}`))}
+     ${kpi(s.tutor_today,L('أسئلة المدرس اليوم','Tutor questions today'),L(`${s.tutor_all||0} من البداية · ${s.tutor_users_all||0} طالبات`,`${s.tutor_all||0} all-time · ${s.tutor_users_all||0} students`))}
+     ${kpi('$'+(s.tutor_7d*0.05).toFixed(2),L('تكلفة المدرس (7 أيام)','Tutor cost (7 days)'),L('تقريبية','approximate'))}
+     ${kpi(s.comp_players,L('في المسابقة','In competition'),L(`${s.comp_today} جمعوا نقاط اليوم · ${s.push} مفعّلين التنبيهات`,`${s.comp_today} earned today · ${s.push} with notifications`))}
+    </div>
+    <div class="adm-grid">
+     <div class="adm-box"><h3>👀 ${L('الزوار آخر 14 يوم','Visitors, last 14 days')}</h3>
+      <div class="adm-chart">${daily.map(x=>`<div title="${x.d}: ${x.v}"><small>${x.v||''}</small><em style="height:${Math.round(x.v/dm*95)}px"></em><small>${String(x.d).slice(8,10)}</small></div>`).join('')}</div></div>
+     <div class="adm-box"><h3>🏫 ${L('الحسابات حسب الصف','Accounts by grade')}</h3>${bars(s.acc_grades)}</div>
+     <div class="adm-box"><h3>🏫 ${L('الزوار حسب الصف (7 أيام)','Visitors by grade (7 days)')}</h3>${bars(s.visit_grades_7d)}</div>
+    </div>`}
+function admStudents(b,s){const rows=(s.students||[]).slice();const k=ADM.sort||'last';
+  const val={name:r=>(r.name||'').toLowerCase(),grade:r=>r.grade||'',last:r=>r.last?-new Date(r.last):0,m_today:r=>-r.m_today,m_7d:r=>-r.m_7d,m_all:r=>-r.m_all,tutor:r=>-r.tutor_all};
+  rows.sort((a,c)=>{const x=val[k](a),y=val[k](c);return x<y?-1:x>y?1:0});
+  const th=(key,t)=>`<th onclick="ADM.sort='${key}';admShow()">${t}${k===key?' ▾':''}</th>`;
+  b.innerHTML=`<div class="row" style="justify-content:space-between;margin-bottom:10px"><b style="font-size:18px">${L(`الطالبات (${rows.length})`,`Students (${rows.length})`)}</b>
+    <input id="admQ" placeholder="${L('🔎 بحث بالاسم أو الإيميل','🔎 Search name or email')}" oninput="admFilter()" style="max-width:320px;margin:0"></div>
+   <div class="adm-tw"><table class="adm-t" id="admTbl"><thead><tr>${th('name',L('الاسم','Name'))}<th>${L('الإيميل','Email')}</th>${th('grade',L('الصف','Grade'))}${th('last',L('آخر دخول','Last seen'))}${th('m_today',L('اليوم','Today'))}${th('m_7d',L('7 أيام','7 days'))}${th('m_all',L('المجموع','Total'))}${th('tutor',L('أسئلة المدرس','Tutor Qs'))}</tr></thead><tbody>
+   ${rows.map(r=>`<tr><td><b>${esc(r.name||'—')}</b></td><td dir="ltr">${esc(r.email||'')}</td><td>${esc(admGr(r.grade))}</td><td>${admDate(r.last)}</td><td class="num">${admMin(r.m_today)}</td><td class="num">${admMin(r.m_7d)}</td><td class="num">${admMin(r.m_all)}</td><td class="num">${r.tutor_all}${r.tutor_today?` <small class="mut">(${L('اليوم','today')} ${r.tutor_today})</small>`:''}</td></tr>`).join('')}</tbody></table></div>
+   <p class="mut" style="font-size:12px">${L('اضغطي على عنوان العمود عشان ترتّبين. الوقت ينحسب بس لما الصفحة مفتوحة والطالبة تستخدمها (بدأ العد 15 نوفمبر).','Tap a column title to sort. Time counts only while the page is open and in use (tracking began 15 Nov).')}</p>`}
+function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl tbody tr').forEach(tr=>{tr.style.display=tr.textContent.toLowerCase().includes(q)?'':'none'})}
+function admPrize(b){const w=ADM.w||[];
+  b.innerHTML=`<div class="adm-box" style="background:var(--sun-soft);border-color:var(--sun)"><b>🎁 ${L('القاعدة:','Rule:')}</b> ${L('أول طالب في كل صف يجمع 500 نقطة خلال الأسبوع (من السبت لين الجمعة) يفوز بنقاط بينز. تواصلي وياه على إيميله.','The first student in each grade to collect 500 points in the week (Saturday to Friday) wins Penz points. Contact them by email.')}</div>
+   <div class="adm-tw" style="margin-top:12px">${w.length?`<table class="adm-t"><thead><tr><th>${L('الأسبوع','Week')}</th><th>${L('الصف','Grade')}</th><th>${L('الاسم','Name')}</th><th>${L('الإيميل','Email')}</th><th>${L('وصل 500','Reached 500')}</th></tr></thead><tbody>${w.map(r=>`<tr><td>${esc(r.week_start)}</td><td>${esc(admGr(r.grade))}</td><td><b>${esc(r.name||'')}</b></td><td dir="ltr"><a href="mailto:${esc(r.email||'')}">${esc(r.email||'')}</a></td><td>${admDate(r.reached_at)}</td></tr>`).join('')}</tbody></table>`:`<p class="mut" style="padding:14px;margin:0">${L('ما في فايز للحين هالأسبوع.','No winner yet this week.')}</p>`}</div>`}
+function admSettings(b){
+  b.innerHTML=`<div class="adm-grid" style="margin-top:0">
+   <div class="adm-box"><h3>👩‍🏫 ${L('مفتاح المدرس الخصوصي (Anthropic)','Private tutor key (Anthropic)')}</h3>
+    <input id="admKey" type="password" dir="ltr" autocomplete="off" placeholder="sk-ant-...">
+    <p id="admMsg" style="min-height:1.5em;font-size:14px"></p><button class="pri" id="admGo" style="width:100%">${L('حفظ وتجربة ✅','Save and test ✅')}</button></div>
+   <div class="adm-box"><h3>📧 ${L('تأكيد الإيميل (Resend)','Email verification (Resend)')}</h3>
+    <p class="mut" style="font-size:13px;margin-top:0">${L('أول ما تحفظين المفتاح، كل طالبة لازم تأكد إيميلها برمز.','Once saved, every student must confirm her email with a code.')}</p>
+    <input id="admMailKey" type="password" dir="ltr" autocomplete="off" placeholder="re_...">
+    <input id="admMailFrom" dir="ltr" autocomplete="off" value="مذاكرتي <noreply@mthakarti.com>" style="margin-top:8px">
+    <p id="admMailMsg" style="min-height:1.5em;font-size:14px"></p><button class="pri" id="admMailGo" style="width:100%">${L('حفظ وتشغيل ✅','Save and turn on ✅')}</button></div></div>`;
+  $('#admGo').onclick=async()=>{const m=$('#admMsg');m.style.color='';m.textContent=L('جاري الحفظ…','Saving…');
+    try{await rpc('admin_set_ai_key',{p_code:ADM.tok,p_key:$('#admKey').value.trim()});$('#admKey').value='';m.textContent=L('✅ انحفظ! جاري تجربة المدرس…','✅ Saved! Testing the tutor…');
+      try{const a=await tutorAsk([{role:'user',content:'Reply with one short friendly Arabic sentence.'},{role:'user',content:'هلا'}],null);m.style.color='var(--mint)';m.textContent='✅ '+L('المدرس شغّال: ','The tutor works: ')+a.slice(0,80)}
+      catch(e){m.style.color='var(--bad)';m.textContent=L('انحفظ، بس المدرس ما رد (لازم تكونين مسجّلة دخول كطالبة عشان التجربة، أو ما في رصيد).','Saved, but the tutor did not answer (you must be signed in as a student to test, or there is no credit).')}}
+    catch(e){m.style.color='var(--bad)';m.textContent=/bad_key/.test(e.message)?L('المفتاح لازم يبدأ بـ sk-ant-','The key must start with sk-ant-'):admErr(e)}};
+  $('#admMailGo').onclick=async()=>{const m=$('#admMailMsg');m.style.color='';m.textContent=L('جاري الحفظ…','Saving…');
+    try{await rpc('admin_set_mail',{p_code:ADM.tok,p_key:$('#admMailKey').value.trim(),p_from:$('#admMailFrom').value.trim()});$('#admMailKey').value='';m.style.color='var(--mint)';m.textContent=L('✅ انحفظ! تأكيد الإيميل صار شغّال.','✅ Saved! Email verification is on.')}
+    catch(e){m.style.color='var(--bad)';m.textContent=/bad_key/.test(e.message)?L('المفتاح لازم يبدأ بـ re_','The key must start with re_'):admErr(e)}}}
+async function admLoginView(msg){
+  crumbs([[L('الرئيسية','Home'),'home'],[L('لوحة الإدارة','Admin')]]);
+  let first=false;try{first=!(await rpc('admin_has_user',{}))}catch(e){}
+  $('#view').innerHTML=ADM_CSS+`<div class="card adm-login"><h1 style="margin-top:0">🔐 ${L('دخول المسؤول','Admin sign in')}</h1>
+   ${first?`<p class="mut">${L('أول مرة: اكتبي الكود السري القديم مرة وحدة بس، واختاري إيميل ورقم سري للدخول بعدين.','First time: enter the old admin code once, then choose an email and password for future sign-ins.')}</p>
+    <label for="admC" style="font-weight:800">${L('الكود السري القديم','Old admin code')}</label><input id="admC" dir="ltr" autocomplete="off">`:''}
+   <label for="admE" style="font-weight:800">${L('الإيميل','Email')}</label><input id="admE" type="email" dir="ltr" autocomplete="username">
+   <label for="admP" style="font-weight:800">${first?L('اختاري رقم سري (8 على الأقل)','Choose a password (8+ characters)'):L('الرقم السري','Password')}</label><input id="admP" type="password" dir="ltr" autocomplete="${first?'new-password':'current-password'}">
+   <p id="admLMsg" style="min-height:1.5em;color:var(--bad);font-size:14px">${msg?esc(msg):''}</p>
+   <button class="pri" id="admLGo" style="width:100%">${first?L('إنشاء الدخول ✅','Create sign-in ✅'):L('دخول','Sign in')}</button>
+   ${first?'':`<p style="text-align:center;font-size:13px;margin-top:12px"><a href="#" onclick="admForgot();return false">${L('نسيتي الرقم السري؟','Forgot your password?')}</a></p>`}</div>`;
+  const go=async()=>{const m=$('#admLMsg'),btn=$('#admLGo');m.textContent='';btn.disabled=true;
+    try{const e=$('#admE').value.trim(),p=$('#admP').value;
+      const t=$('#admC')?await rpc('admin_setup',{p_code:$('#admC').value.trim(),p_email:e,p_pass:p}):await rpc('admin_login',{p_email:e,p_pass:p});
+      admSetTok(t);ADM.tab='over';vAdmin()}catch(e){m.textContent=admErr(e);btn.disabled=false}};
+  $('#admLGo').onclick=go;$('#admP').onkeydown=e=>{if(e.key==='Enter')go()}}
+function admForgot(){const b=$('.adm-login');if(!b)return;b.querySelector('h1').insertAdjacentHTML('afterend',`<p class="mut">${L('غيّري الرقم السري بالكود السري القديم:','Reset your password using the old admin code:')}</p><label for="admC" style="font-weight:800">${L('الكود السري القديم','Old admin code')}</label><input id="admC" dir="ltr" autocomplete="off">`);$('#admLGo').textContent=L('غيّري الرقم السري ✅','Reset password ✅')}
+async function admLogout(){try{await rpc('admin_logout',{p_token:ADM.tok})}catch(e){}admSetTok('');ADM.s=null;ADM.w=null;admLoginView()}
 function vExams(){
   crumbs([[L('الرئيسية','Home'),'home'],[L('جدول الامتحانات','Exam timetable')]]);
   const EL=examList();
@@ -32792,7 +32852,7 @@ let instEvt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();instEvt=e;setTimeout(instOffer,1500)});
 window.addEventListener('appinstalled',()=>{store.set('installed',true);const s=$('#instSheet');if(s)s.remove();toast(L('تم تثبيت مذاكرتي ✅ تلقاها على شاشة جوالك','Mthakarti is installed ✅ Find it on your home screen'))});
 function instOffer(force){
-  try{if(isStandalone()||store.get('installed',false))return;
+  try{if(isStandalone()||store.get('installed',false)||/^#admin/.test(location.hash))return;
     const snooze=store.get('instSnooze',0);if(!force&&snooze&&Date.now()<snooze)return;
     if(!force&&!instEvt&&!isIOS())return; // nothing we can offer on this browser
     if($('#instSheet'))return;
