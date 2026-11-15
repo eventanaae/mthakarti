@@ -32179,8 +32179,8 @@ function vHome(){
     <button class="pri" onclick="go('compete')">${L('🏆 وين مركزي؟','🏆 Where do I rank?')}</button>
   </div>
   <div class="card row" style="justify-content:space-between;margin-top:10px;background:var(--mint-soft)">
-    <div><b style="font-size:18px">${L('📝 واجبات ألف','📝 Alef homework')}</b><div class="mut" style="font-size:14px" id="alefHome">${L('اربط ألف بمذاكرتي: كل واجب تخلّصه = +2 نقطة، وتشوف شو باقي عليك.','Link Alef to Mthakarti: every finished task = +2 points, and see what is left.')}</div></div>
-    <button class="sec" onclick="go('alef')">${L('📝 واجباتي','📝 My homework')}</button>
+    <div><b style="font-size:18px">${L('🔜 قريبًا: واجبات ألف = نقاط!','🔜 Coming soon: Alef homework = points!')}</b><div class="mut" style="font-size:14px" id="alefHome">${L('قريبًا كل واجب تحلّه في ألف بينحسب لك نقاط في المسابقة، وبتشوف هني شو باقي عليك من واجبات. ترقّبوا! 🎉','Soon every task you finish in Alef will earn you competition points, and you will see here what is left. Stay tuned! 🎉')}</div></div>
+    ${ALEF_STORE?`<button class="sec" onclick="go('alef')">${L('📝 واجباتي','📝 My homework')}</button>`:''}
   </div>
   <h2>${L('موادك','Your subjects')} · ${GR[STU.grade].name} ${GR[STU.grade].icon}</h2>
   ${termBar()}
@@ -32964,14 +32964,16 @@ setTimeout(()=>{if(COMP.q.length)flushPts()},6000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&COMP.q.length)flushPts()});
 /* ===== Alef homework via the «مذاكرتي × ألف» browser extension (reads the student's own Alef To-Do list; never the password) ===== */
 const EXT={on:false,linked:false};
+const ALEF_STORE='';/* Chrome Web Store link — filled in once the extension is published */
 window.addEventListener('message',e=>{if(e.source!==window||!e.data)return;
-  if(e.data.type==='MTH_EXT'){EXT.on=true;EXT.linked=!!e.data.linked;if(location.hash==='#alef')alefExtUI()}
+  if(e.data.type==='MTH_EXT'){EXT.on=true;EXT.linked=!!e.data.linked;if(!EXT.linked&&ACC){alefLink();return}if(location.hash==='#alef')alefExtUI()}
   if(e.data.type==='MTH_LINKED'){EXT.linked=true;toast(L('تم ربط الإضافة بحسابك ✅','Extension linked to your account ✅'));if(location.hash==='#alef')alefExtUI()}});
 setTimeout(()=>window.postMessage({type:'MTH_PING'},location.origin),1500);
 function alefLink(){if(!ACC)return;window.postMessage({type:'MTH_LINK',acc:{id:ACC.id,secret:ACC.secret,name:STU&&STU.name}},location.origin)}
 function alefExtUI(){const b=$('#alefExt');if(!b)return;
-  b.innerHTML=!EXT.on?`<p style="margin:0">🔌 ${L('الإضافة مب متركّبة في هذا المتصفح.','The extension is not installed in this browser.')}</p>`
-   :!EXT.linked?`<p style="margin:0 0 8px">✅ ${L('الإضافة متركّبة! باقي تربطها بحسابك:','Extension installed! Now link it to your account:')}</p><button class="pri" onclick="alefLink()">🔗 ${L('اربط الإضافة بحسابي','Link the extension')}</button>`
+  b.innerHTML=!EXT.on?(ALEF_STORE?`<p style="margin:0 0 10px">${L('ضغطتين بس: اضغط الزر، وبعدين «Add to Chrome». ونربطها بحسابك تلقائيًا ✨','Two clicks: press the button, then “Add to Chrome”. We link it to your account automatically ✨')}</p><a class="btn pri" href="${ALEF_STORE}" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none;padding:12px 20px;border-radius:14px;background:var(--pink);color:#fff;font-weight:800">🔗 ${L('اربط مذاكرتي مع ألف','Connect Mthakarti with Alef')}</a><p class="mut" style="font-size:13px;margin:8px 0 0">${L('بعد ما تركّبها، ارجع لهالصفحة وحدّثها.','After installing, come back and refresh this page.')}</p>`
+     :`<p style="margin:0">🔌 ${L('الإضافة مب متركّبة في هذا المتصفح.','The extension is not installed in this browser.')}</p>`)
+   :!EXT.linked?`<p style="margin:0 0 8px">✅ ${L('الإضافة متركّبة! جاري ربطها بحسابك…','Extension installed! Linking it to your account…')}</p><button class="pri" onclick="alefLink()">🔗 ${L('اربط الإضافة بحسابي','Link the extension')}</button>`
    :`<p style="margin:0">✅ ${L('الإضافة متركّبة ومربوطة بحسابك. افتح ألف وروح «To-Do List»، ونحسب واجباتك تلقائيًا.','Installed and linked. Open Alef and go to “To-Do List”, and we count your tasks automatically.')}</p><p style="margin:8px 0 0"><a href="https://moe.alefed.com/#/todo-list" target="_blank" rel="noopener">${L('افتح ألف ↗','Open Alef ↗')}</a></p>`}
 async function vAlef(){
   crumbs([[L('الرئيسية','Home'),'home'],[L('واجبات ألف','Alef homework')]]);
