@@ -32003,6 +32003,7 @@ function render(){
   if(gm&&GR[gm[1]]){if(gm[1]!==STU.grade){location.hash=STU.grade;return}const k=gm[2];if(SUBJ[k])return vSubject(k,ctx.subj===k&&ctx.g===CUR?ctx.tab:'lessons')}
   if(h.startsWith('s-')){const k=h.slice(2);if(SUBJ[k])return vSubject(k,ctx.subj===k?ctx.tab:'lessons')}
   if(h==='compete')return vCompete();
+  if(h==='alef')return vAlef();
   if(h==='exams')return vExams();
   if(h==='admin')return vAdmin();
   if(h==='ielts')return vIelts();
@@ -32176,6 +32177,10 @@ function vHome(){
   <div class="card row" style="justify-content:space-between;margin-top:14px;background:var(--lav-soft)">
     <div><b style="font-size:18px">${L('🏆 مسابقة أكثر واحد يذاكر','🏆 Who studies the most? Competition')}</b><div class="mut" style="font-size:14px">${L(`🎁 أول واحد يجمع 500 نقطة هالأسبوع يفوز بنقاط بينز! الفايز ينعلن كل جمعة.`,`🎁 The first to collect 500 points this week wins Penz points! Winner announced every Friday.`)}</div></div>
     <button class="pri" onclick="go('compete')">${L('🏆 وين مركزي؟','🏆 Where do I rank?')}</button>
+  </div>
+  <div class="card row" style="justify-content:space-between;margin-top:10px;background:var(--mint-soft)">
+    <div><b style="font-size:18px">${L('📝 واجبات ألف','📝 Alef homework')}</b><div class="mut" style="font-size:14px" id="alefHome">${L('اربط ألف بمذاكرتي: كل واجب تخلّصه = +10 نقاط، وتشوف شو باقي عليك.','Link Alef to Mthakarti: every finished task = +10 points, and see what is left.')}</div></div>
+    <button class="sec" onclick="go('alef')">${L('📝 واجباتي','📝 My homework')}</button>
   </div>
   <h2>${L('موادك','Your subjects')} · ${GR[STU.grade].name} ${GR[STU.grade].icon}</h2>
   ${termBar()}
@@ -32957,6 +32962,42 @@ async function flushPts(){if(flushing||!ACC||!COMP.q.length)return;flushing=true
 try{localStorage.removeItem('mth_compPend')}catch(e){}
 setTimeout(()=>{if(COMP.q.length)flushPts()},6000);
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&COMP.q.length)flushPts()});
+/* ===== Alef homework via the «مذاكرتي × ألف» browser extension (reads the student's own Alef To-Do list; never the password) ===== */
+const EXT={on:false,linked:false};
+window.addEventListener('message',e=>{if(e.source!==window||!e.data)return;
+  if(e.data.type==='MTH_EXT'){EXT.on=true;EXT.linked=!!e.data.linked;if(location.hash==='#alef')alefExtUI()}
+  if(e.data.type==='MTH_LINKED'){EXT.linked=true;toast(L('تم ربط الإضافة بحسابك ✅','Extension linked to your account ✅'));if(location.hash==='#alef')alefExtUI()}});
+setTimeout(()=>window.postMessage({type:'MTH_PING'},location.origin),1500);
+function alefLink(){if(!ACC)return;window.postMessage({type:'MTH_LINK',acc:{id:ACC.id,secret:ACC.secret,name:STU&&STU.name}},location.origin)}
+function alefExtUI(){const b=$('#alefExt');if(!b)return;
+  b.innerHTML=!EXT.on?`<p style="margin:0">🔌 ${L('الإضافة مب متركّبة في هذا المتصفح.','The extension is not installed in this browser.')}</p>`
+   :!EXT.linked?`<p style="margin:0 0 8px">✅ ${L('الإضافة متركّبة! باقي تربطها بحسابك:','Extension installed! Now link it to your account:')}</p><button class="pri" onclick="alefLink()">🔗 ${L('اربط الإضافة بحسابي','Link the extension')}</button>`
+   :`<p style="margin:0">✅ ${L('الإضافة متركّبة ومربوطة بحسابك. افتح ألف وروح «To-Do List»، ونحسب واجباتك تلقائيًا.','Installed and linked. Open Alef and go to “To-Do List”, and we count your tasks automatically.')}</p><p style="margin:8px 0 0"><a href="https://moe.alefed.com/#/todo-list" target="_blank" rel="noopener">${L('افتح ألف ↗','Open Alef ↗')}</a></p>`}
+async function vAlef(){
+  crumbs([[L('الرئيسية','Home'),'home'],[L('واجبات ألف','Alef homework')]]);
+  $('#view').innerHTML=`<div style="max-width:760px;margin:0 auto">
+   <h1>📝 ${L('واجبات ألف','Alef homework')}</h1>
+   <p class="mut">${L('كل واجب تخلّصه في ألف = <b>+10 نقاط</b> في المسابقة (لين 15 واجب باليوم). الإضافة تقرا قائمة واجباتك بس، وما تاخذ الباسورد أبد.','Every task you finish in Alef = <b>+10 points</b> (up to 15 tasks a day). The extension only reads your to-do list and never takes your password.')}</p>
+   <div class="card" id="alefExt"></div>
+   <div class="card" id="alefStat"><p class="mut">${L('جاري التحميل…','Loading…')}</p></div>
+   <details class="card"><summary style="font-weight:800;cursor:pointer">🧩 ${L('كيف أركّب الإضافة؟ (كمبيوتر بس: كروم أو إيدج)','How do I install the extension? (computer only: Chrome or Edge)')}</summary>
+    <ol style="line-height:1.9;margin:10px 0 0">
+     <li>${L('نزّل الملف:','Download the file:')} <a href="/mthakarti-alef.zip" download>mthakarti-alef.zip</a></li>
+     <li>${L('افتح الملف المضغوط وطلّع المجلد (Extract) وحطه في مكان ما تمسحه.','Unzip it (Extract) and keep the folder somewhere safe.')}</li>
+     <li>${L('في كروم اكتب في الرابط:','In Chrome, type in the address bar:')} <code dir="ltr">chrome://extensions</code> ${L('(في إيدج: edge://extensions)','(Edge: edge://extensions)')}</li>
+     <li>${L('شغّل «وضع المطوّر» (Developer mode) فوق.','Turn on “Developer mode” at the top.')}</li>
+     <li>${L('اضغط «تحميل غير مضغوط» (Load unpacked) واختار المجلد.','Click “Load unpacked” and choose the folder.')}</li>
+     <li>${L('ارجع لهالصفحة وحدّثها، واضغط «اربط الإضافة بحسابي».','Come back here, refresh, and click “Link the extension”.')}</li>
+     <li>${L('افتح ألف وروح «To-Do List». بيطلع لك تحت شريط صغير «مذاكرتي ✓».','Open Alef and go to “To-Do List”. A small «مذاكرتي ✓» badge appears at the bottom.')}</li>
+    </ol></details></div>`;
+  alefExtUI();window.postMessage({type:'MTH_PING'},location.origin);
+  try{const s=await rpc('alef_status',{p_acc:ACC.id,p_secret:ACC.secret});const b=$('#alefStat');if(!b)return;
+    const p=s.pending||[];
+    b.innerHTML=!s.synced_at?`<p class="mut" style="margin:0">${L('للحين ما وصلتنا واجباتك من ألف. ركّب الإضافة وافتح «To-Do List» في ألف.','We have not received your Alef tasks yet. Install the extension and open “To-Do List” in Alef.')}</p>`
+     :`<div class="row" style="justify-content:space-between"><b style="font-size:18px">${L(`باقي عليك ${p.length} واجب`,`${p.length} tasks left`)}</b><span class="mut" style="font-size:13px">${L('آخر تحديث:','Last update:')} ${new Date(s.synced_at).toLocaleString(LANG==='en'?'en-GB':'ar-AE',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span></div>
+      <p class="mut" style="margin:4px 0 10px">${L(`خلّصت ${s.done_count} واجب من وقت ما ربطت`,`${s.done_count} finished since you linked`)}${s.done_week!=null?L(` · ألف يقول: ${s.done_week} هالأسبوع`,` · Alef says: ${s.done_week} this week`):''}</p>
+      ${p.length?`<div style="display:grid;gap:6px">${p.map(t=>`<div style="display:flex;justify-content:space-between;gap:8px;border:1px solid var(--line);border-radius:12px;padding:8px 12px"><span style="min-width:0;overflow-wrap:anywhere"><b>${esc(t.title||'')}</b><br><small class="mut">${esc(t.kind||'')}</small></span><span class="pill p-lav" style="align-self:center;white-space:nowrap">${t.action==='Continue'?L('بديته','Started'):L('ما بديته','Not started')}</span></div>`).join('')}</div>`:`<p>🎉 ${L('ما عليك ولا واجب!','No tasks left!')}</p>`}`}
+  catch(e){const b=$('#alefStat');if(b)b.innerHTML=`<p class="mut">${L('صار خطأ، جرّب مرة ثانية','Something went wrong, try again')}</p>`}}
 /* weekly prize: the first in the grade to collect 300 points this week (Sat → Fri) wins; we contact them by email */
 async function weekPrize(g){const box=$('#cmpPrize');if(!box)return;
   const head=`<b style="font-size:18px">${L('🎁 جائزة الأسبوع','🎁 Prize of the week')}</b>
