@@ -32056,9 +32056,9 @@ async function accSave(){if(!ACC)return;clearTimeout(accTimer);try{await rpc('ac
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&ACC)accSave()});
 (function(){const s0=store.set;store.set=function(k,v){s0(k,v);accQueue(k)}})();
 function accErr(m){m=String(m||'');
-  if(/email_taken/.test(m))return L('هذا الإيميل أو الرقم مسجّل من قبل. اضغط «عندي حساب» وادخل برقمك السري.','This email or number is already registered. Tap “I have an account” and sign in with your PIN.');
-  if(/no_account/.test(m))return L('ما لقينا حساب بهذا الإيميل أو الرقم. سجّل حساب جديد.','No account with this email or number. Create a new one.');
-  if(/bad_email/.test(m))return L('اكتب إيميل صحيح أو رقم جوال إماراتي (05xxxxxxxx)','Enter a valid email or UAE mobile number (05xxxxxxxx)');
+  if(/email_taken/.test(m))return L('هذا الإيميل مسجّل من قبل. اضغط «عندي حساب» وادخل برقمك السري.','This email is already registered. Tap “I have an account” and sign in with your PIN.');
+  if(/no_account/.test(m))return L('ما لقينا حساب بهذا الإيميل. سجّل حساب جديد.','No account with this email. Create a new one.');
+  if(/bad_email/.test(m))return L('اكتب إيميل صحيح','Enter a valid email');
   if(/bad_pin/.test(m))return L('الرقم السري غلط','Wrong PIN');
   if(/locked/.test(m))return L('محاولات كثيرة غلط. جرّب بعد 15 دقيقة.','Too many wrong tries. Try again in 15 minutes.');
   if(/Failed to fetch|NetworkError|Load failed/i.test(m))return L('تأكد من الإنترنت وجرّب مرة ثانية','Check your internet and try again');
@@ -32070,8 +32070,6 @@ async function accLogout(){if(!confirm(L('تبي تسجّل خروج من هذا
   try{const ks=[];for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&k.indexOf('mth_')===0)ks.push(k)}ks.forEach(k=>localStorage.removeItem(k))}catch(e){}
   COOKIE_KEYS.concat(['acct']).forEach(k=>{document.cookie='mth_'+k+'=;max-age=0;path=/'});
   ACC=null;STU=null;location.hash='welcome';location.reload()}
-/* login id: an email, or a UAE mobile number (05xxxxxxxx / +9715xxxxxxxx, Arabic digits OK) */
-function isIdent(s){s=String(s||'').trim();if(s.includes('@'))return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s);const d=s.replace(/[٠-٩]/g,c=>c.charCodeAt(0)-1632).replace(/[۰-۹]/g,c=>c.charCodeAt(0)-1776).replace(/[^0-9]/g,'');return /^(00971|971)?5\d{8}$/.test(d)||/^05\d{8}$/.test(d)}
 function vWelcome(){
   crumbs([[L('أهلًا بك','Welcome')]]);
   const grades=[['10','العاشر'],['11','الحادي عشر'],['12','الثاني عشر']];
@@ -32099,8 +32097,8 @@ function vWelcome(){
    ${mode==='new'?`<p class="mut" style="font-size:13px;margin:0 0 8px">${L('⚠️ تأكد من صفك، ما تقدر تغيّره بعد التسجيل.','⚠️ Double-check your grade, it cannot be changed after sign-up.')}</p>`:''}
    <p id="gradeMsg" class="note hidden" style="margin:6px 0 0">${L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!')}</p></div>
    ${mode==='new'?`<p id="ieNote" class="mut" style="font-size:13px;margin:0 0 8px;${ieSel?'':'display:none'}">${L('✈️ بتشوف قسم الآيلتس بس: اختبارات تدريبية بنفس شكل وتوقيت الاختبار الرسمي.','✈️ You will only see the IELTS section: practice tests in the official format and timing.')}</p>`:''}`;
-  const emailIn=`<label for="accEmail" style="font-weight:800">${L('إيميلك أو رقم جوالك','Your email or mobile number')}</label>
-   <input id="accEmail" type="text" inputmode="email" autocomplete="username" dir="ltr" placeholder="${L('name@example.com أو 05xxxxxxxx','name@example.com or 05xxxxxxxx')}" value="${esc(emailV)}" style="margin:6px 0 14px" ${mode==='edit'?'disabled':''}>`;
+  const emailIn=`<label for="accEmail" style="font-weight:800">${L('إيميلك','Your email')}</label>
+   <input id="accEmail" type="email" autocomplete="email" dir="ltr" placeholder="name@example.com" value="${esc(emailV)}" style="margin:6px 0 14px" ${mode==='edit'?'disabled':''}>`;
   const pinIn=(lbl)=>`<label for="accPin" style="font-weight:800">${lbl}</label>
    <input id="accPin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="6" autocomplete="${mode==='new'?'new-password':'current-password'}" dir="ltr" placeholder="••••" style="margin:6px 0 4px;letter-spacing:6px">`;
   let body='';
@@ -32148,7 +32146,7 @@ function vWelcome(){
   go.onclick=async()=>{
     const email=($('#accEmail').value||'').trim().toLowerCase(), pin=$('#accPin')?$('#accPin').value.trim():'';
     if(mode==='login'){
-      if(!isIdent(email))return err(L('اكتب إيميل صحيح أو رقم جوال إماراتي (05xxxxxxxx)','Enter a valid email or UAE mobile number (05xxxxxxxx)'));
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return err(L('اكتب إيميل صحيح','Enter a valid email'));
       if(!/^[0-9]{4,6}$/.test(pin))return err(L('الرقم السري 4 إلى 6 أرقام','PIN is 4–6 digits'));
       go.disabled=true;err('');
       try{const r=await rpc('acc_login',{p_email:email,p_pin:pin});const a=Array.isArray(r)?r[0]:r;if(!a||a.err||!a.acc_id)throw new Error((a&&a.err)||'no_account');
@@ -32165,7 +32163,7 @@ function vWelcome(){
     if(!pick){err(L('اختر صفك ومسارك','Choose your grade and stream'));gs.focus();return}
     if(!hasContent(pick)){err(L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!'));gs.focus();return}
     if(mode==='edit'){STU={name,grade:STU.grade};store.set('student',STU);stuChip();accSave().then(compAuto);location.hash='home';render();if(store.get('pushOn',false))syncPush();return}
-    if(!isIdent(email))return err(L('اكتب إيميل صحيح أو رقم جوال إماراتي (05xxxxxxxx)','Enter a valid email or UAE mobile number (05xxxxxxxx)'));
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return err(L('اكتب إيميل صحيح','Enter a valid email'));
     if(!/^[0-9]{4,6}$/.test(pin))return err(L('اختر رقم سري من 4 إلى 6 أرقام','Choose a 4–6 digit PIN'));
     go.disabled=true;err('');
     try{STU={name,grade:pick};store.set('student',STU);
