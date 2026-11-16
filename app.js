@@ -57752,7 +57752,7 @@ function regGate(){if(!isGuest()||guestSecs()<GUEST_LIMIT||$('#regModal')||/^#ad
 function isGuest(){return !!(STU&&STU.guest&&!ACC)}
 /* visitor funnel: each step counted once per device per day */
 /* Meta Pixel: stays off until META_PIXEL_ID is set. Sends page views and the key funnel steps (no personal data). */
-const META_PIXEL_ID='1503869041658279';
+const META_PIXEL_ID='1681675853586492';
 (function(){if(!META_PIXEL_ID||!location.protocol.startsWith('http')||/^#admin/.test(location.hash))return;
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq('init',META_PIXEL_ID);fbq('track','PageView')})();
