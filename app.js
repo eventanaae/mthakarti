@@ -57753,14 +57753,14 @@ function isGuest(){return !!(STU&&STU.guest&&!ACC)}
 /* visitor funnel: each step counted once per device per day */
 /* Meta Pixel: stays off until META_PIXEL_ID is set. Sends page views and the key funnel steps (no personal data). */
 const META_PIXEL_ID='1681675853586492';
-(function(){if(!META_PIXEL_ID||!location.protocol.startsWith('http')||/^#admin/.test(location.hash))return;
+(function(){if(window.fbq||!META_PIXEL_ID||!location.protocol.startsWith('http')||/^#admin/.test(location.hash))return;
   !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');
   fbq('init',META_PIXEL_ID);fbq('track','PageView')})();
 function px(s){try{if(!window.fbq)return;const M={guest_start:['track','Lead'],guest_lesson:['trackCustom','OpenLesson'],guest_quiz:['trackCustom','TakeQuiz'],reg_ok:['track','CompleteRegistration']};const m=M[s];if(m)fbq(m[0],m[1])}catch(e){}}
 function step(s){px(s);try{if(!location.protocol.startsWith('http'))return;let d=store.get('devId',null);if(!d){d=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12));store.set('devId',d)}
   const k='mth_st|'+new Date().toDateString()+'|'+s;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}
   rpc('log_step',{p_dev:d,p_step:s}).catch(()=>{})}catch(e){}}
-function guestStart(g,n){GUEST={grade:g,name:n||''};store.set('guest',GUEST);STU=guestStu(g,n);step('guest_start');guestHello();const h=g==='ielts'?'ielts':'home';if(location.hash==='#'+h)render();else location.hash=h}
+function guestStart(g,n){GUEST={grade:g,name:n||''};store.set('guest',GUEST);STU=guestStu(g,n);step('guest_start');guestHello();const cur=location.hash.slice(1);const h=g==='ielts'?'ielts':(cur&&cur.indexOf(g+'-')===0?cur:'home');if(location.hash==='#'+h)render();else location.hash=h}
 function joinPrompt(why){if(/^#admin/.test(location.hash))return;step('join_prompt');welDraft={mode:'new',pick:STU&&STU.grade,why};if(location.hash==='#welcome')render();else location.hash='welcome'}
 /* IELTS is for Grade 12 students and IELTS-only accounts */
 function IEOK(){return !!(STU&&(/^g12/.test(STU.grade)||STU.grade==='ielts'))}

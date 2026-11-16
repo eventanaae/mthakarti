@@ -2,5 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /#admin
 Disallow: /reels/
+Disallow: /ad.html
+Disallow: /rec.html
 
 Sitemap: https://mthakarti.com/sitemap.xml

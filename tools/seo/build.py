@@ -150,7 +150,7 @@ if m:
             f'<tr><td>{e(names.get(k, {}).get("name", k))}</td><td>{d}</td><td>{e(tm)}</td></tr>' for k, d, tm in items) + '</table></div>'
 edesc = f'جدول امتحانات نهاية {TERM} {YEAR} في الإمارات للصف العاشر والثاني عشر (عام ومتقدم)، مع روابط شرح كل مادة على هيكل الامتحان.'
 urls.append(page('exams/', f'جدول امتحانات نهاية {TERM} {YEAR} الإمارات – العاشر والثاني عشر | مذاكرتي', edesc,
-                 f'<h1>جدول امتحانات نهاية {TERM} {YEAR}</h1><p>{e(edesc)}</p>{rows}<a class="cta" href="/?utm_source=google&utm_medium=organic&utm_campaign=exams#exams">🔔 فعّل تذكير الامتحانات وذاكر مجانًا</a><p><a href="/lessons/">📚 شرح كل المواد</a></p>',
+                 f'<h1>جدول امتحانات نهاية {TERM} {YEAR}</h1><p>{e(edesc)}</p>{rows}<div class="trap">⚠️ <b>تنبيه:</b> وزارة التربية والتعليم نبّهت إن بعض الجداول المتداولة في السوشال ميديا مب رسمية. هالجدول للمساعدة في التخطيط، وتأكد دايمًا من مدرستك ومن <a href="https://www.moe.gov.ae/">موقع الوزارة</a> قبل الامتحان.</div><a class="cta" href="/?utm_source=google&utm_medium=organic&utm_campaign=exams#exams">🔔 فعّل تذكير الامتحانات وذاكر مجانًا</a><p><a href="/lessons/">📚 شرح كل المواد</a></p>',
                  [('مذاكرتي', ''), ('جدول الامتحانات', 'exams/')], []))
 
 
