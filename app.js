@@ -57983,7 +57983,7 @@ function vWelcome(target){
     try{STU={name,grade:pick};
       const r=await rpc('acc_register',{p_email:email,p_pin:pin,p_name:name,p_grade:pick,p_lang:LANG,p_data:accDump()});const a=Array.isArray(r)?r[0]:r;
       const back=['compete','assistant','alef'].includes(dr.why)?dr.why:(store.get('guestLast',null)||'');
-      store.set('student',STU);store.set('guest',null);store.set('guestLast',null);store.set('guestSecs',0);GUEST=null;step('reg_ok');
+      store.set('student',STU);store.set('guest',null);store.set('guestLast',null);store.set('guestSecs',0);GUEST=null;step('reg_ok');try{if(a&&a.acc_id)fetch(SB_URL+'/functions/v1/mailer',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify({kind:'welcome',acc_id:a.acc_id,acc_secret:a.acc_secret})}).catch(()=>{})}catch(e){}
       ACC={id:a.acc_id,secret:a.acc_secret,email};store.set('acct',ACC);accSave().then(compAuto);verCheck();
       rpc('guest_link',{p_dev:devId(),p_acc:ACC.id,p_secret:ACC.secret}).catch(()=>{});
       {const rm=$('#regModal');if(rm){rm.remove();document.body.style.overflow=''}}
