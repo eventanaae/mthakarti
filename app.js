@@ -58546,6 +58546,45 @@ function logVisit(){try{if(!location.protocol.startsWith('http'))return;let d=st
   const base={p_dev:d,p_grade:STU&&STU.grade||null,p_lang:LANG,p_acc:!!ACC};
   (u.s?rpc('log_visit_src',Object.assign({p_src:u.s,p_med:u.m||null,p_camp:u.c||null},base)).catch(()=>rpc('log_visit',base)):rpc('log_visit',base)).then(()=>store.set('lastVisit',k)).catch(()=>{})}catch(e){}}
 setTimeout(logVisit,4000);
+
+/* ===== Study timer (student idea: Amna, G10 Adv): pick study + break minutes; finishing a study block earns points (server-checked) ===== */
+const FOC={t:null};
+function focState(){return store.get('focus',null)}
+function focSave(v){store.set('focus',v);focBar()}
+function focOpen(){focusOpen()}
+function focusOpen(){if($('#focModal'))return;const st=focState();
+  const m=document.createElement('div');m.id='focModal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
+  m.style.cssText='position:fixed;inset:0;z-index:9998;background:rgba(20,10,20,.55);display:flex;align-items:center;justify-content:center;padding:16px';
+  const ch=(id,vals,def)=>`<div class="row" style="gap:6px;flex-wrap:wrap;justify-content:center">${vals.map(v=>`<button type="button" class="${v===def?'pri':'ghost'}" data-g="${id}" data-v="${v}" style="min-width:64px">${v} ${L('د','min')}</button>`).join('')}</div>`;
+  m.innerHTML=`<div class="card" style="max-width:420px;width:100%;text-align:center"><h2 style="margin-top:0">⏱️ ${L('مؤقت المذاكرة','Study timer')}</h2>
+   ${st?`<p>${st.phase==='study'?L('أنت الحين في وقت المذاكرة 📚','You are in a study block 📚'):L('أنت الحين في وقت الراحة ☕','You are on a break ☕')}</p><button class="ghost" style="width:100%" id="focStop">${L('إيقاف المؤقت','Stop the timer')}</button>`:
+   `<p class="mut" style="margin-top:0">${L('اختار وقت المذاكرة ووقت الراحة. لما يخلص وقت المذاكرة تاخذ نقاط 🏆','Pick study and break time. Finish the study block to earn points 🏆')}</p>
+   <b>${L('وقت المذاكرة','Study')}</b>${ch('s',[15,25,45,60],25)}<b style="display:block;margin-top:12px">${L('وقت الراحة','Break')}</b>${ch('b',[5,10,15],5)}
+   <p class="mut" style="font-size:13px">${ACC?L('كل 5 دقايق مذاكرة = نقطة (لين 40 نقطة باليوم)','Every 5 study minutes = 1 point (up to 40 a day)'):L('سجّل عشان تاخذ نقاط على وقت مذاكرتك','Sign up to earn points for your study time')}</p>
+   <button class="pri" style="width:100%" id="focGo">${L('ابدأ المذاكرة ▶️','Start studying ▶️')}</button>`}
+   <button class="ghost" style="width:100%;margin-top:8px" id="focClose">${L('سكّر','Close')}</button></div>`;
+  document.body.appendChild(m);const sel={s:25,b:5};
+  m.querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{sel[b.dataset.g]=+b.dataset.v;m.querySelectorAll(`[data-g="${b.dataset.g}"]`).forEach(x=>x.className=x===b?'pri':'ghost')});
+  $('#focClose').onclick=()=>m.remove();
+  if($('#focStop'))$('#focStop').onclick=()=>{focSave(null);m.remove();toast(L('وقّفنا المؤقت','Timer stopped'))};
+  if($('#focGo'))$('#focGo').onclick=async()=>{let sid=null;
+    if(ACC){try{sid=await rpc('focus_start',{p_acc:ACC.id,p_secret:ACC.secret,p_mins:sel.s,p_subj:ctx&&ctx.subj||null})}catch(e){}}
+    focSave({phase:'study',s:sel.s,b:sel.b,end:Date.now()+sel.s*60000,sid});m.remove();try{step('focus_start')}catch(e){}
+    toast(L(`يالله! ${sel.s} دقيقة مذاكرة 📚`,`Go! ${sel.s} minutes of study 📚`))}}
+function focBeep(){try{const a=new (window.AudioContext||window.webkitAudioContext)(),o=a.createOscillator(),g=a.createGain();o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.value=.15;o.start();setTimeout(()=>{o.stop();a.close()},450)}catch(e){}try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}}
+async function focTick(){const st=focState();focBar();if(!st)return;if(Date.now()<st.end)return;
+  if(st.phase==='study'){focBeep();let msg=L('خلص وقت المذاكرة! 👏 وقت الراحة ☕','Study block done! 👏 Break time ☕');
+    if(ACC&&st.sid){try{const v=await rpc('focus_done',{p_acc:ACC.id,p_secret:ACC.secret,p_id:st.sid});
+      if(typeof v==='number'&&v>=0){msg=L(`+${Math.max(1,Math.floor(st.s/5))} نقطة 🏆 خلص وقت المذاكرة! وقت الراحة ☕`,`+${Math.max(1,Math.floor(st.s/5))} points 🏆 Study block done! Break time ☕`);if(COMP.me){COMP.me.points=v;store.set('compMe',COMP.me);const m=$('#myPts');if(m)m.textContent=v}}
+      else if(v===-3)msg=L('خلص وقت المذاكرة 👏 (وصلت حد نقاط المؤقت اليوم) وقت الراحة ☕','Study block done 👏 (daily timer points reached) Break time ☕')}catch(e){}}
+    try{step('focus_done')}catch(e){}toast(msg);focSave({phase:'break',s:st.s,b:st.b,end:Date.now()+st.b*60000,sid:null})}
+  else{focBeep();toast(L('خلصت الراحة! نرجع نذاكر؟ ⏱️','Break over! Back to study? ⏱️'));focSave(null);setTimeout(focusOpen,600)}}
+function focBar(){let b=$('#focBar');const st=focState();
+  if(!st){if(b)b.remove();const fb=$('#focusBtn');if(fb)fb.textContent='⏱️';return}
+  if(!b){b=document.createElement('div');b.id='focBar';b.onclick=focusOpen;b.style.cssText='position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 64px);z-index:60;background:var(--pink);color:#fff;border-radius:99px;padding:6px 14px;font-weight:800;box-shadow:0 4px 14px rgba(0,0,0,.18);cursor:pointer;font-variant-numeric:tabular-nums';document.body.appendChild(b)}
+  const left=Math.max(0,st.end-Date.now()),mm=Math.floor(left/60000),ss=Math.floor(left%60000/1000);
+  b.textContent=`${st.phase==='study'?'📚':'☕'} ${mm}:${String(ss).padStart(2,'0')}`;const fb=$('#focusBtn');if(fb)fb.textContent=st.phase==='study'?'📚':'☕'}
+FOC.t=setInterval(focTick,1000);setTimeout(focBar,500);
 /* replies from the owner to a student's suggestion: shown once, inside the site */
 async function checkReplies(){try{if(!location.protocol.startsWith('http')||/^#admin/.test(location.hash)||$('#replyModal'))return;
   const r=await rpc('my_replies',{p_dev:devId(),p_acc:ACC?ACC.id:null,p_secret:ACC?ACC.secret:null});if(!r||!r.length)return;
