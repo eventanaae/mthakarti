@@ -58815,7 +58815,7 @@ function utmGet(){try{const q=new URLSearchParams(location.search),r=document.re
 function logVisit(){try{if(!location.protocol.startsWith('http'))return;let d=store.get('devId',null);if(!d){d=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12));store.set('devId',d)}
   const u=utmGet(),k='visit|'+new Date().toDateString()+'|'+(STU&&STU.grade||'')+'|'+(ACC?1:0)+'|'+(u.s||'');if(store.get('lastVisit',null)===k)return;
   const base={p_dev:d,p_grade:STU&&STU.grade||null,p_lang:LANG,p_acc:!!ACC};
-  rpc('log_visit',u.s?Object.assign({p_src:u.s,p_med:u.m||null,p_camp:u.c||null},base):base).catch(e=>u.s?rpc('log_visit',base):Promise.reject(e)).then(()=>store.set('lastVisit',k)).catch(()=>{})}catch(e){}}
+  (u.s?rpc('log_visit_src',Object.assign({p_src:u.s,p_med:u.m||null,p_camp:u.c||null},base)).catch(()=>rpc('log_visit',base)):rpc('log_visit',base)).then(()=>store.set('lastVisit',k)).catch(()=>{})}catch(e){}}
 setTimeout(logVisit,4000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')logVisit()});
 /* time on site: count seconds while the page is visible and the student was active in the last 2 minutes; send every minute */
 (function(){let acc=0,lastAct=Date.now();['pointerdown','keydown','scroll','touchstart'].forEach(e=>addEventListener(e,()=>{lastAct=Date.now()},{passive:true}));
