@@ -58798,10 +58798,18 @@ function examStrip(){
     <div class="exgrid">${EL.filter(e=>e.n<=15).map(e=>`<div class="exi ${e.n<=3?'soon':''}"><span class="exic">${e.s.icon}</span><span class="exn">${nm(e.k)}</span><span class="exd">${WHEN(e.n)}</span></div>`).join('')}</div></div>`;
 }
 /* Owner-only page: paste the Anthropic API key once (needs the admin code) */
+/* where the visitor came from: utm_* in the link (or instagram/facebook referrer), kept 30 days as first touch */
+function utmGet(){try{const q=new URLSearchParams(location.search),r=document.referrer||'';let u=null;
+  if(q.get('utm_source'))u={s:q.get('utm_source'),m:q.get('utm_medium')||'',c:q.get('utm_campaign')||''};
+  else if(q.get('fbclid')||/facebook\.com|fb\.com/.test(r))u={s:'facebook',m:'referral',c:''};
+  else if(/instagram\.com/.test(r))u={s:'instagram',m:'referral',c:''};
+  const o=store.get('utm',null);if(u&&(!o||Date.now()-o.t>2592e6)){u.t=Date.now();store.set('utm',u);return u}
+  return o&&Date.now()-o.t<=2592e6?o:{}}catch(e){return {}}}
 /* anonymous daily visit counter (one row per device per day) for the owner dashboard */
 function logVisit(){try{if(!location.protocol.startsWith('http'))return;let d=store.get('devId',null);if(!d){d=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12));store.set('devId',d)}
-  const k='visit|'+new Date().toDateString()+'|'+(STU&&STU.grade||'')+'|'+(ACC?1:0);if(store.get('lastVisit',null)===k)return;
-  rpc('log_visit',{p_dev:d,p_grade:STU&&STU.grade||null,p_lang:LANG,p_acc:!!ACC}).then(()=>store.set('lastVisit',k)).catch(()=>{})}catch(e){}}
+  const u=utmGet(),k='visit|'+new Date().toDateString()+'|'+(STU&&STU.grade||'')+'|'+(ACC?1:0)+'|'+(u.s||'');if(store.get('lastVisit',null)===k)return;
+  const base={p_dev:d,p_grade:STU&&STU.grade||null,p_lang:LANG,p_acc:!!ACC};
+  rpc('log_visit',u.s?Object.assign({p_src:u.s,p_med:u.m||null,p_camp:u.c||null},base):base).catch(e=>u.s?rpc('log_visit',base):Promise.reject(e)).then(()=>store.set('lastVisit',k)).catch(()=>{})}catch(e){}}
 setTimeout(logVisit,4000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')logVisit()});
 /* time on site: count seconds while the page is visible and the student was active in the last 2 minutes; send every minute */
 (function(){let acc=0,lastAct=Date.now();['pointerdown','keydown','scroll','touchstart'].forEach(e=>addEventListener(e,()=>{lastAct=Date.now()},{passive:true}));
@@ -58875,7 +58883,7 @@ async function vAdmin(){
   if(ADM.s)admShow();
   admLoad();
 }
-async function admLoad(){try{const [s,w,pt,fn]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_funnel',{p_code:ADM.tok}).catch(()=>null)]);ADM.fn=fn;ADM.g=await rpc('admin_guests',{p_code:ADM.tok}).catch(()=>[]);ADM.fb=await rpc('admin_feedback',{p_code:ADM.tok}).catch(()=>[]);
+async function admLoad(){try{const [s,w,pt,fn]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_funnel',{p_code:ADM.tok}).catch(()=>null)]);ADM.fn=fn;ADM.g=await rpc('admin_guests',{p_code:ADM.tok}).catch(()=>[]);ADM.fb=await rpc('admin_feedback',{p_code:ADM.tok}).catch(()=>[]);ADM.utm=await rpc('admin_utm',{p_code:ADM.tok}).catch(()=>null);
   const pm={};(pt||[]).forEach(r=>{pm[(r.email||'').toLowerCase()]=r});(s.students||[]).forEach(r=>{const p=pm[(r.email||'').toLowerCase()];r.pts=p?p.points:0;r.wk=p?p.week:0});
   ADM.s=s;ADM.w=w||[];admShow()}
   catch(e){if(/bad_code/.test(e.message)){admSetTok('');return admLoginView(L('انتهت الجلسة، سجّلي دخول مرة ثانية','Session expired, please sign in again'))}const b=$('#admBody');if(b)b.innerHTML=`<p style="color:var(--bad)">${admErr(e)}</p>`}}
@@ -58902,7 +58910,14 @@ function admShow(){const b=$('#admBody');if(!b)return;document.querySelectorAll(
      <div class="adm-box"><h3>🏫 ${L('الحسابات حسب الصف','Accounts by grade')}</h3>${bars(s.acc_grades)}</div>
      <div class="adm-box"><h3>🏫 ${L('الزوار حسب الصف (7 أيام)','Visitors by grade (7 days)')}</h3>${bars(s.visit_grades_7d)}</div>
      ${admFunnel()}
+     ${admUtm()}
     </div>`}
+/* where visitors came from (utm links: instagram bio, reels, meta ads), last 30 days */
+function admUtm(){const u=ADM.utm;if(!u)return '';const NM={direct:L('مباشر / بحث','Direct / search'),instagram:'Instagram',facebook:'Facebook',meta:'Meta Ads',tiktok:'TikTok',whatsapp:'WhatsApp'};
+  return `<div class="adm-box"><h3>🔗 ${L('من وين جو الزوار (30 يوم)','Where visitors came from (30 days)')}</h3>
+   <div class="adm-bar" style="grid-template-columns:1fr 44px 44px 44px 44px;font-weight:800;font-size:12px;color:var(--mut)"><span></span><span style="text-align:center">${L('اليوم','Today')}</span><span style="text-align:center">${L('7 أيام','7d')}</span><span style="text-align:center">30</span><span style="text-align:center">${L('سجّلوا','Signed')}</span></div>
+   ${u.length?u.map(r=>`<div class="adm-bar" style="grid-template-columns:1fr 44px 44px 44px 44px"><span style="overflow:hidden;text-overflow:ellipsis" title="${esc(r.src+' / '+r.med+' / '+r.camp)}">${esc(NM[r.src]||r.src)}${r.med?` <small class="mut">${esc(r.med)}</small>`:''}${r.camp?` <small class="mut">· ${esc(r.camp)}</small>`:''}</span><b style="text-align:center">${r.today}</b><b style="text-align:center">${r.d7}</b><b style="text-align:center">${r.d30}</b><b style="text-align:center;color:var(--mint)">${r.acc}</b></div>`).join(''):`<p class="mut">${L('ما في بيانات للحين','No data yet')}</p>`}
+   <p class="mut" style="font-size:12px;margin:8px 0 0">${L('كل جهاز ينحسب مرة باليوم. «سجّلوا» = عندهم حساب.','Each device counts once a day. "Signed" = has an account.')}</p></div>`}
 /* visitor journey: how many devices reached each step (today / 7 days) */
 function admFunnel(){const f=ADM.fn;if(!f)return '';const T=f.today||{},W=f.d7||{};
   const rows=[['welcome_view',L('شافوا صفحة التسجيل','Saw the sign-up page')],['guest_start',L('جرّبوا كزوار','Tried as a guest')],['guest_lesson',L('زوار فتحوا درس','Guests opened a lesson')],['guest_quiz',L('زوار حلّوا كويز','Guests took a quiz')],['join_prompt',L('زوار انطلب منهم التسجيل','Guests asked to sign up')],['form_focus',L('بدوا يكتبون في الاستمارة','Started filling the form')],['reg_submit',L('ضغطوا «سجّل»','Pressed “Register”')],['reg_ok',L('سجّلوا بنجاح ✅','Signed up ✅')],['login_ok',L('دخلوا بحساب قديم','Signed in to an existing account')]];
