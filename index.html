@@ -57987,7 +57987,7 @@ function render(){
   const sameRoute=route===h; route=h; if(!sameRoute){window.scrollTo(0,0);const v0=$('#view');if(v0)v0.style.minHeight=''} /* re-rendering the same page (term switch, language) keeps your place */
   stuChip();
   { const p=$('#notifPanel'); if(p) p.remove(); }
-  if(h==='admin'){$('#fab').classList.add('hidden');return vAdmin();}
+  if(h==='admin'){$('#fab').classList.add('hidden');{const rm=$('#regModal');if(rm){rm.remove();document.body.style.overflow=''}}return vAdmin();}
   const IEO=!!(STU&&STU.grade==='ielts'); /* IELTS-only accounts: no school subjects, no competition */
   if(!STU||(!ACC&&!STU.guest)||(!GR[STU.grade]&&!IEO)||h==='welcome'){$('#fab').classList.add('hidden');return vWelcome();}
   if(VER.need){$('#fab').classList.add('hidden');return vVerify();}
@@ -58024,7 +58024,7 @@ function guestSecs(){return +store.get('guestSecs',0)||0}
 function devId(){let d=store.get('devId',null);if(!d){d=(crypto.randomUUID?crypto.randomUUID():Date.now().toString(36)+Math.random().toString(36).slice(2,12));store.set('devId',d)}return d}
 function guestHello(){try{if(!location.protocol.startsWith('http')||!GUEST)return;rpc('guest_hello',{p_dev:devId(),p_name:GUEST.name||null,p_grade:GUEST.grade||null,p_secs:guestSecs()}).catch(()=>{})}catch(e){}}
 /* sign-up pop-up after 5 minutes: cannot be closed; name and grade are already filled in */
-function regGate(){if(!isGuest()||guestSecs()<GUEST_LIMIT||$('#regModal'))return;step('reg_gate');guestHello();
+function regGate(){if(!isGuest()||guestSecs()<GUEST_LIMIT||$('#regModal')||/^#admin/.test(location.hash))return;step('reg_gate');guestHello();
   const m=document.createElement('div');m.id='regModal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
   m.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(40,20,32,.55);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 12px';
   m.innerHTML='<div id="regBox" style="width:100%;max-width:560px"></div>';document.body.appendChild(m);document.body.style.overflow='hidden';
@@ -58041,7 +58041,7 @@ function step(s){px(s);try{if(!location.protocol.startsWith('http'))return;let d
   const k='mth_st|'+new Date().toDateString()+'|'+s;try{if(sessionStorage.getItem(k))return;sessionStorage.setItem(k,'1')}catch(e){}
   rpc('log_step',{p_dev:d,p_step:s}).catch(()=>{})}catch(e){}}
 function guestStart(g,n){GUEST={grade:g,name:n||''};store.set('guest',GUEST);STU=guestStu(g,n);step('guest_start');guestHello();const h=g==='ielts'?'ielts':'home';if(location.hash==='#'+h)render();else location.hash=h}
-function joinPrompt(why){step('join_prompt');welDraft={mode:'new',pick:STU&&STU.grade,why};if(location.hash==='#welcome')render();else location.hash='welcome'}
+function joinPrompt(why){if(/^#admin/.test(location.hash))return;step('join_prompt');welDraft={mode:'new',pick:STU&&STU.grade,why};if(location.hash==='#welcome')render();else location.hash='welcome'}
 /* IELTS is for Grade 12 students and IELTS-only accounts */
 function IEOK(){return !!(STU&&(/^g12/.test(STU.grade)||STU.grade==='ielts'))}
 function stuChip(){const c=$('#stuChip');if(!c)return;if(STU&&STU.guest&&!ACC){c.classList.remove('hidden');c.textContent='👤 '+(GUEST&&GUEST.name?GUEST.name+' · ':'')+L('زائر · سجّل','Guest · Sign up');return}if(STU&&STU.grade==='ielts'){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+L('آيلتس','IELTS');return}if(STU&&GR[STU.grade]){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+GR[STU.grade].short}else c.classList.add('hidden')}
