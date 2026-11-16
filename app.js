@@ -58611,7 +58611,7 @@ async function checkReplies(){try{if(!location.protocol.startsWith('http')||/^#a
     <button class="pri" style="width:100%" id="replyOk">${L('شكرًا 💗','Thanks 💗')}</button></div>`;
   document.body.appendChild(m);
   $('#replyOk').onclick=()=>{m.remove();rpc('my_replies_seen',{p_dev:devId(),p_acc:ACC?ACC.id:null,p_secret:ACC?ACC.secret:null,p_ids:r.map(x=>x.id)}).catch(()=>{})}}catch(e){}}
-setTimeout(checkReplies,5000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(checkReplies,1500)});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')logVisit()});
+setTimeout(checkReplies,5000);setTimeout(()=>{try{if(store.get('pushOn',false)&&!store.get('pushDev',false)&&STU&&typeof syncPush==='function')syncPush().then(ok=>{if(ok)store.set('pushDev',true)})}catch(e){}},7000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(checkReplies,1500)});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')logVisit()});
 /* time on site: count seconds while the page is visible and the student was active in the last 2 minutes; send every minute */
 (function(){let acc=0,lastAct=Date.now();['pointerdown','keydown','scroll','touchstart'].forEach(e=>addEventListener(e,()=>{lastAct=Date.now()},{passive:true}));
   const send=()=>{if(acc<5||!location.protocol.startsWith('http'))return;const d=store.get('devId',null);if(!d)return;const s=Math.min(acc,120);acc=0;
@@ -58760,7 +58760,9 @@ function admFeedback(b){const f=ADM.fb||[];const KN={idea:L('💡 فكرة','�
        :`<div style="margin-top:8px"><textarea id="fbr${x.id}" rows="2" placeholder="${L('اكتبي ردج… يوصله داخل الموقع أول ما يفتحه','Write a reply… they get it inside the site next time they open it')}" style="width:100%;margin:0"></textarea><button class="pri" style="margin-top:6px" onclick="admFbReply(${x.id})">${L('أرسلي الرد 💬','Send reply 💬')}</button></div>`}
      <label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-size:14px;cursor:pointer"><input type="checkbox" ${x.done?'checked':''} onchange="admFbDone(${x.id},this.checked)" style="width:auto;margin:0"> ${L('تم التعامل معها','Handled')}</label></div>`).join('')}</div>`:`<p class="mut">${L('ما وصلت رسايل للحين.','No messages yet.')}</p>`}`}
 async function admFbReply(id){const t=$('#fbr'+id),v=(t&&t.value||'').trim();if(!v){toast(L('اكتبي الرد أول','Write a reply first'));return}
-  try{const r=await rpc('admin_feedback_reply',{p_code:ADM.tok,p_id:id,p_reply:v});if(r!=='ok')throw new Error(r);const x=(ADM.fb||[]).find(y=>y.id===id);if(x){x.reply=v;x.reply_seen=false;x.done=true}toast(L('✅ انرسل! بيوصله أول ما يفتح الموقع','✅ Sent! They will see it next time they open the site'));admShow()}
+  try{const r=await rpc('admin_feedback_reply',{p_code:ADM.tok,p_id:id,p_reply:v});if(r!=='ok')throw new Error(r);const x=(ADM.fb||[]).find(y=>y.id===id);if(x){x.reply=v;x.reply_seen=false;x.done=true}admShow();
+  let pushed=0;try{const pr=await fetch(SB_URL+'/functions/v1/reply-push',{method:'POST',headers:{'Content-Type':'application/json',apikey:SB_KEY,Authorization:'Bearer '+SB_KEY},body:JSON.stringify({code:ADM.tok,id})});const pj=await pr.json();pushed=pj&&pj.sent||0}catch(e){}
+  toast(pushed?L('✅ انرسل، ووصله إشعار على جواله 🔔','✅ Sent, and they got a phone notification 🔔'):L('✅ انرسل! بيوصله أول ما يفتح الموقع','✅ Sent! They will see it next time they open the site'))}
   catch(e){toast(L('ما انرسل، جربي مرة ثانية','Not sent, please try again'))}}
 async function admFbDone(id,v){try{await rpc('admin_feedback_done',{p_code:ADM.tok,p_id:id,p_done:v});const x=(ADM.fb||[]).find(y=>y.id===id);if(x)x.done=v;admShow()}catch(e){toast(L('صار خطأ','Something went wrong'))}}
 function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl .adm-sc').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q)?'':'none'})}
@@ -58830,7 +58832,7 @@ const isStandalone=()=>matchMedia('(display-mode: standalone)').matches||navigat
 function b64u(s){const p='='.repeat((4-s.length%4)%4);const b=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));return Uint8Array.from(b,c=>c.charCodeAt(0))}
 async function syncPush(){
   try{if(!('serviceWorker' in navigator)||!STU)return false;const reg=await navigator.serviceWorker.getRegistration();if(!reg)return false;const sub=await reg.pushManager.getSubscription();if(!sub)return false;
-    const j=sub.toJSON();await rpc('save_push',{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_grade:STU.grade,p_name:STU.name,p_lang:LANG});return true}catch(e){return false}
+    const j=sub.toJSON();await rpc('save_push',{p_endpoint:j.endpoint,p_p256dh:j.keys.p256dh,p_auth:j.keys.auth,p_grade:STU.grade,p_name:STU.name,p_lang:LANG});rpc('save_push_dev',{p_endpoint:j.endpoint,p_dev:devId()}).catch(()=>{});return true}catch(e){return false}
 }
 async function enableNotif(){
   if(isIOS()&&!isStandalone()){
