@@ -55,8 +55,8 @@ def page(path, title, desc, body, crumbs, jsonld, canonical=None):
 <link rel="icon" href="/icon-192.png"><meta name="theme-color" content="#ef5d98"><style>{CSS}</style>{lds}</head><body>
 <header><a class="logo" href="/">مذاكرتي.</a><a href="/lessons/">📚 كل الدروس</a></header>
 <main><nav class="crumbs">{cr}</nav>{body}</main>
-<footer><p>مذاكرتي: منصة مذاكرة مجانية لطلاب الإمارات. دروس على هيكل امتحانات وزارة التربية والتعليم، وكويز بعد كل درس، ومدرس خصوصي ذكي، ومسابقة أسبوعية.</p>
-<p><a href="/lessons/">كل الدروس</a> · <a href="/exams/">جدول الامتحانات</a> · <a href="/privacy.html">الخصوصية</a></p></footer></body></html>"""
+<footer><p>مذاكرتي: منصة مذاكرة مجانية سوّتها بنت إماراتية لطلاب الإمارات من صف 9 لين 12. دروس على هيكل امتحانات وزارة التربية والتعليم، وكويز بعد كل درس، ومدرس خصوصي ذكي، ومسابقة أسبوعية.</p>
+<p><a href="/lessons/">كل الدروس</a> · <a href="/exam-structure/">هيكل الامتحانات</a> · <a href="/exams/">جدول الامتحانات</a> · <a href="/about/">من سوّى مذاكرتي؟</a> · <a href="https://www.instagram.com/mthakarti/">إنستغرام</a></p></footer></body></html>"""
     out = os.path.join(ROOT, path, 'index.html') if path.endswith('/') or path == '' else os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     open(out, 'w', encoding='utf-8').write(doc)
@@ -68,7 +68,7 @@ def app_link(g, k=None, i=None, camp='lesson'):
     return f'/?utm_source=google&utm_medium=organic&utm_campaign={camp}#{h}'
 
 
-for d in ('lessons', 'exams'):
+for d in ('lessons', 'exams', 'exam-structure', 'about'):
     shutil.rmtree(os.path.join(ROOT, d), ignore_errors=True)
 
 urls = []
@@ -152,6 +152,34 @@ edesc = f'جدول امتحانات نهاية {TERM} {YEAR} في الإمارا
 urls.append(page('exams/', f'جدول امتحانات نهاية {TERM} {YEAR} الإمارات – العاشر والثاني عشر | مذاكرتي', edesc,
                  f'<h1>جدول امتحانات نهاية {TERM} {YEAR}</h1><p>{e(edesc)}</p>{rows}<a class="cta" href="/?utm_source=google&utm_medium=organic&utm_campaign=exams#exams">🔔 فعّل تذكير الامتحانات وذاكر مجانًا</a><p><a href="/lessons/">📚 شرح كل المواد</a></p>',
                  [('مذاكرتي', ''), ('جدول الامتحانات', 'exams/')], []))
+
+
+# exam-structure hub: every subject of every grade with its structure references
+hs = ''
+for g, gd in data.items():
+    gname = GN.get(g) or gd.get('name', g)
+    gslug = GS.get(g) or g
+    items = ''
+    for k, s in gd['subj'].items():
+        refs = [t.get('q') for t in s['T'] if t.get('q')]
+        items += f'<li><a href="/lessons/{gslug}/{k}/">{s.get("icon","📘")} هيكل امتحان {e(s["name"])}</a> <small>({len(s["T"])} درس{"، " + str(len(refs)) + " بند من الهيكل" if refs else ""})</small></li>'
+    hs += f'<h2>{e(gname)}</h2><ul class="list">{items}</ul>'
+hdesc2 = f'هياكل امتحانات وزارة التربية والتعليم في الإمارات {TERM} {YEAR} لكل المواد، من صف 9 لين 12 عام ومتقدم، مع شرح كل بند في الهيكل وأسئلة عليه. مجانًا.'
+urls.append(page('exam-structure/', f'هيكل امتحانات الإمارات {TERM} {YEAR} – كل المواد صف 9-12 | مذاكرتي', hdesc2,
+                 f'<h1>هيكل امتحانات {TERM} {YEAR}</h1><p>{e(hdesc2)}</p><a class="cta" href="/?utm_source=google&utm_medium=organic&utm_campaign=structure">ذاكر على الهيكل مجانًا</a>{hs}<p><a href="/exams/">📅 جدول الامتحانات</a></p>',
+                 [('مذاكرتي', ''), ('هيكل الامتحانات', 'exam-structure/')], []))
+
+# about page (trust: who made it and why)
+adesc = 'مذاكرتي منصة مذاكرة مجانية سوّتها بنت إماراتية عشان تساعد طلاب الإمارات من صف 9 لين 12: دروس على هيكل الامتحان، وكويزات، ومدرس خصوصي ذكي، ومسابقة كل أسبوع.'
+urls.append(page('about/', 'من سوّى مذاكرتي؟ منصة مجانية من بنت إماراتية لطلاب الإمارات | مذاكرتي', adesc,
+                 f"""<h1>من سوّى مذاكرتي؟</h1>
+<p>مذاكرتي سوّتها <b>بنت إماراتية</b> عشان تساعد طلاب الإمارات. كانت المذاكرة من ملفات وقروبات مبعثرة، وما تدري وش المهم في الامتحان. فجمعت كل شي في مكان واحد، مرتب على <b>هيكل امتحان وزارة التربية والتعليم</b>، و<b>مجاني 100%</b>.</p>
+<h2>وش تلقى في مذاكرتي؟</h2><ul class="list"><li>📚 دروس ومراجعات لكل المواد، من صف 9 لين 12، عام ومتقدم.</li><li>✅ كويز بعد كل درس، وامتحانات تجريبية.</li><li>🤖 مدرس خصوصي ذكي يرد على أسئلتك.</li><li>🏆 مسابقة كل أسبوع مع طلاب مرحلتك في كل الإمارات.</li><li>🔔 تذكير بالامتحانات وجدولها.</li></ul>
+<a class="cta" href="/?utm_source=google&utm_medium=organic&utm_campaign=about">ابدأ مجانًا</a>
+<p>تابعونا على إنستغرام: <a href="https://www.instagram.com/mthakarti/">@mthakarti</a></p>""",
+                 [('مذاكرتي', ''), ('من نحن', 'about/')],
+                 [{"@context": "https://schema.org", "@type": "AboutPage", "name": "من سوّى مذاكرتي؟", "description": adesc,
+                   "about": {"@type": "EducationalOrganization", "name": "مذاكرتي", "url": SITE, "sameAs": ["https://www.instagram.com/mthakarti/"]}}]))
 
 # sitemap
 sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', f'<url><loc>{SITE}/</loc><lastmod>{TODAY}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>']
