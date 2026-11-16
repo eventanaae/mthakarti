@@ -58545,7 +58545,18 @@ function logVisit(){try{if(!location.protocol.startsWith('http'))return;let d=st
   const u=utmGet(),k='visit|'+new Date().toDateString()+'|'+(STU&&STU.grade||'')+'|'+(ACC?1:0)+'|'+(u.s||'');if(store.get('lastVisit',null)===k)return;
   const base={p_dev:d,p_grade:STU&&STU.grade||null,p_lang:LANG,p_acc:!!ACC};
   (u.s?rpc('log_visit_src',Object.assign({p_src:u.s,p_med:u.m||null,p_camp:u.c||null},base)).catch(()=>rpc('log_visit',base)):rpc('log_visit',base)).then(()=>store.set('lastVisit',k)).catch(()=>{})}catch(e){}}
-setTimeout(logVisit,4000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')logVisit()});
+setTimeout(logVisit,4000);
+/* replies from the owner to a student's suggestion: shown once, inside the site */
+async function checkReplies(){try{if(!location.protocol.startsWith('http')||/^#admin/.test(location.hash)||$('#replyModal'))return;
+  const r=await rpc('my_replies',{p_dev:devId(),p_acc:ACC?ACC.id:null,p_secret:ACC?ACC.secret:null});if(!r||!r.length)return;
+  const m=document.createElement('div');m.id='replyModal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
+  m.style.cssText='position:fixed;inset:0;z-index:9999;background:rgba(20,10,20,.55);display:flex;align-items:center;justify-content:center;padding:16px';
+  m.innerHTML=`<div class="card" style="max-width:460px;width:100%;max-height:85vh;overflow:auto"><h2 style="margin-top:0">💌 ${L('وصلك رد على اقتراحك!','You got a reply to your suggestion!')}</h2>
+    ${r.map(x=>`<div style="margin:10px 0"><div class="mut" style="font-size:13px;white-space:pre-wrap">${L('اقتراحك:','You wrote:')} ${esc(x.msg).slice(0,300)}</div><div style="margin-top:6px;background:var(--pink-soft);border-radius:12px;padding:10px 12px;white-space:pre-wrap;overflow-wrap:anywhere">${esc(x.reply)}</div><div class="mut" style="font-size:12px;margin-top:4px">${L('من فريق مذاكرتي 💗','From the Mthakarti team 💗')}</div></div>`).join('')}
+    <button class="pri" style="width:100%" id="replyOk">${L('شكرًا 💗','Thanks 💗')}</button></div>`;
+  document.body.appendChild(m);
+  $('#replyOk').onclick=()=>{m.remove();rpc('my_replies_seen',{p_dev:devId(),p_acc:ACC?ACC.id:null,p_secret:ACC?ACC.secret:null,p_ids:r.map(x=>x.id)}).catch(()=>{})}}catch(e){}}
+setTimeout(checkReplies,5000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(checkReplies,1500)});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')logVisit()});
 /* time on site: count seconds while the page is visible and the student was active in the last 2 minutes; send every minute */
 (function(){let acc=0,lastAct=Date.now();['pointerdown','keydown','scroll','touchstart'].forEach(e=>addEventListener(e,()=>{lastAct=Date.now()},{passive:true}));
   const send=()=>{if(acc<5||!location.protocol.startsWith('http'))return;const d=store.get('devId',null);if(!d)return;const s=Math.min(acc,120);acc=0;
@@ -58618,7 +58629,7 @@ async function vAdmin(){
   if(ADM.s)admShow();
   admLoad();
 }
-async function admLoad(){try{const [s,w,pt,fn]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_funnel',{p_code:ADM.tok}).catch(()=>null)]);ADM.fn=fn;ADM.g=await rpc('admin_guests',{p_code:ADM.tok}).catch(()=>[]);ADM.fb=await rpc('admin_feedback',{p_code:ADM.tok}).catch(()=>[]);ADM.utm=await rpc('admin_utm',{p_code:ADM.tok}).catch(()=>null);
+async function admLoad(){try{const [s,w,pt,fn]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_funnel',{p_code:ADM.tok}).catch(()=>null)]);ADM.fn=fn;ADM.g=await rpc('admin_guests',{p_code:ADM.tok}).catch(()=>[]);ADM.fb=await rpc('admin_feedback_v2',{p_code:ADM.tok}).catch(()=>rpc('admin_feedback',{p_code:ADM.tok})).catch(()=>[]);ADM.utm=await rpc('admin_utm',{p_code:ADM.tok}).catch(()=>null);
   const pm={};(pt||[]).forEach(r=>{pm[(r.email||'').toLowerCase()]=r});(s.students||[]).forEach(r=>{const p=pm[(r.email||'').toLowerCase()];r.pts=p?p.points:0;r.wk=p?p.week:0});
   ADM.s=s;ADM.w=w||[];admShow()}
   catch(e){if(/bad_code/.test(e.message)){admSetTok('');return admLoginView(L('انتهت الجلسة، سجّلي دخول مرة ثانية','Session expired, please sign in again'))}const b=$('#admBody');if(b)b.innerHTML=`<p style="color:var(--bad)">${admErr(e)}</p>`}}
@@ -58690,7 +58701,12 @@ function admFeedback(b){const f=ADM.fb||[];const KN={idea:L('💡 فكرة','�
      <div class="adm-sh"><b>${esc(x.name||L('زائر','Guest'))}</b><span class="adm-pill">${KN[x.kind]||esc(x.kind||'')}</span></div>
      <div class="mut" style="font-size:12.5px;margin:2px 0 6px">${esc(admGr(x.grade))}${x.email?` · <span dir="ltr">${esc(x.email)}</span>`:''} · ${admDate(x.created_at)}${x.page?` · <span dir="ltr">${esc(x.page)}</span>`:''}</div>
      <div style="white-space:pre-wrap;overflow-wrap:anywhere">${esc(x.msg)}</div>
+     ${x.reply?`<div style="margin-top:8px;background:var(--pink-soft);border-radius:12px;padding:8px 10px;white-space:pre-wrap;overflow-wrap:anywhere"><b>💬 ${L('ردج:','Your reply:')}</b> ${esc(x.reply)}<div class="mut" style="font-size:12px;margin-top:4px">${x.reply_seen?L('✓ الطالب شاف الرد','✓ Seen by the student'):L('⏳ بيشوفه أول ما يفتح الموقع','⏳ They will see it next time they open the site')}</div></div>`
+       :`<div style="margin-top:8px"><textarea id="fbr${x.id}" rows="2" placeholder="${L('اكتبي ردج… يوصله داخل الموقع أول ما يفتحه','Write a reply… they get it inside the site next time they open it')}" style="width:100%;margin:0"></textarea><button class="pri" style="margin-top:6px" onclick="admFbReply(${x.id})">${L('أرسلي الرد 💬','Send reply 💬')}</button></div>`}
      <label style="display:flex;gap:6px;align-items:center;margin-top:8px;font-size:14px;cursor:pointer"><input type="checkbox" ${x.done?'checked':''} onchange="admFbDone(${x.id},this.checked)" style="width:auto;margin:0"> ${L('تم التعامل معها','Handled')}</label></div>`).join('')}</div>`:`<p class="mut">${L('ما وصلت رسايل للحين.','No messages yet.')}</p>`}`}
+async function admFbReply(id){const t=$('#fbr'+id),v=(t&&t.value||'').trim();if(!v){toast(L('اكتبي الرد أول','Write a reply first'));return}
+  try{const r=await rpc('admin_feedback_reply',{p_code:ADM.tok,p_id:id,p_reply:v});if(r!=='ok')throw new Error(r);const x=(ADM.fb||[]).find(y=>y.id===id);if(x){x.reply=v;x.reply_seen=false;x.done=true}toast(L('✅ انرسل! بيوصله أول ما يفتح الموقع','✅ Sent! They will see it next time they open the site'));admShow()}
+  catch(e){toast(L('ما انرسل، جربي مرة ثانية','Not sent, please try again'))}}
 async function admFbDone(id,v){try{await rpc('admin_feedback_done',{p_code:ADM.tok,p_id:id,p_done:v});const x=(ADM.fb||[]).find(y=>y.id===id);if(x)x.done=v;admShow()}catch(e){toast(L('صار خطأ','Something went wrong'))}}
 function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl .adm-sc').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q)?'':'none'})}
 function admPrize(b){const w=ADM.w||[];
