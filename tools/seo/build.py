@@ -15,8 +15,8 @@ TODAY = datetime.date.today().isoformat()
 data = json.load(open(sys.argv[1], encoding='utf-8'))
 data.pop('err', None)
 
-GN = {'g10g': 'الصف العاشر عام', 'g10a': 'الصف العاشر متقدم', 'g12a': 'الصف الثاني عشر متقدم', 'g12g': 'الصف الثاني عشر عام'}
-GS = {'g10g': 'grade-10-general', 'g10a': 'grade-10-advanced', 'g12a': 'grade-12-advanced', 'g12g': 'grade-12-general'}
+GN = {'g9g': 'الصف التاسع عام', 'g9a': 'الصف التاسع متقدم', 'g11g': 'الصف الحادي عشر عام', 'g11a': 'الصف الحادي عشر متقدم', 'g10g': 'الصف العاشر عام', 'g10a': 'الصف العاشر متقدم', 'g12a': 'الصف الثاني عشر متقدم', 'g12g': 'الصف الثاني عشر عام'}
+GS = {'g9g': 'grade-9-general', 'g9a': 'grade-9-advanced', 'g11g': 'grade-11-general', 'g11a': 'grade-11-advanced', 'g10g': 'grade-10-general', 'g10a': 'grade-10-advanced', 'g12a': 'grade-12-advanced', 'g12g': 'grade-12-general'}
 
 e = html.escape
 
@@ -75,8 +75,8 @@ urls = []
 seen = {}  # identical lesson content across grades -> canonical to first
 hub = []
 for g, gd in data.items():
-    gname = GN[g]
-    gslug = GS[g]
+    gname = GN.get(g) or gd.get('name', g).replace(' · ', ' ')
+    gslug = GS.get(g) or ('grade-' + re.sub(r'\D', '', g) + ('-advanced' if g.endswith('a') else '-general'))
     subj_cards = []
     for k, s in gd['subj'].items():
         sname = s['name']
