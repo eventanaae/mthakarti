@@ -57560,7 +57560,7 @@ function setTerm(n){const v=$('#view'),tb=document.querySelector('.termbar'),top
 function termBar(){return `<div class="tabs termbar" role="tablist" aria-label="${L('الفصل الدراسي','Term')}" style="margin:14px 0 6px">${[1,2,3].map(n=>`<button class="${TERM===n?'on':''}" onclick="setTerm(${n})">📘 ${TERM_NAME(n)}</button>`).join('')}</div>`}
 const NOTERM=()=>`<div class="card" style="text-align:center;background:var(--lav-soft)"><b style="font-size:18px">${L('بعدنا نشتغل على دروس '+TERM_NAME(TERM)+' 🛠️','We’re still working on '+TERM_NAME(TERM)+' lessons 🛠️')}</b><p class="mut">${L('بننزلها أول ما تنشرها المدرسة. حاليًا ذاكر دروس الفصل الأول 📚','We’ll add them as soon as school publishes them. For now, study Term 1 📚')}</p><button class="sec" onclick="setTerm(1)">${TERM_NAME(1)}</button></div>`;
 function setGrade(g){if(!GR[g])return;CUR=g;Object.keys(SUBJ).forEach(k=>delete SUBJ[k]);Object.assign(SUBJ,GR[g].S);
-  if(LANG==='en')Object.keys(SUBJ).forEach(k=>{if(!AR_ONLY.includes(k)&&GR[g].E[k])SUBJ[k]=GR[g].E[k]});
+  {const es=store.get('enSubj',[])||[];Object.keys(SUBJ).forEach(k=>{if(!AR_ONLY.includes(k)&&GR[g].E[k]&&(LANG==='en'||es.includes(g+':'+k)))SUBJ[k]=GR[g].E[k]})}
   /* term filter: each lesson has term (default 1); questions follow their lesson */
   if(TERM===null)TERM=+store.get('term',1)||1;
   Object.keys(SUBJ).forEach(k=>{const s=SUBJ[k];const T=s.T.filter(t=>(t.term!=null?t.term:(s.term!=null?s.term:1))===TERM);const ids=T.map(t=>t.id);const Q=s.Q.filter(q=>ids.includes(q[0]));
@@ -58042,6 +58042,11 @@ function vGrade(){
    ${SOON.map(([n,i])=>`<div class="tile off"><span class="ic">${i}</span><b>${LANG==='en'&&SOON_EN[n]?SOON_EN[n]:n}</b><small>${L('قريبًا','Coming soon')}</small></div>`).join('')}
   </div>`;
 }
+/* per-subject English: a student can read one subject in English (e.g. advanced science) while the app stays in Arabic */
+function subjEn(k){return LANG!=='en'&&(store.get('enSubj',[])||[]).includes(CUR+':'+k)}
+function setSubjEn(k,on){let es=store.get('enSubj',[])||[];const id=CUR+':'+k;es=es.filter(x=>x!==id);if(on)es.push(id);store.set('enSubj',es);setGrade(CUR);try{step(on?'subj_en_on':'subj_en_off')}catch(e){}render()}
+function subjLangBar(k){if(LANG==='en'||!GR[CUR]||!GR[CUR].E||!GR[CUR].E[k]||AR_ONLY.includes(k))return '';const on=subjEn(k);
+  return `<div class="card" style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:10px 0;background:var(--sky-soft,var(--lav-soft))"><span>${on?'🇬🇧 هالمادة تنعرض لك بالإنجليزي':'🇬🇧 تبي هالمادة بالإنجليزي مثل كتاب المدرسة؟'}</span><span class="row" style="gap:6px"><button class="${on?'pri':'ghost'}" onclick="setSubjEn('${k}',true)">English</button><button class="${on?'ghost':'pri'}" onclick="setSubjEn('${k}',false)">عربي</button></span></div>`}
 function vSubject(k,tab){
   const s=SUBJ[k]; tab=tab||ctx.tab||'lessons'; ctx={subj:k,tab};
   ctx.g=CUR;
@@ -58050,6 +58055,7 @@ function vSubject(k,tab){
   if(s.noTerm){$('#view').innerHTML=`<h1>${s.icon} ${nmH(k)}</h1>${termBar()}${NOTERM()}`;return}
   $('#view').innerHTML=`
   <h1>${s.icon} ${nmH(k)}</h1>
+  ${subjLangBar(k)}
   ${termBar()}
   <div class="tabs" role="tablist">
    <button class="${tab==='lessons'?'on':''}" onclick="vSubject('${k}','lessons')">${L('📚 الدروس','📚 Lessons')}</button>
