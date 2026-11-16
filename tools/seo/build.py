@@ -56,7 +56,7 @@ def page(path, title, desc, body, crumbs, jsonld, canonical=None):
 <header><a class="logo" href="/">مذاكرتي.</a><a href="/lessons/">📚 كل الدروس</a></header>
 <main><nav class="crumbs">{cr}</nav>{body}</main>
 <footer><p>مذاكرتي: منصة مذاكرة مجانية سوّتها بنت إماراتية لطلاب الإمارات من صف 9 لين 12. دروس على هيكل امتحانات وزارة التربية والتعليم، وكويز بعد كل درس، ومدرس خصوصي ذكي، ومسابقة أسبوعية.</p>
-<p><a href="/lessons/">كل الدروس</a> · <a href="/exam-structure/">هيكل الامتحانات</a> · <a href="/exams/">جدول الامتحانات</a> · <a href="/about/">من سوّى مذاكرتي؟</a> · <a href="https://www.instagram.com/mthakarti/">إنستغرام</a></p></footer></body></html>"""
+<p><a href="/lessons/">كل الدروس</a> · <a href="/exam-structure/">هيكل الامتحانات</a> · <a href="/exams/">جدول الامتحانات</a> · <a href="/study-tips/">كيف تذاكر للامتحان</a> · <a href="/about/">من سوّى مذاكرتي؟</a> · <a href="https://www.instagram.com/mthakarti/">إنستغرام</a></p></footer></body></html>"""
     out = os.path.join(ROOT, path, 'index.html') if path.endswith('/') or path == '' else os.path.join(ROOT, path)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     open(out, 'w', encoding='utf-8').write(doc)
@@ -180,6 +180,9 @@ urls.append(page('about/', 'من سوّى مذاكرتي؟ منصة مجانية
                  [('مذاكرتي', ''), ('من نحن', 'about/')],
                  [{"@context": "https://schema.org", "@type": "AboutPage", "name": "من سوّى مذاكرتي؟", "description": adesc,
                    "about": {"@type": "EducationalOrganization", "name": "مذاكرتي", "url": SITE, "sameAs": ["https://www.instagram.com/mthakarti/"]}}]))
+
+# hand-written content pages (not generated here; keep them in the sitemap)
+urls.append(f'{SITE}/study-tips/')
 
 # sitemap
 sm = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', f'<url><loc>{SITE}/</loc><lastmod>{TODAY}</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>']
