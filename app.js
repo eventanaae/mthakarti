@@ -57764,7 +57764,7 @@ function guestStart(g,n){GUEST={grade:g,name:n||''};store.set('guest',GUEST);STU
 function joinPrompt(why){if(/^#admin/.test(location.hash))return;step('join_prompt');welDraft={mode:'new',pick:STU&&STU.grade,why};if(location.hash==='#welcome')render();else location.hash='welcome'}
 /* IELTS is for Grade 12 students and IELTS-only accounts */
 function IEOK(){return !!(STU&&(/^g12/.test(STU.grade)||STU.grade==='ielts'))}
-function stuChip(){const c=$('#stuChip');if(!c)return;if(STU&&STU.guest&&!ACC){c.classList.remove('hidden');c.textContent='👤 '+(GUEST&&GUEST.name?GUEST.name+' · ':'')+L('زائر · سجّل','Guest · Sign up');return}if(STU&&STU.grade==='ielts'){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+L('آيلتس','IELTS');return}if(STU&&GR[STU.grade]){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+GR[STU.grade].short}else c.classList.add('hidden')}
+function stuChip(){const c=$('#stuChip');if(!c)return;if(STU&&STU.guest&&!ACC){c.classList.remove('hidden');c.textContent='👤 '+(GUEST&&GUEST.name?GUEST.name+' · ':'')+L('زائر · سجّل','Guest · Sign up');return}if(STU&&STU.grade==='ielts'){c.classList.remove('hidden');c.textContent='👤 '+STU.name+' · '+L('آيلتس','IELTS');return}if(STU&&GR[STU.grade]){c.classList.remove('hidden');c.textContent=(myAv()||'👤')+' '+STU.name+' · '+GR[STU.grade].short}else c.classList.add('hidden')}
 let welDraft=null; // keeps typed fields when switching language on the welcome view
 /* ===== Cloud account (required): email + PIN; progress syncs to Supabase so it follows the student to any device ===== */
 let ACC=store.get('acct',null);
@@ -57916,7 +57916,7 @@ function vWelcome(target){
   }else if(quick){
     body=`<h1 style="margin-top:0">${L('أهلًا في مذاكرتي 🌸','Welcome to Mthakarti 🌸')}</h1>
      <p class="mut" style="margin-top:0">${L('دروس منهجك، أسئلة وامتحانات، مدرس خصوصي، وجوائز كل أسبوع 🏆','Your curriculum lessons, quizzes and exams, a private tutor, and weekly prizes 🏆')}</p>
-     <label for="stuName" style="font-weight:800">${L('شو اسمك؟','What’s your name?')}</label>
+     ${avRow()}<label for="stuName" style="font-weight:800">${L('شو اسمك؟','What’s your name?')}</label>
      <input id="stuName" autocomplete="given-name" maxlength="30" placeholder="${L('اكتب اسمك','Type your name')}" value="${esc(nameV)}" style="margin:6px 0 14px">
      ${gradeSel}
      <p id="welErr" class="mut" style="color:var(--bad);min-height:1.5em"></p>
@@ -57926,7 +57926,7 @@ function vWelcome(target){
     body=`<h1 style="margin-top:0">${L('أهلًا في مذاكرتي 🌸','Welcome to Mthakarti 🌸')}</h1>
      ${whyBox}
      ${LANG==='en'?'<p class="mut" style="margin-top:0;font-size:14px">Arabic Language, Islamic Education and Social Studies always stay in Arabic.</p>':''}
-     <label for="stuName" style="font-weight:800">${L('شو اسمك؟','What’s your name?')}</label>
+     ${avRow()}<label for="stuName" style="font-weight:800">${L('شو اسمك؟','What’s your name?')}</label>
      <input id="stuName" autocomplete="given-name" maxlength="30" placeholder="${L('اكتب اسمك','Type your name')}" value="${esc(nameV)}" style="margin:6px 0 14px">
      ${gradeSel}${emailIn}
      ${pinIn(L('اختر رقم سري (4 إلى 6 أرقام)','Choose a PIN (4–6 digits)'))}
@@ -58547,6 +58547,28 @@ function logVisit(){try{if(!location.protocol.startsWith('http'))return;let d=st
   (u.s?rpc('log_visit_src',Object.assign({p_src:u.s,p_med:u.m||null,p_camp:u.c||null},base)).catch(()=>rpc('log_visit',base)):rpc('log_visit',base)).then(()=>store.set('lastVisit',k)).catch(()=>{})}catch(e){}}
 setTimeout(logVisit,4000);
 
+
+/* ===== Profile characters (student idea): pick a character instead of the plain profile icon; shown in the header and the leaderboard ===== */
+const AVATARS=[['falcon','🦅','صقر','Falcon'],['cat','🐱','قطوة','Cat'],['camel','🐪','جمل','Camel'],['horse','🐎','خيل','Horse'],['gazelle','🦌','غزال','Gazelle'],['owl','🦉','بومة','Owl'],['fox','🦊','ثعلب','Fox'],['lion','🦁','أسد','Lion'],['panda','🐼','باندا','Panda'],['dolphin','🐬','دولفين','Dolphin'],['turtle','🐢','سلحفاة','Turtle'],['rabbit','🐰','أرنب','Rabbit'],['penguin','🐧','بطريق','Penguin'],['butterfly','🦋','فراشة','Butterfly'],['bee','🐝','نحلة','Bee'],['unicorn','🦄','يونيكورن','Unicorn'],['robot','🤖','روبوت','Robot'],['astronaut','🧑‍🚀','رائد فضاء','Astronaut']];
+const AVC=['#fde7f0','#e8f2fd','#fff4d9','#e9fbf1','#efe9ff'];
+function avOf(id){const a=AVATARS.find(x=>x[0]===id);return a?a[1]:null}
+function myAv(){return avOf(store.get('avatar',null))}
+function avBadge(id,size){const e=avOf(id);if(!e)return '';const i=AVATARS.findIndex(x=>x[0]===id);size=size||28;
+  return `<span aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:${size}px;height:${size}px;border-radius:50%;background:${AVC[i%AVC.length]};font-size:${Math.round(size*.62)}px;vertical-align:middle;margin-inline-end:6px">${e}</span>`}
+function avApply(){const e=myAv();const pb=$('#profBtn');if(pb)pb.textContent=e||'👤';stuChip()}
+function avatarOpen(){if($('#avModal'))return;const cur=store.get('avatar',null);
+  const m=document.createElement('div');m.id='avModal';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');
+  m.style.cssText='position:fixed;inset:0;z-index:9998;background:rgba(20,10,20,.55);display:flex;align-items:center;justify-content:center;padding:16px';
+  m.innerHTML=`<div class="card" style="max-width:440px;width:100%;max-height:88vh;overflow:auto;text-align:center"><h2 style="margin-top:0">${L('اختار شخصيتك ✨','Pick your character ✨')}</h2>
+   <p class="mut" style="margin-top:0">${L('تطلع جنب اسمك في الموقع وفي ترتيب المسابقة','Shown next to your name and on the leaderboard')}</p>
+   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px">${AVATARS.map((a,i)=>`<button type="button" data-av="${a[0]}" style="display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 4px;border-radius:16px;border:2px solid ${a[0]===cur?'var(--pink)':'var(--line)'};background:${AVC[i%AVC.length]};color:var(--ink);cursor:pointer"><span style="font-size:34px;line-height:1.1">${a[1]}</span><small style="font-weight:700">${L(a[2],a[3])}</small></button>`).join('')}</div>
+   <button class="ghost" style="width:100%;margin-top:10px" id="avClose">${L('سكّر','Close')}</button></div>`;
+  document.body.appendChild(m);$('#avClose').onclick=()=>m.remove();
+  m.querySelectorAll('[data-av]').forEach(b=>b.onclick=async()=>{const id=b.dataset.av;store.set('avatar',id);avApply();m.remove();try{step('avatar_set')}catch(e){}
+    toast(L(`${avOf(id)} حلو اختيارك!`,`${avOf(id)} Nice pick!`));const r=$('#avRow');if(r)r.outerHTML=avRow();
+    if(ACC){try{await rpc('set_avatar',{p_acc:ACC.id,p_secret:ACC.secret,p_av:id});if(typeof accSave==='function')accSave()}catch(e){}}})}
+function avRow(){const id=store.get('avatar',null);return `<div id="avRow" class="row" style="align-items:center;gap:10px;margin:0 0 12px">${id?avBadge(id,52):'<span style="font-size:40px">👤</span>'}<button type="button" class="ghost" onclick="avatarOpen()">${id?L('غيّر شخصيتك','Change character'):L('✨ اختار شخصيتك','✨ Pick a character')}</button></div>`}
+setTimeout(avApply,300);
 /* ===== Study timer (student idea: Amna, G10 Adv): pick study + break minutes. No points (owner's decision). ===== */
 const FOC={t:null};
 function focState(){return store.get('focus',null)}
@@ -58962,13 +58984,13 @@ async function vCompete(){
    <div id="cmpPrize"></div><div id="cmpTop"></div><div id="cmpBoard" class="card" style="margin-top:12px"><p class="mut">${L('جاري تحميل الترتيب…','Loading the leaderboard…')}</p></div></div>`;
   weekPrize(g);
   const top=$('#cmpTop');
-  if(COMP.me&&COMP.me.grade===g){top.innerHTML=`<div class="card" style="background:var(--mint-soft)">👤 <b>${esc(COMP.me.name)}</b> · ${L('نقاطك:','Your points:')} <b id="myPts">${COMP.me.points||0}</b></div>`}
+  if(COMP.me&&COMP.me.grade===g){top.innerHTML=`<div class="card" style="background:var(--mint-soft)">${myAv()?avBadge(store.get('avatar',null),30):'👤 '}<b>${esc(COMP.me.name)}</b> · ${L('نقاطك:','Your points:')} <b id="myPts">${COMP.me.points||0}</b></div>`}
   else{top.innerHTML=`<div class="card"><p class="mut">${L('جاري تجهيزك في المسابقة…','Setting you up in the competition…')}</p></div>`;
     if(await compAuto())return location.hash==='#compete'?vCompete():undefined;
     top.innerHTML=`<div class="card"><p class="mut">${L('تأكد من الإنترنت وارجع للصفحة.','Check your internet and come back.')}</p></div>`;
   }
-  try{await flushPts();const rows=await rpc('leaderboard',{p_grade:g});
-    $('#cmpBoard').innerHTML=rows&&rows.length?`<table class="tbl"><tr><th>#</th><th>${L('الاسم','Name')}</th><th>${L('النقاط','Points')}</th></tr>${rows.map(r=>`<tr ${COMP.me&&r.player_id===COMP.me.id?'style="background:var(--pink-soft);font-weight:800"':''}><td>${r.rank<=3?['🥇','🥈','🥉'][r.rank-1]:r.rank}</td><td>${esc(r.name)}</td><td>${r.points}</td></tr>`).join('')}</table>`:`<p class="mut">${L('ما في متسابقين للحين. كن أول واحد! 🚀','No players yet. Be the first! 🚀')}</p>`;
+  try{await flushPts();const rows=await rpc('leaderboard',{p_grade:g});const AVM={};try{(await rpc('leaderboard_avatars',{p_grade:g})||[]).forEach(x=>AVM[x.player_id]=x.avatar)}catch(e){}
+    $('#cmpBoard').innerHTML=rows&&rows.length?`<table class="tbl"><tr><th>#</th><th>${L('الاسم','Name')}</th><th>${L('النقاط','Points')}</th></tr>${rows.map(r=>`<tr ${COMP.me&&r.player_id===COMP.me.id?'style="background:var(--pink-soft);font-weight:800"':''}><td>${r.rank<=3?['🥇','🥈','🥉'][r.rank-1]:r.rank}</td><td>${avBadge(AVM[r.player_id])}${esc(r.name)}</td><td>${r.points}</td></tr>`).join('')}</table>`:`<p class="mut">${L('ما في متسابقين للحين. كن أول واحد! 🚀','No players yet. Be the first! 🚀')}</p>`;
     if(COMP.me&&$('#myPts')){const me=rows.find(r=>r.player_id===COMP.me.id);if(me)$('#myPts').textContent=me.points}}
   catch(e){$('#cmpBoard').innerHTML=`<p class="mut">${L('الترتيب يشتغل على موقع mthakarti.com 🌐','The leaderboard works on mthakarti.com 🌐')}</p>`}
 }
