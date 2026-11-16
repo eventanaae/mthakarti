@@ -4,5 +4,6 @@ Disallow: /#admin
 Disallow: /reels/
 Disallow: /ad.html
 Disallow: /rec.html
+Disallow: /ig/
 
 Sitemap: https://mthakarti.com/sitemap.xml
