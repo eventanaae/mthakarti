@@ -1,7 +1,7 @@
 const {chromium}=require('playwright');(async()=>{const b=await chromium.launch();const p=await b.newPage();
 await p.route('**/rest/v1/**',r=>r.fulfill({status:200,contentType:'application/json',body:'null'}));
 await p.goto('http://localhost:8765/');await p.waitForTimeout(1500);
-const out=await p.evaluate(()=>{const R={};for(const g of Object.keys(GR)){try{setGrade(g)}catch(e){R.err=String(e)}
+const out=await p.evaluate(()=>{window.subjLangOf=()=>'ar';const R={};for(const g of Object.keys(GR)){try{setGrade(g)}catch(e){R.err=String(e)}
   R[g]={name:GR[g].name,subj:{}};for(const k of Object.keys(SUBJ)){const s=SUBJ[k];if(!s||!s.T)continue;
    R[g].subj[k]={name:(typeof nm==='function'?nm(k):k),icon:s.icon,lang:(typeof SL==='function'?SL(s):'ar'),T:s.T.map(t=>({id:t.id,t:t.t,q:t.q||'',say:t.say||'',html:t.html||'',deep:t.deep||''})),nq:(s.Q||[]).length,
    Q:(s.Q||[])}}}return R});
