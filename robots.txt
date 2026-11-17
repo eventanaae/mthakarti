@@ -5,5 +5,6 @@ Disallow: /reels/
 Disallow: /ad.html
 Disallow: /rec.html
 Disallow: /ig/
+Disallow: /wa/
 
 Sitemap: https://mthakarti.com/sitemap.xml
