@@ -57953,9 +57953,9 @@ function vWelcome(target){
   const go=$('#welGo');
   go.onclick=async()=>{
     if(quick){const name=$('#stuName').value.trim();
-      if(!name){err(L('اكتب اسمك أول 🙂','Type your name first 🙂'));$('#stuName').focus();return}
-      if(!pick){err(L('اختر صفك ومسارك','Choose your grade and stream'));gs&&gs.focus();return}
-      if(!hasContent(pick)){err(L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!'));return}
+      if(!name){step('val_no_name');err(L('اكتب اسمك أول 🙂','Type your name first 🙂'));$('#stuName').focus();return}
+      if(!pick){step('val_no_grade');err(L('اختر صفك ومسارك','Choose your grade and stream'));gs&&gs.focus();return}
+      if(!hasContent(pick)){step('val_soon_'+pick);err(L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!'));return}
       guestStart(pick,name);return}
     const email=($('#accEmail').value||'').trim().toLowerCase(), pin=$('#accPin')?$('#accPin').value.trim():'';
     if(mode==='login'){
@@ -57972,12 +57972,12 @@ function vWelcome(target){
       return;
     }
     const name=$('#stuName').value.trim();
-    if(!name){err(L('اكتب اسمك أول 🙂','Type your name first 🙂'));$('#stuName').focus();return}
-    if(!pick){err(L('اختر صفك ومسارك','Choose your grade and stream'));gs.focus();return}
-    if(!hasContent(pick)){err(L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!'));gs.focus();return}
+    if(!name){step('val_no_name');err(L('اكتب اسمك أول 🙂','Type your name first 🙂'));$('#stuName').focus();return}
+    if(!pick){step('val_no_grade');err(L('اختر صفك ومسارك','Choose your grade and stream'));gs.focus();return}
+    if(!hasContent(pick)){step('val_soon_'+pick);err(L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!'));gs.focus();return}
     if(mode==='edit'){STU={name,grade:STU.grade};store.set('student',STU);stuChip();accSave().then(compAuto);location.hash='home';render();if(store.get('pushOn',false))syncPush();return}
-    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email))return err(L('اكتب إيميل صحيح','Enter a valid email'));
-    if(!/^[0-9]{4,6}$/.test(pin))return err(L('اختر رقم سري من 4 إلى 6 أرقام','Choose a 4–6 digit PIN'));
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){step('val_bad_email');return err(L('اكتب إيميل صحيح','Enter a valid email'))}
+    if(!/^[0-9]{4,6}$/.test(pin)){step('val_bad_pin');return err(L('اختر رقم سري من 4 إلى 6 أرقام','Choose a 4–6 digit PIN'))}
     go.disabled=true;err('');step('reg_submit');
     const prevStu=STU;
     try{STU={name,grade:pick};
