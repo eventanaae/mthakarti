@@ -57935,7 +57935,7 @@ function vWelcome(target){
      <button class="pri" id="welGo" style="width:100%">${L('سجّل وابدأ المذاكرة ✏️','Register and start ✏️')}</button>
      <p style="text-align:center;margin-top:12px"><a href="#" onclick="welSwitch('login');return false">${L('عندي حساب؟ سجّل دخول','I have an account — sign in')}</a></p>`;
   }
-  (target||$('#view')).innerHTML=`<div class="card" style="max-width:640px;margin:${target?'0':'20px'} auto">${langBar}${body}</div>`;
+  (target||$('#view')).innerHTML=`${target?'':`<div style="max-width:640px;margin:20px auto 0">${winBanner()}</div>`}<div class="card" style="max-width:640px;margin:${target?'0':'20px'} auto">${langBar}${body}</div>`;
   const hasContent=id=>id==='ielts'||!!(GR[id]&&GR[id].S&&Object.keys(GR[id].S).length);
   if(mode==='edit')profStats();
   if(mode==='new'&&!target){step('welcome_view');document.querySelectorAll('#stuName,#accEmail,#accPin,#gradeSel').forEach(x=>x.addEventListener('focus',()=>step('form_focus'),{once:true}))}
@@ -57992,9 +57992,17 @@ function vWelcome(target){
     }catch(e){STU=prevStu;go.disabled=false;const c=(String(e.message).match(/email_taken|bad_email|bad_pin|bad_grade|too_big|Failed to fetch|NetworkError|Load failed/)||['other'])[0];step('reg_err_'+c.toLowerCase().replace(/[^a-z_]/g,'_').slice(0,20));err(accErr(e.message))}
   };
 }
+/* Weekly winners banner (owner, 21 Nov 2026). Update WINNERS each Friday. Shown on home and welcome for 7 days. */
+const WINNERS={date:'2026-11-20',list:[['Al Mona',L('ثاني عشر متقدم','G12 Advanced')],['Amna',L('عاشر عام','G10 General')]]};
+function winBanner(){const d=new Date(WINNERS.date+'T00:00:00+04:00');if(Date.now()-d.getTime()>7*864e5||Date.now()<d.getTime())return'';
+  return `<div class="card" style="background:linear-gradient(135deg,#FFEFD4,#FFDCEA);border:2px dashed #F3B6D2;text-align:center;margin:0 0 14px;color:#4A3540">
+   <div style="font-size:34px;line-height:1">🏆</div>
+   <div style="font-weight:800;font-size:19px;margin-top:4px">${L('فايزين الجمعة','Friday winners')} · ${L('20 نوفمبر 2026','20 Nov 2026')}</div>
+   <div style="margin:8px 0 2px">${WINNERS.list.map(([n,g])=>`<span style="display:inline-block;background:#F9D3E4;border-radius:14px;padding:7px 14px;margin:4px;font-weight:800">🎉 ${esc(n)} <span style="color:#c0356f;font-weight:700">· ${g}</span></span>`).join('')}</div>
+   <div style="font-size:14px;margin-top:6px">${L('وصلوا 500 نقطة قبل الكل وفازوا بنقاط بينز ☕ مبروك! المسابقة الجديدة بدت، والفايز الجاي ممكن تكون إنت 💪','They reached 500 points first and won Beans points ☕ A new week has started, the next winner could be you 💪')}</div></div>`}
 function vHome(){
   crumbs([[L('الرئيسية','Home')]]);
-  $('#view').innerHTML=`
+  $('#view').innerHTML=`${winBanner()}
   ${isGuest()?`<div class="card row" style="justify-content:space-between;background:var(--sun-soft);border-color:var(--sun);margin-bottom:12px"><div style="min-width:0"><b>👀 ${L('إنت تتصفح كزائر','You are browsing as a guest')}</b><div class="mut" style="font-size:14px">${L('سجّل عشان تنحفظ مذاكرتك، وتدخل المسابقة والجوائز، وتكلم مدرسك الخصوصي.','Sign up to save your progress, join the competition and prizes, and talk to your tutor.')}</div></div><button class="pri" onclick="joinPrompt('home')">${L('سجّل الحين ✏️','Sign up ✏️')}</button></div>`:''}
   <section class="hero">
     <div>
