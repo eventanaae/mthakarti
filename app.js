@@ -58692,7 +58692,7 @@ async function vAdmin(){
   if(ADM.s)admShow();
   admLoad();
 }
-async function admLoad(){try{const [s,w,pt,fn]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_funnel',{p_code:ADM.tok}).catch(()=>null)]);ADM.fn=fn;ADM.g=await rpc('admin_guests',{p_code:ADM.tok}).catch(()=>[]);ADM.fb=await rpc('admin_feedback_v2',{p_code:ADM.tok}).catch(()=>rpc('admin_feedback',{p_code:ADM.tok})).catch(()=>[]);ADM.utm=await rpc('admin_utm',{p_code:ADM.tok}).catch(()=>null);
+async function admLoad(){try{const [s,w,pt,fn]=await Promise.all([rpc('admin_stats',{p_code:ADM.tok}),rpc('admin_winners2',{p_code:ADM.tok}).catch(()=>rpc('admin_winners',{p_code:ADM.tok})).catch(()=>[]),rpc('admin_points',{p_code:ADM.tok}).catch(()=>[]),rpc('admin_funnel',{p_code:ADM.tok}).catch(()=>null)]);ADM.fn=fn;ADM.g=await rpc('admin_guests',{p_code:ADM.tok}).catch(()=>[]);ADM.fb=await rpc('admin_feedback_v2',{p_code:ADM.tok}).catch(()=>rpc('admin_feedback',{p_code:ADM.tok})).catch(()=>[]);ADM.utm=await rpc('admin_utm',{p_code:ADM.tok}).catch(()=>null);
   const pm={};(pt||[]).forEach(r=>{pm[(r.email||'').toLowerCase()]=r});(s.students||[]).forEach(r=>{const p=pm[(r.email||'').toLowerCase()];r.pts=p?p.points:0;r.wk=p?p.week:0});
   ADM.s=s;ADM.w=w||[];admShow()}
   catch(e){if(/bad_code/.test(e.message)){admSetTok('');return admLoginView(L('انتهت الجلسة، سجّلي دخول مرة ثانية','Session expired, please sign in again'))}const b=$('#admBody');if(b)b.innerHTML=`<p style="color:var(--bad)">${admErr(e)}</p>`}}
@@ -58776,10 +58776,23 @@ async function admFbReply(id){const t=$('#fbr'+id),v=(t&&t.value||'').trim();if(
 async function admFbDone(id,v){try{await rpc('admin_feedback_done',{p_code:ADM.tok,p_id:id,p_done:v});const x=(ADM.fb||[]).find(y=>y.id===id);if(x)x.done=v;admShow()}catch(e){toast(L('صار خطأ','Something went wrong'))}}
 function admFilter(){const q=($('#admQ').value||'').toLowerCase();document.querySelectorAll('#admTbl .adm-sc').forEach(c=>{c.style.display=c.textContent.toLowerCase().includes(q)?'':'none'})}
 function admPrize(b){const w=ADM.w||[];
-  b.innerHTML=`<div class="adm-box" style="background:var(--sun-soft);border-color:var(--sun)"><b>🎁 ${L('القاعدة:','Rule:')}</b> ${L('أول طالب في كل صف يجمع 500 نقطة خلال الأسبوع (من السبت لين الجمعة) يفوز بنقاط بينز. تواصلي وياه على إيميله.','The first student in each grade to collect 500 points in the week (Saturday to Friday) wins Penz points. Contact them by email.')}</div>
-   <div style="margin-top:12px">${w.length?`<div class="adm-cards">${w.map(r=>`<div class="adm-sc"><div class="adm-sh"><b>🏆 ${esc(r.name||'')}</b><span class="adm-pill">${esc(admGr(r.grade))}</span></div>
+  /* grouped by week (Sat → Fri), newest first; each winner shows whether the prize was delivered */
+  const fdw=d=>new Date(d+'T12:00:00').toLocaleDateString(LANG==='en'?'en-GB':'ar-AE',{day:'numeric',month:'long'});
+  const addD=(d,n)=>{const x=new Date(d+'T12:00:00');x.setDate(x.getDate()+n);return x.toISOString().slice(0,10)};
+  const today=new Date(Date.now()+4*3600e3).toISOString().slice(0,10);
+  const weeks=[...new Set(w.map(r=>r.week_start))];
+  const card=r=>{const paid=!!r.paid_at;return `<div class="adm-sc" style="border-color:${paid?'#7FD8C4':'var(--sun)'}"><div class="adm-sh"><b>🏆 ${esc(r.name||'')}</b><span class="adm-pill">${esc(admGr(r.grade))}</span></div>
      <div class="adm-em" dir="ltr"><a href="mailto:${esc(r.email||'')}">${esc(r.email||'')}</a></div>
-     <div class="mut" style="font-size:12.5px">${L('أسبوع','Week of')} ${esc(r.week_start)} · ${L('وصل 500:','Reached 500:')} ${admDate(r.reached_at)}</div></div>`).join('')}</div>`:`<p class="mut" style="margin:0">${L('ما في فايز للحين هالأسبوع.','No winner yet this week.')}</p>`}</div>`}
+     <div class="mut" style="font-size:12.5px">${L('وصل 500:','Reached 500:')} ${admDate(r.reached_at)}</div>
+     <div style="margin-top:8px">${paid?`<span class="adm-pill" style="background:#EAF8F6;color:#2f9488">✅ ${L('استلمت الجائزة','Prize delivered')} · ${admDate(r.paid_at)}</span>`
+       :`<button class="pri" style="padding:6px 12px;font-size:14px" onclick="admPaid('${esc(r.week_start)}','${esc(r.grade)}')">☕ ${L('سلّمت الجائزة','Mark prize delivered')}</button>`}</div></div>`};
+  const sec=wk=>{const end=addD(wk,6),done=today>end,rows=w.filter(r=>r.week_start===wk),left=rows.filter(r=>!r.paid_at).length;
+    return `<div class="adm-box" style="margin-top:12px"><div class="row" style="justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">📅 ${L('أسبوع','Week')} ${fdw(wk)} ← ${fdw(end)}</h3>
+      <span class="adm-pill">${done?(left?`⏳ ${L('باقي','To deliver:')} ${left}`:`✅ ${L('كلهم استلموا','All delivered')}`):`🔵 ${L('الأسبوع الحالي، يخلص الجمعة','Current week, ends Friday')}`}</span></div>
+      <div class="adm-cards" style="margin-top:10px">${rows.map(card).join('')}</div></div>`};
+  b.innerHTML=`<div class="adm-box" style="background:var(--sun-soft);border-color:var(--sun)"><b>🎁 ${L('القاعدة:','Rule:')}</b> ${L('أول طالب في كل صف يجمع 500 نقطة خلال الأسبوع (من السبت لين الجمعة) يفوز بنقاط بينز. تواصلي وياه على إيميله.','The first student in each grade to collect 500 points in the week (Saturday to Friday) wins Penz points. Contact them by email.')}</div>
+   ${weeks.length?weeks.map(sec).join(''):`<p class="mut" style="margin:12px 0 0">${L('ما في فايز للحين.','No winners yet.')}</p>`}`}
+async function admPaid(wk,g){try{await rpc('admin_prize_mark',{p_code:ADM.tok,p_week:wk,p_grade:g,p_paid:true});const r=(ADM.w||[]).find(x=>x.week_start===wk&&x.grade===g);if(r)r.paid_at=new Date().toISOString();toast(L('تم ✅','Done ✅'));admPrize($('#admBody')||document.querySelector('.adm-body'))}catch(e){toast(L('ما زبط، جرّبي مرة ثانية','Failed, try again'))}}
 function admSettings(b){
   b.innerHTML=`<div class="adm-grid" style="margin-top:0">
    <div class="adm-box"><h3>👩‍🏫 ${L('مفتاح المدرس الخصوصي (Anthropic)','Private tutor key (Anthropic)')}</h3>
