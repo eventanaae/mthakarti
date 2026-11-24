@@ -57710,6 +57710,7 @@ function render(){
   document.body.classList.toggle('adm-mode',h==='admin');
   {const AP=admPrevGet();if(AP&&ADM.tok&&h!=='admin'&&(!STU||STU.preview))STU={name:L('👑 المسؤولة','👑 Admin'),grade:AP,guest:true,preview:true}}
   admPrevBar();
+  if(h!=='admin'&&h!=='welcome')setTimeout(winPopup,900);
   if(h==='admin'){$('#fab').classList.add('hidden');{const rm=$('#regModal');if(rm){rm.remove();document.body.style.overflow=''}}return vAdmin();}
   const IEO=!!(STU&&STU.grade==='ielts'); /* IELTS-only accounts: no school subjects, no competition */
   if(STU&&ACC&&!STU.guest&&!GR[STU.grade]&&!IEO&&h!=='welcome'){$('#fab').classList.add('hidden');return vSoon();}
@@ -58089,7 +58090,6 @@ function vHome(){
   </div>`}
   ${fbBox()}
   <p class="foot">${L('مذاكرتي · mthakarti.com · محتوى تعليمي مساعد، ارجع دائمًا لكتابك ومعلمك 🌸','Mthakarti · mthakarti.com · Supporting study material — always check your textbook and teacher 🌸')}</p>`;
-  setTimeout(winPopup,700);
 }
 function subjProgress(k){const s=SUBJ[k],p=P(k);if(!s.T.length)return 0;const seen=p.done.filter(id=>s.T.some(t=>t.id===id)).length/s.T.length;const ex=p.exam?p.exam/100:0;return Math.round((seen*.5+ex*.5)*100)}
 function vGrade(){
