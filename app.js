@@ -63850,3 +63850,9 @@ function burst(el){if(RM||!el)return;try{const r=el.getBoundingClientRect(),cx=r
     s.style.left=cx+'px';s.style.top=cy+'px';s.style.setProperty('--dx',Math.cos(a)*d+'px');s.style.setProperty('--dy',Math.sin(a)*d-30+'px');s.style.setProperty('--rot',(Math.random()*120-60)+'deg');
     document.body.appendChild(s);setTimeout(()=>s.remove(),950)}}catch(e){}}
 render();
+
+/* Auto-update: if a newer app.js was deployed, reload once so phones never stay on an old cached copy */
+(function(){async function chk(){try{const cur=(document.querySelector('script[src*="app.js?v="]')||{}).src||'';const v=(cur.match(/v=([\w]+)/)||[])[1];if(!v)return;
+  const t=await (await fetch('/index.html?nc='+Date.now(),{cache:'no-store'})).text();const nv=(t.match(/app\.js\?v=([\w]+)/)||[])[1];
+  if(nv&&nv!==v&&sessionStorage.getItem('mthUpd')!==nv){sessionStorage.setItem('mthUpd',nv);location.reload()}}catch(e){}}
+ setTimeout(chk,3000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')chk()})})();
