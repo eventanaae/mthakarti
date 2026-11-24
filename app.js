@@ -58017,7 +58017,7 @@ function winBanner(){const d=new Date(WINNERS.date+'T00:00:00+04:00');if(Date.no
    <div style="margin:8px 0 2px">${WINNERS.list.map(([n,g])=>`<span style="display:inline-block;background:#F9D3E4;border-radius:14px;padding:7px 14px;margin:4px;font-weight:800">🎉 ${esc(n)} <span style="color:#c0356f;font-weight:700">· ${g}</span></span>`).join('')}</div>
    <div style="font-size:14px;margin-top:6px">${L('وصلوا 500 نقطة قبل الكل وفازوا بنقاط بينز ☕ مبروك! المسابقة الجديدة بدت، والفايز الجاي ممكن تكون إنت 💪','They reached 500 points first and won Beans points ☕ A new week has started, the next winner could be you 💪')}</div></div>`}
 /* Friday winners popup (owner, 24 Nov 2026): animated, shown once per device to signed-in students, for 7 days */
-function winPopup(){try{if(!ACC||!STU||STU.preview||$('#winPop'))return;const d=new Date(WINNERS.date+'T00:00:00+04:00');if(Date.now()-d.getTime()>7*864e5||Date.now()<d.getTime())return;
+function winPopup(){try{if(!ACC||!STU||STU.preview||STU.grade==='ielts'||$('#winPop'))return;const d=new Date(WINNERS.date+'T00:00:00+04:00');if(Date.now()-d.getTime()>7*864e5||Date.now()<d.getTime())return;
   const k='mth_winpop_'+WINNERS.date;if(localStorage.getItem(k))return;localStorage.setItem(k,'1')}catch(e){return}
   const cols=['#EF5D95','#F7C948','#7FD8C4','#B79BE0','#F7A98C','#5BCFC5'];
   const conf=Array.from({length:46},(_,i)=>`<i style="left:${(i*37)%100}%;background:${cols[i%cols.length]};animation-delay:${(i%12)*.07}s;animation-duration:${2.2+(i%5)*.35}s;transform:rotate(${i*29}deg);${i%3?'':'border-radius:50%;'}"></i>`).join('');
