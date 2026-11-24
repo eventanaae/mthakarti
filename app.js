@@ -57709,6 +57709,7 @@ function render(){
   { const p=$('#notifPanel'); if(p) p.remove(); }
   if(h==='admin'){$('#fab').classList.add('hidden');{const rm=$('#regModal');if(rm){rm.remove();document.body.style.overflow=''}}return vAdmin();}
   const IEO=!!(STU&&STU.grade==='ielts'); /* IELTS-only accounts: no school subjects, no competition */
+  if(STU&&ACC&&!STU.guest&&!GR[STU.grade]&&!IEO&&h!=='welcome'){$('#fab').classList.add('hidden');return vSoon();}
   if(!STU||(!ACC&&!STU.guest)||(!GR[STU.grade]&&!IEO)||h==='welcome'){$('#fab').classList.add('hidden');return vWelcome();}
   if(VER.need){$('#fab').classList.add('hidden');return vVerify();}
   if(isGuest()&&['compete','assistant','alef'].includes(h)){joinPrompt(h);return}
@@ -57780,6 +57781,16 @@ async function verSend(){const m=$('#verMsg');try{
   if(j.verified){VER.need=false;render();return}
   if(m)m.textContent=j.ok?L('✉️ أرسلنا رمز من 6 أرقام لإيميلك. شيك على البريد غير المرغوب (Junk) لو ما لقيته.','✉️ We sent a 6-digit code to your email. Check Junk/Spam if you cannot find it.')
     :j.error==='rate_limited'?L('انتظر دقيقة وجرّب ترسل مرة ثانية.','Wait a minute, then try sending again.'):L('ما قدرنا نرسل الرمز، جرّب بعد شوي.','We could not send the code, try again shortly.')}catch(e){if(m)m.textContent=L('تأكد من الإنترنت وجرّب مرة ثانية','Check your internet and try again')}}
+function vSoon(){
+  crumbs([[L('الرئيسية','Home')]]);
+  const gn=(typeof GRN!=='undefined'&&GRN[STU.grade])||{g9g:L('تاسع عام','G9 General'),g9a:L('تاسع متقدم','G9 Advanced')}[STU.grade]||STU.grade;
+  $('#view').innerHTML=`<div class="card" style="max-width:560px;margin:20px auto;text-align:center">
+   <div style="font-size:46px">🌸</div>
+   <h1 style="margin-top:6px">${L('هلا','Hi')} ${esc(STU.name||'')}! ${L('حسابك جاهز','Your account is ready')}</h1>
+   <p>${L('محتوى','Content for')} <b>${esc(gn)}</b> ${L('ينزل قريب إن شاء الله 🛠️','is coming soon 🛠️')}</p>
+   <p class="mut">${L('أول ما ينزل بنطرش لك إيميل، وتقدر تدخل المسابقة وتجمع نقاط من أول يوم 💪','We will email you as soon as it is ready, and you can join the competition from day one 💪')}</p>
+   <div class="row" style="justify-content:center"><button class="ghost" onclick="accLogout()">${L('تسجيل خروج','Sign out')}</button></div></div>`;
+}
 function vVerify(){
   crumbs([[L('تأكيد الإيميل','Verify email')]]);
   $('#view').innerHTML=`<div class="card" style="max-width:560px;margin:20px auto;text-align:center">
@@ -57855,7 +57866,7 @@ async function profStats(){const b=$('#profStats');if(!b||!ACC)return;
   catch(e){const x=$('#profStats');if(x)x.innerHTML=''}}
 function vWelcome(target){
   if(!target)crumbs([[L('أهلًا بك','Welcome')]]);
-  const grades=[['10','العاشر'],['11','الحادي عشر'],['12','الثاني عشر']];
+  const grades=[['9','التاسع'],['10','العاشر'],['11','الحادي عشر'],['12','الثاني عشر']];
   const dr=welDraft||{};welDraft=null;
   const mode=dr.mode||(ACC?'edit':'new');
   const sel=dr.pick!=null?dr.pick:(STU?STU.grade:'');
@@ -57865,7 +57876,8 @@ function vWelcome(target){
   WHY.quiz=L('🎯 سجّل عشان تحل الأسئلة والكويزات وتجمع نقاط!','🎯 Sign up to answer questions and quizzes and earn points!');
   WHY.exam=L('📝 سجّل عشان تحل الامتحانات وتجمع نقاط!','📝 Sign up to take exams and earn points!');
   WHY.home=L('✏️ سجّل عشان تنحفظ مذاكرتك وتدخل المسابقة','✏️ Sign up to save your progress and join the competition');
-  const whyBox=dr.why&&WHY[dr.why]?`<div class="card" style="background:var(--sun-soft);border-color:var(--sun);margin:0 0 14px"><b>${WHY[dr.why]}</b><div class="mut" style="font-size:13.5px;margin-top:4px">${L('دقيقة وحدة بس، وكل اللي ذاكرته كزائر ينحفظ في حسابك 👍','Takes a minute, and everything you studied as a guest is kept 👍')}</div></div>`:'';
+  if(dr.soon)WHY.soon=L('🛠️ محتوى صفك ينزل قريب إن شاء الله! سجّل الحين وبنطرش لك إيميل أول ما ينزل، وتدخل المسابقة من أول يوم 🌸','🛠️ Your grade is coming soon! Sign up now and we will email you as soon as it is ready 🌸');
+  const whyBox=(dr.why||dr.soon)&&WHY[dr.why||'soon']?`<div class="card" style="background:var(--sun-soft);border-color:var(--sun);margin:0 0 14px"><b>${WHY[dr.why||'soon']}</b><div class="mut" style="font-size:13.5px;margin-top:4px">${L('دقيقة وحدة بس، وكل اللي ذاكرته كزائر ينحفظ في حسابك 👍','Takes a minute, and everything you studied as a guest is kept 👍')}</div></div>`:'';
   /* first visit: only name + grade, then straight into the site (sign-up comes after 5 minutes) */
   const quick=mode==='new'&&!STU&&!dr.full&&!dr.why;
   const emailV=dr.email!=null?dr.email:(ACC?ACC.email:'');
@@ -57885,7 +57897,7 @@ function vWelcome(target){
    :`${kindSel}<div id="gradeWrap" style="${ieSel?'display:none':''}"><label for="gradeSel" style="font-weight:800;display:block;margin-bottom:6px">${L('في أي صف ومسار؟','Which grade and stream?')}</label>
    <select id="gradeSel" style="margin:0 0 6px;cursor:pointer" ${mode==='edit'?'disabled':''}>
     <option value="" ${sel&&!ieSel?'':'selected'} disabled>${L('اختر صفك ومسارك','Choose your grade and stream')}</option>
-    ${grades.map(([g,n])=>['عام','متقدم'].map(tr=>{const id='g'+g+(tr==='عام'?'g':'a');return `<option value="${id}" ${sel===id?'selected':''}>${g==='10'?'📗':g==='11'?'📘':'🎓'} ${L(`الصف ${n} · ${tr}`,`Grade ${g} · ${tr==='عام'?'General':'Advanced'}`)}</option>`}).join('')).join('')}
+    ${grades.map(([g,n])=>['عام','متقدم'].map(tr=>{const id='g'+g+(tr==='عام'?'g':'a');return `<option value="${id}" ${sel===id?'selected':''}>${g==='9'?'📙':g==='10'?'📗':g==='11'?'📘':'🎓'} ${L(`الصف ${n} · ${tr}`,`Grade ${g} · ${tr==='عام'?'General':'Advanced'}`)}</option>`}).join('')).join('')}
    </select>
    ${mode==='edit'?`<p class="mut" style="font-size:13px;margin:0 0 6px">${L('🔒 الصف ينحدد مرة وحدة وقت التسجيل وما يتغير.','🔒 Your grade is set once at sign-up and cannot be changed.')}</p>`:''}
    ${mode==='new'?`<p class="mut" style="font-size:13px;margin:0 0 8px">${L('⚠️ تأكد من صفك، ما تقدر تغيّره بعد التسجيل.','⚠️ Double-check your grade, it cannot be changed after sign-up.')}</p>`:''}
@@ -57955,7 +57967,7 @@ function vWelcome(target){
     if(quick){const name=$('#stuName').value.trim();
       if(!name){step('val_no_name');err(L('اكتب اسمك أول 🙂','Type your name first 🙂'));$('#stuName').focus();return}
       if(!pick){step('val_no_grade');err(L('اختر صفك ومسارك','Choose your grade and stream'));gs&&gs.focus();return}
-      if(!hasContent(pick)){step('val_soon_'+pick);err(L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!'));return}
+      if(!hasContent(pick)){step('val_soon_'+pick);welDraft={mode:'new',full:true,name,pick,soon:true};return vWelcome()}
       guestStart(pick,name);return}
     const email=($('#accEmail').value||'').trim().toLowerCase(), pin=$('#accPin')?$('#accPin').value.trim():'';
     if(mode==='login'){
@@ -57974,7 +57986,7 @@ function vWelcome(target){
     const name=$('#stuName').value.trim();
     if(!name){step('val_no_name');err(L('اكتب اسمك أول 🙂','Type your name first 🙂'));$('#stuName').focus();return}
     if(!pick){step('val_no_grade');err(L('اختر صفك ومسارك','Choose your grade and stream'));gs.focus();return}
-    if(!hasContent(pick)){step('val_soon_'+pick);err(L('بعدنا نشتغل على محتوى هذا الصف 🛠️ قريبًا إن شاء الله!','We’re still working on this grade 🛠️ Coming soon!'));gs.focus();return}
+    if(!hasContent(pick))step('val_soon_'+pick);
     if(mode==='edit'){STU={name,grade:STU.grade};store.set('student',STU);stuChip();accSave().then(compAuto);location.hash='home';render();if(store.get('pushOn',false))syncPush();return}
     if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){step('val_bad_email');return err(L('اكتب إيميل صحيح','Enter a valid email'))}
     if(!/^[0-9]{4,6}$/.test(pin)){step('val_bad_pin');return err(L('اختر رقم سري من 4 إلى 6 أرقام','Choose a 4–6 digit PIN'))}
@@ -58627,7 +58639,7 @@ setTimeout(checkReplies,5000);setTimeout(()=>{try{if(store.get('pushOn',false)&&
   setInterval(()=>{if(document.visibilityState==='visible'&&Date.now()-lastAct<120000){acc+=10;
     if(isGuest()){const g=guestSecs()+10;store.set('guestSecs',g);if(g%60===0)guestHello();if(g>=GUEST_LIMIT)regGate()}}},10000);
   setInterval(send,60000);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')send()})})();
-const GRN={g10g:L('عاشر عام','G10 General'),g10a:L('عاشر متقدم','G10 Advanced'),g12a:L('ثاني عشر متقدم','G12 Advanced'),g11g:L('حادي عشر عام','G11 General'),g11a:L('حادي عشر متقدم','G11 Advanced'),g12g:L('ثاني عشر عام','G12 General'),ielts:L('آيلتس بس','IELTS only')};
+const GRN={g9g:L('تاسع عام','G9 General'),g9a:L('تاسع متقدم','G9 Advanced'),g10g:L('عاشر عام','G10 General'),g10a:L('عاشر متقدم','G10 Advanced'),g12a:L('ثاني عشر متقدم','G12 Advanced'),g11g:L('حادي عشر عام','G11 General'),g11a:L('حادي عشر متقدم','G11 Advanced'),g12g:L('ثاني عشر عام','G12 General'),ielts:L('آيلتس بس','IELTS only')};
 /* ===== Owner dashboard (#admin): email + password login, session kept on this device for 30 days ===== */
 const ADM={tok:(()=>{try{return localStorage.getItem('mthAdmTok')||''}catch(e){return ''}})(),tab:'over',s:null,w:null};
 function admSetTok(t){ADM.tok=t||'';try{t?localStorage.setItem('mthAdmTok',t):localStorage.removeItem('mthAdmTok')}catch(e){}}
