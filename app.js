@@ -57950,7 +57950,7 @@ function vWelcome(target){
      <button class="pri" id="welGo" style="width:100%">${L('سجّل وابدأ المذاكرة ✏️','Register and start ✏️')}</button>
      <p style="text-align:center;margin-top:12px"><a href="#" onclick="welSwitch('login');return false">${L('عندي حساب؟ سجّل دخول','I have an account — sign in')}</a></p>`;
   }
-  (target||$('#view')).innerHTML=`${target?'':`<div style="max-width:640px;margin:20px auto 0">${winBanner()}</div>`}<div class="card" style="max-width:640px;margin:${target?'0':'20px'} auto">${langBar}${body}</div>`;
+  (target||$('#view')).innerHTML=`<div class="card" style="max-width:640px;margin:${target?'0':'20px'} auto">${langBar}${body}</div>`;
   const hasContent=id=>id==='ielts'||!!(GR[id]&&GR[id].S&&Object.keys(GR[id].S).length);
   if(mode==='edit')profStats();
   if(mode==='new'&&!target){step('welcome_view');document.querySelectorAll('#stuName,#accEmail,#accPin,#gradeSel').forEach(x=>x.addEventListener('focus',()=>step('form_focus'),{once:true}))}
@@ -58015,9 +58015,48 @@ function winBanner(){const d=new Date(WINNERS.date+'T00:00:00+04:00');if(Date.no
    <div style="font-weight:800;font-size:19px;margin-top:4px">${L('فايزين الجمعة','Friday winners')} · ${L('20 نوفمبر 2026','20 Nov 2026')}</div>
    <div style="margin:8px 0 2px">${WINNERS.list.map(([n,g])=>`<span style="display:inline-block;background:#F9D3E4;border-radius:14px;padding:7px 14px;margin:4px;font-weight:800">🎉 ${esc(n)} <span style="color:#c0356f;font-weight:700">· ${g}</span></span>`).join('')}</div>
    <div style="font-size:14px;margin-top:6px">${L('وصلوا 500 نقطة قبل الكل وفازوا بنقاط بينز ☕ مبروك! المسابقة الجديدة بدت، والفايز الجاي ممكن تكون إنت 💪','They reached 500 points first and won Beans points ☕ A new week has started, the next winner could be you 💪')}</div></div>`}
+/* Friday winners popup (owner, 24 Nov 2026): animated, shown once per device to signed-in students, for 7 days */
+function winPopup(){try{if(!ACC||!STU||STU.preview||$('#winPop'))return;const d=new Date(WINNERS.date+'T00:00:00+04:00');if(Date.now()-d.getTime()>7*864e5||Date.now()<d.getTime())return;
+  const k='mth_winpop_'+WINNERS.date;if(localStorage.getItem(k))return;localStorage.setItem(k,'1')}catch(e){return}
+  const cols=['#EF5D95','#F7C948','#7FD8C4','#B79BE0','#F7A98C','#5BCFC5'];
+  const conf=Array.from({length:46},(_,i)=>`<i style="left:${(i*37)%100}%;background:${cols[i%cols.length]};animation-delay:${(i%12)*.07}s;animation-duration:${2.2+(i%5)*.35}s;transform:rotate(${i*29}deg);${i%3?'':'border-radius:50%;'}"></i>`).join('');
+  const el=document.createElement('div');el.id='winPop';
+  el.innerHTML=`<style>
+   #winPop{position:fixed;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(40,20,40,.55);backdrop-filter:blur(4px);animation:wpFade .35s ease both}
+   #winPop .wp-card{position:relative;max-width:380px;width:100%;background:linear-gradient(160deg,#FFF6E5,#FFE3EF 60%,#F1E8FF);border-radius:28px;padding:28px 22px 22px;text-align:center;color:#4A3540;box-shadow:0 24px 60px rgba(214,49,127,.35);overflow:hidden;animation:wpPop .6s cubic-bezier(.2,1.4,.4,1) both .1s}
+   #winPop .wp-conf{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+   #winPop .wp-conf i{position:absolute;top:-14px;width:9px;height:14px;border-radius:2px;animation:wpFall linear both}
+   #winPop .wp-cup{font-size:64px;line-height:1;display:inline-block;animation:wpBounce 1.2s ease-in-out .5s 2}
+   #winPop .wp-rays{position:absolute;left:50%;top:58px;width:220px;height:220px;margin-left:-110px;margin-top:-110px;background:repeating-conic-gradient(rgba(247,201,72,.35) 0 10deg,transparent 10deg 20deg);border-radius:50%;animation:wpSpin 9s linear infinite;z-index:0}
+   #winPop .wp-in{position:relative;z-index:1}
+   #winPop h2{margin:8px 0 2px;font-size:24px;font-weight:800}
+   #winPop .wp-date{font-size:13.5px;color:#c0356f;font-weight:700;margin-bottom:12px}
+   #winPop .wp-w{display:flex;align-items:center;gap:10px;background:#F9D3E4;border-radius:18px;padding:10px 14px;margin:8px 0;text-align:right;opacity:0;animation:wpSlide .5s ease both}
+   #winPop .wp-w b{font-size:17px}#winPop .wp-w span{display:block;font-size:13px;color:#c0356f;font-weight:700}
+   #winPop .wp-msg{font-size:14.5px;line-height:1.8;margin:12px 0 14px}
+   #winPop .wp-go{width:100%;border:0;border-radius:999px;background:#EF5D95;color:#fff;font-weight:800;font-size:16px;padding:13px;box-shadow:0 6px 16px rgba(239,93,149,.35);cursor:pointer;animation:wpPulse 1.6s ease-in-out 1.6s infinite}
+   #winPop .wp-x{position:absolute;top:10px;left:12px;z-index:2;border:0;background:rgba(255,255,255,.7);width:34px;height:34px;border-radius:50%;font-size:18px;cursor:pointer;color:#4A3540}
+   @keyframes wpFade{from{opacity:0}to{opacity:1}}
+   @keyframes wpPop{from{opacity:0;transform:scale(.6) translateY(40px)}to{opacity:1;transform:none}}
+   @keyframes wpFall{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(560px) rotate(540deg)}}
+   @keyframes wpBounce{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-14px) rotate(-8deg)}60%{transform:translateY(0) rotate(6deg)}}
+   @keyframes wpSpin{to{transform:rotate(360deg)}}
+   @keyframes wpSlide{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:none}}
+   @keyframes wpPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+   @media (prefers-reduced-motion:reduce){#winPop *,#winPop{animation:none!important}#winPop .wp-w{opacity:1}#winPop .wp-conf{display:none}}
+  </style>
+  <div class="wp-card" role="dialog" aria-modal="true" aria-labelledby="wpT"><div class="wp-conf">${conf}</div><div class="wp-rays"></div>
+   <button class="wp-x" aria-label="${L('سكّر','Close')}" onclick="winPopClose()">✕</button>
+   <div class="wp-in"><div class="wp-cup">🏆</div>
+    <h2 id="wpT">${L('فايزين الجمعة!','Friday winners!')}</h2><div class="wp-date">${L('20 نوفمبر 2026','20 Nov 2026')}</div>
+    ${WINNERS.list.map(([n,g],i)=>`<div class="wp-w" style="animation-delay:${.7+i*.18}s"><div style="font-size:26px">🎉</div><div><b>${esc(n)}</b><span>${g}</span></div></div>`).join('')}
+    <div class="wp-msg">${L('وصلوا 500 نقطة قبل الكل وفازوا بنقاط بينز ☕<br><b>المسابقة الجديدة بدت، والفايز الجاي ممكن تكون إنت 💪</b>','They reached 500 points first and won Beans points ☕<br><b>A new week has started, the next winner could be you 💪</b>')}</div>
+    <button class="wp-go" onclick="winPopClose();go('compete')">${L('يالله أدخل المسابقة 🏆','Join the race 🏆')}</button></div></div>`;
+  el.addEventListener('click',e=>{if(e.target===el)winPopClose()});document.body.appendChild(el);document.body.style.overflow='hidden'}
+function winPopClose(){const e=$('#winPop');if(e){e.style.transition='opacity .25s';e.style.opacity='0';setTimeout(()=>e.remove(),250)}document.body.style.overflow=''}
 function vHome(){
   crumbs([[L('الرئيسية','Home')]]);
-  $('#view').innerHTML=`${winBanner()}
+  $('#view').innerHTML=`
   ${isGuest()?`<div class="card row" style="justify-content:space-between;background:var(--sun-soft);border-color:var(--sun);margin-bottom:12px"><div style="min-width:0"><b>👀 ${L('إنت تتصفح كزائر','You are browsing as a guest')}</b><div class="mut" style="font-size:14px">${L('سجّل عشان تنحفظ مذاكرتك، وتدخل المسابقة والجوائز، وتكلم مدرسك الخصوصي.','Sign up to save your progress, join the competition and prizes, and talk to your tutor.')}</div></div><button class="pri" onclick="joinPrompt('home')">${L('سجّل الحين ✏️','Sign up ✏️')}</button></div>`:''}
   <section class="hero">
     <div>
@@ -58050,6 +58089,7 @@ function vHome(){
   </div>`}
   ${fbBox()}
   <p class="foot">${L('مذاكرتي · mthakarti.com · محتوى تعليمي مساعد، ارجع دائمًا لكتابك ومعلمك 🌸','Mthakarti · mthakarti.com · Supporting study material — always check your textbook and teacher 🌸')}</p>`;
+  setTimeout(winPopup,700);
 }
 function subjProgress(k){const s=SUBJ[k],p=P(k);if(!s.T.length)return 0;const seen=p.done.filter(id=>s.T.some(t=>t.id===id)).length/s.T.length;const ex=p.exam?p.exam/100:0;return Math.round((seen*.5+ex*.5)*100)}
 function vGrade(){
